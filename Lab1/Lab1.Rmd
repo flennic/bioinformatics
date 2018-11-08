@@ -12,33 +12,80 @@ knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE)
 library(dplyr)
 library(tidyr)
 library(magrittr)
+library(kableExtra)
 
 ```
 
 # Assignment 1
 
-## 1.1
+# Question 1: Hardy–Weinberg equilibrium
 
-Some text and equation here: 
+$~$
+
+## Question 1.1
+
+We consider a diploid population of _N_ individuals and we focus our attention on a gene locus with two possible alleles, _A_ and _a_. The resulting population will be something like the following:
+
+> AA \quad Aa \quad AA \quad aa \quad aA \quad aA \quad Aa \quad .....
+
+We then define the following quantities:
+
+* $n_{AA}$: the population of _AA_ homozygotes subjects in the parental generation;
+
+* $n_{aa}$: the population of _aa_ homozygotes subjects in the parental generation;
+
+* $n_{Aa}$: the population of heterozygotes subjects in the parental generation;
+
+* $p$: the proportion of *A*s in the allele population, given by $\frac{n_{AA}}{N} + \frac{1}{2} \cdot \frac{n_{Aa}}{N}$;
+
+* $q$: the proportion of *a*s in the allele population, given by $\frac{n_{aa}}{N} + \frac{1}{2} \cdot \frac{n_{Aa}}{N}$;
+
+* $p + q = 1$
+
+Our goal is to demonstrate how the defined population will be able to come into a state called _Hardy–Weinberg equilibrium_, in only one generation obtained through random mating (both alleles of the offspring are just randomly, with proportions p and q, drawn from the parental allele population). A population in this state present the proportion of _AA_ homozygotes equal to $p^2$, the proportion of _aa_ homozygotes equal to $q^2$ and the proportion of _Aa_/_aA_ heterozygotes equal to $2pq$.
+
+$~$
+
+## Question 1.2
+
+We now look at the MN blood group, that has two possible co–dominating alleles, $L^{M}$ (denoted $M$) and $L^{N}$ (denoted $N$). In a population of $n = 1000$ Americans of Caucasian descent, the following genotype counts were observed: 
+
+* $n_{MM} = 357$ individuals were _MM_ homozygotes; 
+
+* $n_{MN} = 485$ individuals were _MN_ heterozygotes; 
+
+* $n_{NN} = 158$ individuals were _NN_ homozygotes;
+
+The relatives proportion, obtained by dividing the genotype counts by the total population, are 0.357, 0.485 and 0.158 respectively. According to the Hardy–Weinberg principle, we expect these quantities to follow the proportions $p^2$, $2pq$ and $q^2$, where $p$ and $q$ are the proportions of $N$ and $M$ alleles. In formulas:
 
 \begin{equation}
-  S = \sqrt{\frac{\sum_{r,s}(d_{rs} - \hat{d}_{rs})^2}{\sum_{r,s} d_{rs}^2}}.
+  \begin{split}
+    p & = \frac{n_{MM}}{n} + \frac{1}{2} \cdot \frac{n_{MN}}{n} = 0.357 + \frac{1}{2} \cdot 0.485 = 0.5995 \\
+    q & = \frac{n_{NN}}{n} + \frac{1}{2} \cdot \frac{n_{MN}}{n} = 0.158 + \frac{1}{2} \cdot 0.485 = 0.4005 
+  \end{split}
 \end{equation}
 
+Performing a chi–square goodness of fit test (`chisq.test()` function in R) result in _p-value_ $= 1$, meaning that the hypothesis of the existance of a Hardy–Weinberg equilibrium is accepted.
 
-```{r}
-# ------------------------------------------------------------------------------
-# Question 1.1
-# ------------------------------------------------------------------------------
-
-```
-
-## 1.2
 
 ```{r}
 # ------------------------------------------------------------------------------
 # Question 1.2
 # ------------------------------------------------------------------------------
+
+# The prob of one allele is the proportion of the homozigote + half the proportion of the heterozygote 
+p <- 0.357 + 0.485/2
+q <- 0.158 + 0.485/2
+
+# Expected values (Hardy–Weinberg equilibrium)
+p_2 <- p^2
+q_2 <- q^2
+pq <- 2*p*q
+
+Xsq <- chisq.test(c(0.357, 0.485, 0.158), p = c(p_2, pq, q_2))
+Xsq
+# Xsq$observed
+# Xsq$expected
 
 ```
 
