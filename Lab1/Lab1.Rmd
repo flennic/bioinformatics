@@ -245,7 +245,8 @@ Caenorhabditis elegans is a free-living, nematode worm, which lives in soil envi
 i) male
 ii) self-fertilizing hermaphrodite
 
-Finally, it has all human sensations, such as taste and smell, despite the fact that is has no eyes. (https://en.wikipedia.org/wiki/Caenorhabditis_elegans)
+Finally, it has all human sensations, such as taste and smell, despite the fact that is has no eyes.  
+(https://en.wikipedia.org/wiki/Caenorhabditis_elegans)
 
 In general C.elegans has a similar construction and characteristics as humans.
 It is also important that the genes, which are responsible for human's evolution, had similar ancestor with C.elegans. Therefore, instead of making experiments on humans, which most of the time is expensive and difficult, scientist can work with C.elegans. That is the reason why studying  C.elegans biology is crucial for scientific field.
@@ -253,23 +254,27 @@ It is also important that the genes, which are responsible for human's evolution
 
 ## 3.2
 
-```{r}
-# ------------------------------------------------------------------------------
-# Question 3.2
-# ------------------------------------------------------------------------------
-knitr::include_graphics("images/3.2_exons.png")
-```
+\includegraphics[width=\linewidth]{images/3.2_exons.png}
 
-This diagram shows exons and introns. We have 4 exons in our searching query. Our searching query found between 6528 and 8027. Our exons and introns:  
-* introns1: 6528 - 6935
-* exon1: 6936 - 7110
-* introns2: 7111 - 7157
-* exon2: 7158 - 7393
-* introns3: 7394 - 7432
-* exon3: 7433 - 7609
-* introns4: 7610 - 7650
-* exon4: 7651 - 7818
-* introns5: 7819 - 8027
+This diagram shows exons and introns. We have 4 exons in our searching query. Our searching query found between 6528 and 8027. Our exons and introns:
+
+* introns1:   6528 - 6935  
+
+* exon1:      6936 - 7110  
+
+* introns2:   7111 - 7157
+
+* exon2:      7158 - 7393
+
+* introns3:   7394 - 7432
+
+* exon3:      7433 - 7609
+
+* introns4:   7610 - 7650
+
+* exon4:      7651 - 7818
+
+* introns5:   7819 - 8027
 
 # Appendix
 
