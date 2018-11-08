@@ -240,12 +240,16 @@ of schizosaccharomyces pombe.
 
 ## 3.1
 
-```{r}
-# ------------------------------------------------------------------------------
-# Question 3.1
-# ------------------------------------------------------------------------------
+Caenorhabditis elegans is a free-living, nematode worm, which lives in soil environments all over the world. it is divided in two sexes:
 
-```
+i) male
+ii) self-fertilizing hermaphrodite
+
+Finally, it has all human sensations, such as taste and smell, despite the fact that is has no eyes. (https://en.wikipedia.org/wiki/Caenorhabditis_elegans)
+
+In general C.elegans has a similar construction and characteristics as humans.
+It is also important that the genes, which are responsible for human's evolution, had similar ancestor with C.elegans. Therefore, instead of making experiments on humans, which most of the time is expensive and difficult, scientist can work with C.elegans. That is the reason why studying  C.elegans biology is crucial for scientific field.
+(http://www.people.ku.edu/~erikl/Lundquist_Lab/Why_study_C._elegans.html)
 
 ## 3.2
 
