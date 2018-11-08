@@ -276,6 +276,16 @@ This diagram shows exons and introns. We have 4 exons in our searching query. Ou
 
 * introns5:   7819 - 8027
 
+## 3.3
+
+We can find all the information needed  from the summary :
+
+\includegraphics[width=\linewidth]{images/3.3_alignment_summary.png}
+
+The numbering of the sequences in the alignment is 1500. The identities section in the summary shows this result. In general, identities shows the number of identical bases between the query and the subject sequence. 
+
+The summary also conteins information about the orientation both of the query and the subject sequence, which can be found in "Strand" section.In this case the the database genomic sequence progress has the same direction as the query sequence because both of them are plus and they are increasing.
+
 # Appendix
 
 ```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
