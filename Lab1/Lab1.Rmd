@@ -240,7 +240,7 @@ of schizosaccharomyces pombe.
 
 ## 3.1
 
-Caenorhabditis elegans is a free-living, nematode worm, which lives in soil environments all over the world. it is divided in two sexes:
+*Caenorhabditis elegans* is a free-living, nematode worm, which lives in soil environments all over the world. it is divided in two sexes:
 
 i) male
 ii) self-fertilizing hermaphrodite
@@ -285,6 +285,21 @@ We can find all the information needed  from the summary :
 The numbering of the sequences in the alignment is 1500. The identities section in the summary shows this result. In general, identities shows the number of identical bases between the query and the subject sequence. 
 
 The summary also conteins information about the orientation both of the query and the subject sequence, which can be found in "Strand" section.In this case the the database genomic sequence progress has the same direction as the query sequence because both of them are plus and they are increasing.
+
+Using http://www.bioinformatics.nl/cgi-bin/emboss/revseq ,  we reverse the query sequence, we run again the BLAST tool and we get the below summary :
+
+Using http://www.bioinformatics.nl/cgi-bin/emboss/revseq ,  we reverse the query sequence, we run again the BLAST tool and we get the below summary :
+
+\includegraphics[width=\linewidth]{images/3.3_reverse.png}
+
+It is clear from this summary that the reverse sequence has opposite direction from the subject sequence ( Plus / Minus in the "Strand" section ), while all the other information, such as Identities and Score, is the same.
+
+
+
+
+
+
+
 
 ## 3.4
 
