@@ -19,32 +19,42 @@ library(kableExtra)
 # Assignment 1
 
 # Question 1: Hardy–Weinberg equilibrium
-
-$~$
-
 ## Question 1.1
 
-We consider a diploid population of _N_ individuals and we focus our attention on a gene locus with two possible alleles, _A_ and _a_. The resulting population will be something like the following:
+We define the following probability space
 
-> AA \quad Aa \quad AA \quad aa \quad aA \quad aA \quad Aa \quad .....
+$$\left(\Omega,\mathcal{F},P\right)$$
 
-We then define the following quantities:
+Where,
 
-* $n_{AA}$: the population of _AA_ homozygotes subjects in the parental generation;
+$$\Omega = \left\{(A,A), (A,a), (a,A), (a,a)\right\}$$
 
-* $n_{aa}$: the population of _aa_ homozygotes subjects in the parental generation;
+We also define a probability measure $P$ such as
 
-* $n_{Aa}$: the population of heterozygotes subjects in the parental generation;
+$$P(X, Y)$$
+$$X,Y \in \left\{A, a\right\}$$
 
-* $p$: the proportion of *A*s in the allele population, given by $\frac{n_{AA}}{N} + \frac{1}{2} \cdot \frac{n_{Aa}}{N}$;
+So $P(X,Y)$ is the probability that an allele is $(X,Y)$.
 
-* $q$: the proportion of *a*s in the allele population, given by $\frac{n_{aa}}{N} + \frac{1}{2} \cdot \frac{n_{Aa}}{N}$;
+By definition, $p$ is the proportion of $A's$ in the allele population and $q$ is the proportion of $a's$ in the allele population, so:
 
-* $p + q = 1$
+$$P(A) = P(A,A) + P(A,a) + P(a,A) = p$$
 
-Our goal is to demonstrate how the defined population will be able to come into a state called _Hardy–Weinberg equilibrium_, in only one generation obtained through random mating (both alleles of the offspring are just randomly, with proportions p and q, drawn from the parental allele population). A population in this state present the proportion of _AA_ homozygotes equal to $p^2$, the proportion of _aa_ homozygotes equal to $q^2$ and the proportion of _Aa_/_aA_ heterozygotes equal to $2pq$.
+The same applies to $P(a)$.
+$$P(a) = P(a,a) + P(a,A) + P(A,a)= q$$
 
-$~$
+The fact that we asume random mating means that $X$ and $Y$ are $IID$, which entails the following:
+
+$$P(A,A) = P(A) * P(A) = p^{2}$$
+$$P(a,a) = P(a) * P(a) = q^{2}$$
+$$P(A,a) = P(A)*P(a) = P(a,A) = pq$$
+The probability of an allele of it being a heterozygote is:
+$$P(A,a) + P(a,A) = 2pq$$
+
+$$P(\Omega) = P(A,A) + P(a,a) + 2P(A,a) = p^{2} + q^{2} + 2pq = 1$$
+
+Thus, we show that by random mating the proportion of $A's$ and $a's$ is the same in the offsprings and the Hardy-Weinberg equilibrium is obtained and can't deviate from it.
+
 
 ## Question 1.2
 
@@ -74,15 +84,15 @@ Performing a chi–square goodness of fit test (`chisq.test()` function in R) re
 # ------------------------------------------------------------------------------
 
 # The prob of one allele is the proportion of the homozigote + half the proportion of the heterozygote 
-p <- 0.357 + 0.485/2
-q <- 0.158 + 0.485/2
+p = 0.357 + 0.485 / 2
+q = 0.158 + 0.485 / 2
 
 # Expected values (Hardy–Weinberg equilibrium)
-p_2 <- p^2
-q_2 <- q^2
-pq <- 2*p*q
+p_2 = p^2
+q_2 = q^2
+pq = 2*p*q
 
-Xsq <- chisq.test(c(0.357, 0.485, 0.158), p = c(p_2, pq, q_2))
+Xsq = chisq.test(c(0.357, 0.485, 0.158), p=c(p_2, pq, q_2))
 Xsq
 # Xsq$observed
 # Xsq$expected
