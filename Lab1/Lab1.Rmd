@@ -47,7 +47,7 @@ $$P(A) = P(A,A) + P(A,a) + P(a,A) = p$$
 The same applies to $P(a)$.
 $$P(a) = P(a,a) + P(a,A) + P(A,a)= q$$
 
-The fact that we asume random mating means that $X$ and $Y$ are $IID$, which entails the following:
+The fact that we assume random mating means that $X$ and $Y$ are $IID$, which entails the following:
 
 $$P(A,A) = P(A) * P(A) = p^{2}$$
 $$P(a,a) = P(a) * P(a) = q^{2}$$
@@ -414,6 +414,14 @@ After getting whole DNA code from all exons, we can search it on blastx to find 
 
 As we can see from output of blastx, all exons are used for producing *Eukaryotic translation initiation factor 4E-3 [Caenorhabditis elegans]* protein.  
 After DNA code translation, blastx compared our protein sequence with a negative direction. While our query sequence order is decreasing, out subject sequence order is increasing.
+
+
+## 3.6
+
+From https://www.wormbase.org/species/c_elegans/gene/WBGene00002061#0-3gi1-3 and https://www.ncbi.nlm.nih.gov/gene/178536 we can gain the below information:
+
+First of all, the gene's name is ife-3 and it belongs to the gene class ife. It can be found in humans, monkeys, cows and other animals and insects. It is one of the five c. elegans homologs responsible for the protein eIF4E(Eukaryotic translation initiation factor 4E-3). ??ts ancestry also related to Eukaryota, Metazoa, Ecdysozoa and other elegans. Moreover, except for c.elegans, which referred in previous parts of the exercise, BLASTP showed matches with some other species. For instance, the highest match (100%) is with c. brenneri and the lowest (73.7) with S. cerevisiae. Finally, from the gene's ontology perspective, ife - 3 participates in some molecular functions and biological functions such as RNA binding, protein metabolic process and gene expression. 
+
 
 # Appendix
 
