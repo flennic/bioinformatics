@@ -1,6 +1,8 @@
 ---
 title: "Lab 1 - Gr. 14 - Bioinformatics (732A93)"
-output: pdf_document
+output: 
+  pdf_document:
+    toc: True
 link-citations: true
 author: tbd
 ---
@@ -12,42 +14,107 @@ knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE)
 library(dplyr)
 library(tidyr)
 library(magrittr)
+library(kableExtra)
 
 ```
+
+\newpage
 
 # Assignment 1
 
-## 1.1
+# Question 1: Hardy–Weinberg equilibrium
+## Question 1.1
 
-Some text and equation here: 
+We define the following probability space
+
+$$\left(\Omega,\mathcal{F},P\right)$$
+
+Where,
+
+$$\Omega = \left\{(A,A), (A,a), (a,A), (a,a)\right\}$$
+
+We also define a probability measure $P$ such as
+
+$$P(X, Y)$$
+$$X,Y \in \left\{A, a\right\}$$
+
+So $P(X,Y)$ is the probability that an allele is $(X,Y)$.
+
+By definition, $p$ is the proportion of $A's$ in the allele population and $q$ is the proportion of $a's$ in the allele population, so:
+
+$$P(A) = P(A,A) + P(A,a) + P(a,A) = p$$
+
+The same applies to $P(a)$.
+$$P(a) = P(a,a) + P(a,A) + P(A,a)= q$$
+
+The fact that we assume random mating means that $X$ and $Y$ are $IID$, which entails the following:
+
+$$P(A,A) = P(A) * P(A) = p^{2}$$
+$$P(a,a) = P(a) * P(a) = q^{2}$$
+$$P(A,a) = P(a,A) = P(A)*P(a) = pq$$
+The probability of an allele of it being a heterozygote is:
+$$P(A,a) + P(a,A) = 2pq$$
+
+$$P(\Omega) = P(A,A) + P(a,a) + 2P(A,a) = p^{2} + q^{2} + 2pq = 1$$
+
+Thus, we show that by random mating the proportion of $A's$ and $a's$ is the same in the offsprings and the Hardy-Weinberg equilibrium is obtained and can't deviate from it.
+
+
+## Question 1.2
+
+We now look at the MN blood group, that has two possible co–dominating alleles, $L^{M}$ (denoted $M$) and $L^{N}$ (denoted $N$). In a population of $n = 1000$ Americans of Caucasian descent, the following genotype counts were observed: 
+
+* $n_{MM} = 357$ individuals were _MM_ homozygotes; 
+
+* $n_{MN} = 485$ individuals were _MN_ heterozygotes; 
+
+* $n_{NN} = 158$ individuals were _NN_ homozygotes;
+
+The relatives proportion, obtained by dividing the genotype counts by the total population, are 0.357, 0.485 and 0.158 respectively. According to the Hardy–Weinberg principle, we expect these quantities to follow the proportions $p^2$, $2pq$ and $q^2$, where $p$ and $q$ are the proportions of $N$ and $M$ in the alleles. In formulas:
 
 \begin{equation}
-  S = \sqrt{\frac{\sum_{r,s}(d_{rs} - \hat{d}_{rs})^2}{\sum_{r,s} d_{rs}^2}}.
+  \begin{split}
+    p & = \frac{n_{MM}}{n} + \frac{1}{2} \cdot \frac{n_{MN}}{n} = 0.357 + \frac{1}{2} \cdot 0.485 = 0.5995 \\
+    q & = \frac{n_{NN}}{n} + \frac{1}{2} \cdot \frac{n_{MN}}{n} = 0.158 + \frac{1}{2} \cdot 0.485 = 0.4005 
+  \end{split}
 \end{equation}
 
+With these empirical quantities we formulate what would the population look if it was on equilibrium and compare them with the real proportions $\left(p_{MM}=0.375, p_{NN}=0.158, p_{MN}=0.485\right)$:
 
-```{r}
-# ------------------------------------------------------------------------------
-# Question 1.1
-# ------------------------------------------------------------------------------
+$$p_{MM}^0 = p^{2} = 0.3594002$$
+$$p_{NN}^0 = q^{2} = 0.1604002$$
+$$p_{MN}^0 = 2pq = 0.4801995$$
 
-```
+Performing a chi–square goodness of fit test (`chisq.test()` function in R) results in _p-value_ $= 1$. This result shows that there is not enough statistical evidence to reject the hypothesis that the population is in a Hardy-Weinberg equilibrium.
 
-## 1.2
 
 ```{r}
 # ------------------------------------------------------------------------------
 # Question 1.2
 # ------------------------------------------------------------------------------
 
+# The prob of one allele is the proportion of the homozigote + half the proportion of the heterozygote 
+p = 0.357 + 0.485 / 2
+q = 0.158 + 0.485 / 2
+
+# Expected values (Hardy–Weinberg equilibrium)
+p_2 = p^2
+q_2 = q^2
+pq = 2*p*q
+
+Xsq = chisq.test(c(0.357, 0.485, 0.158), p=c(p_2, pq, q_2))
+Xsq
+# Xsq$observed
+# Xsq$expected
+
 ```
 
-# Assignment 2
+# Assignment 2 : Exploring a genomic sequence
 
 Note that, by convention, a *coding strand* is used when displaying a DNA sequence.
 "A coding strand, is the segment within double-stranded DNA that runs from 5' to 3', and which is complementary to the antisense strand of DNA, or template strand, which runs from 3' to 5'" (https://en.wikipedia.org/wiki/Sense_strand).
 
-## 2.1
+## Question 2.1
 
 We go to the following link https://www.ncbi.nlm.nih.gov/nuccore/CU329670, 
 scroll down to "Features", click on "CDS" to see the first 5662 nucleotides of 
@@ -55,7 +122,7 @@ the sequence.
 
 The protein product is: **RecQ type DNA helicase**
 
-## 2.2
+## Question 2.2
 
 Note that proteins are made up of 20 different amino acids (linked together).
 Amino acids are molecules composed of an alpha carbon, a carboxyl group, an
@@ -74,7 +141,7 @@ In our case, the first four amino acids are:
 knitr::include_graphics("images/2.2_amino-acids.png")
 ```
 
-## 2.3
+## Question 2.3
 
 Note that nucleotides code for amino acids. They are molecules composed of a sugar, a phosphate and a base. The part of nucleotides that distinguishes them is the base.
 
@@ -109,7 +176,7 @@ sequence `MVVA` (https://www.ebi.ac.uk/Tools/st/emboss_backtranseq/). After past
 sequence is returned: **ATGGTCGTCGCT**
 
 
-## 2.4
+## Question 2.4
 
 The above mentioned obtained coding strand sequence ATGGTCGTCGCT does not exist 
 in the provided nucleotide sequence (that was saved in FASTA format as 
@@ -141,7 +208,7 @@ was that we needed to take the reverse complement of the correct characters
 from the nucleotid sequence (namely the last 12 characters).
 
 
-## 2.5
+## Question 2.5
 
 *Number range that corresponds to these amino acids (protein sequence):*
 
@@ -173,25 +240,188 @@ features under source), that this genomic sequence lies on the chromosome 1
 of schizosaccharomyces pombe.
 
 
-# Assignment 3
+# Assignment 3 : Exploring a genomic sequence
 
-## 3.1
+## Question 3.1
 
-```{r}
-# ------------------------------------------------------------------------------
-# Question 3.1
-# ------------------------------------------------------------------------------
+*Caenorhabditis elegans* is a free-living, nematode worm, which lives in soil environments all over the world. it is divided in two sexes:
 
+i) male
+ii) self-fertilizing hermaphrodite
+
+Finally, it has all human sensations, such as taste and smell, despite the fact that is has no eyes.  
+(https://en.wikipedia.org/wiki/Caenorhabditis_elegans)
+
+In general C.elegans has a similar construction and characteristics as humans.
+It is also important that the genes, which are responsible for human's evolution, had similar ancestor with C.elegans. Therefore, instead of making experiments on humans, which most of the time is expensive and difficult, scientist can work with C.elegans. That is the reason why studying  C.elegans biology is crucial for scientific field.
+(http://www.people.ku.edu/~erikl/Lundquist_Lab/Why_study_C._elegans.html)
+
+## Question 3.2
+
+\includegraphics[width=\linewidth]{images/3.2_exons.png}
+
+This diagram shows exons and introns. We have 4 exons in our searching query. Our searching query found between 6529 and 8028. Our exons and introns:
+
+* introns1:   6529 - 6935  
+
+* exon1:      6936 - 7110  
+
+* introns2:   7111 - 7157
+
+* exon2:      7158 - 7393
+
+* introns3:   7394 - 7432
+
+* exon3:      7433 - 7609
+
+* introns4:   7610 - 7650
+
+* exon4:      7651 - 7818
+
+* introns5:   7819 - 8028
+
+## Question 3.3
+
+We can find all the information needed  from the summary :
+
+\includegraphics[width=\linewidth]{images/3.3_alignment_summary.png}
+
+The numbering of the sequences in the alignment is 1500. The identities section in the summary shows this result. In general, identities shows the number of identical bases between the query and the subject sequence. 
+
+The summary also conteins information about the orientation both of the query and the subject sequence, which can be found in "Strand" section.In this case the the database genomic sequence progress has the same direction as the query sequence because both of them are plus and they are increasing.
+
+## Question 3.4
+
+Our query sequence is found at *"Caenorhabditis elegans chromosome V"* and its range is between 6529 and 8028. We can see chromosome name in the figure of question 3.3.
+
+Using http://www.bioinformatics.nl/cgi-bin/emboss/revseq ,  we reverse the query sequence, we run again the BLAST tool and we get the below summary :
+
+Using http://www.bioinformatics.nl/cgi-bin/emboss/revseq ,  we reverse the query sequence, we run again the BLAST tool and we get the below summary :
+
+\includegraphics[width=\linewidth]{images/3.3_reverse.png}
+
+It is clear from this summary that the reverse sequence has opposite direction from the subject sequence ( Plus / Minus in the "Strand" section ), while all the other information, such as Identities and Score, is the same.
+
+
+
+## Question 3.5
+
+We will find sequences of exons by this code:
+
+```{r echo=T}
+## gets sequence, starting index and ending index as a parameter 
+## split and return the seqeunce between start and index
+get_exon = function(seq, start, end){
+  org_seq_start = 6529
+  fst_index = start - org_seq_start + 1
+  return(substr(seq, fst_index, fst_index + (end-start)))
+}
+
+## read the query sequence
+fasta_file = readLines("732A51_BioinformaticsHT2018_Lab01Ex03.fasta")
+query_sequence = paste(fasta_file[-1], collapse = "")
+
+## Starting and end indexes of exons.
+exon1_start = 6936
+exon1_end = 7110
+
+exon2_start = 7158
+exon2_end = 7393
+
+exon3_start = 7433
+exon3_end = 7609
+
+exon4_start = 7651
+exon4_end = 7818
+
+## get exons with our split function
+exon1 = get_exon(query_sequence, exon1_start, exon1_end)
+exon2 = get_exon(query_sequence, exon2_start, exon2_end)
+exon3 = get_exon(query_sequence, exon3_start, exon3_end)
+exon4 = get_exon(query_sequence, exon4_start, exon4_end)
+
+## save exons for protein analysis
+writeLines(exon1, file("q3.5_exon1.txt"))
+writeLines(exon2, file("q3.5_exon2.txt"))
+writeLines(exon3, file("q3.5_exon3.txt"))
+writeLines(exon4, file("q3.5_exon4.txt"))
 ```
 
-## 3.2
+### **exon 1**
 
-```{r}
-# ------------------------------------------------------------------------------
-# Question 3.2
-# ------------------------------------------------------------------------------
+  - **get_exon** function output:
 
+```{r echo=F, eval=T}
+cat(substr(exon1,1,50), "...")
 ```
+
+  - **Sequence Text View Tool** in blast nucleotide search 
+
+\includegraphics[width=\linewidth]{images/3.5_stv_tool_ex1.png}
+
+
+
+
+### **exon 2**
+
+  - **get_exon** function output:
+  
+```{r echo=F, eval=T}
+cat(substr(exon2,1,50), "...")
+```
+
+  - **Sequence Text View Tool** in blast nucleotide search 
+
+\includegraphics[width=\linewidth]{images/3.5_stv_tool_ex2.png}
+
+
+
+
+
+### **exon 3**
+
+  - **get_exon** function output:
+  
+```{r echo=F, eval=T}
+cat(substr(exon3,1,50), "...")
+```
+
+  - **Sequence Text View Tool** in blast nucleotide search 
+
+\includegraphics[width=\linewidth]{images/3.5_stv_tool_ex3.png}
+
+
+
+
+
+### **exon 4**
+
+  - **get_exon** function output:
+  
+```{r echo=F, eval=T}
+cat(substr(exon4,1,50), "...")
+```
+
+  - **Sequence Text View Tool** in blast nucleotide search 
+
+\includegraphics[width=\linewidth]{images/3.5_stv_tool_ex4.png}
+
+After getting whole DNA code from all exons, we can search it on blastx to find which protein it is and its protein sequence. We can also see the protein sequence in the screenshots of *Sequence Text View Tool* in blast nucleotide search for each exons.
+
+  - **blastx**
+
+\includegraphics[width=\linewidth]{images/3.5_blastx_all_ex.png}
+
+As we can see from output of blastx, all exons are used for producing *Eukaryotic translation initiation factor 4E-3 [Caenorhabditis elegans]* protein.  
+After DNA code translation, blastx compared our protein sequence with a negative direction. While our query sequence order is decreasing, out subject sequence order is increasing.
+
+
+## 3.6
+
+From https://www.wormbase.org/species/c_elegans/gene/WBGene00002061#0-3gi1-3 and https://www.ncbi.nlm.nih.gov/gene/178536 we can gain the below information:
+
+First of all, the gene's name is ife-3 and it belongs to the gene class ife. It can be found in humans, monkeys, cows and other animals and insects. It is one of the five c. elegans homologs responsible for the protein eIF4E(Eukaryotic translation initiation factor 4E-3). ??ts ancestry also related to Eukaryota, Metazoa, Ecdysozoa and other elegans. Moreover, except for c.elegans, which referred in previous parts of the exercise, BLASTP showed matches with some other species. For instance, the highest match (100%) is with c. brenneri and the lowest (73.7) with S. cerevisiae. Finally, from the gene's ontology perspective, ife - 3 participates in some molecular functions and biological functions such as RNA binding, protein metabolic process and gene expression. 
+
 
 # Appendix
 
