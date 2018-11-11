@@ -1,8 +1,8 @@
 ---
-title: "Lab 1 - Gr. 14 - Bioinformatics (732A93)"
+title: "Lab X - Gr. 14 - Bioinformatics (732A93)"
 output: pdf_document
 link-citations: true
-author: tbd
+author: author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092), Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
 ---
 
 ```{r setup, include=FALSE}

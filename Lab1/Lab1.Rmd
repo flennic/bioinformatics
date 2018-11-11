@@ -4,7 +4,7 @@ output:
   pdf_document:
     toc: True
 link-citations: true
-author: tbd
+author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092), Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
 ---
 
 ```{r setup, include=FALSE}
