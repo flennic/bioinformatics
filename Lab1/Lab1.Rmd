@@ -42,10 +42,10 @@ So $P(X,Y)$ is the probability that an allele is $(X,Y)$.
 
 By definition, $p$ is the proportion of $A's$ in the allele population and $q$ is the proportion of $a's$ in the allele population, so:
 
-$$P(A) = P(A,A) + P(A,a) + P(a,A) = p$$
+$$P(A) = P(A,A) + P(A,a) = p$$
 
 The same applies to $P(a)$.
-$$P(a) = P(a,a) + P(a,A) + P(A,a)= q$$
+$$P(a) = P(a,a) + P(a,A) = q$$
 
 The fact that we assume random mating means that $X$ and $Y$ are $IID$, which entails the following:
 
