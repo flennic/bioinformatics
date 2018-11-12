@@ -262,8 +262,6 @@ It is also important that the genes, which are responsible for human's evolution
 
 This diagram shows exons and introns. We have 4 exons in our searching query. Our searching query found between 6529 and 8028. Our exons and introns:
 
-* introns1:   6529 - 6935  
-
 * exon1:      6936 - 7110  
 
 * introns2:   7111 - 7157
@@ -278,8 +276,6 @@ This diagram shows exons and introns. We have 4 exons in our searching query. Ou
 
 * exon4:      7651 - 7818
 
-* introns5:   7819 - 8028
-
 ## Question 3.3
 
 We can find all the information needed  from the summary :
@@ -290,18 +286,15 @@ The numbering of the sequences in the alignment is 1500. The identities section 
 
 The summary also conteins information about the orientation both of the query and the subject sequence, which can be found in "Strand" section.In this case the the database genomic sequence progress has the same direction as the query sequence because both of them are plus and they are increasing.
 
-## Question 3.4
-
-Our query sequence is found at *"Caenorhabditis elegans chromosome V"* and its range is between 6529 and 8028. We can see chromosome name in the figure of question 3.3.
-
-Using http://www.bioinformatics.nl/cgi-bin/emboss/revseq ,  we reverse the query sequence, we run again the BLAST tool and we get the below summary :
-
 Using http://www.bioinformatics.nl/cgi-bin/emboss/revseq ,  we reverse the query sequence, we run again the BLAST tool and we get the below summary :
 
 \includegraphics[width=\linewidth]{images/3.3_reverse.png}
 
 It is clear from this summary that the reverse sequence has opposite direction from the subject sequence ( Plus / Minus in the "Strand" section ), while all the other information, such as Identities and Score, is the same.
 
+## Question 3.4
+
+Our query sequence is found at *"Caenorhabditis elegans chromosome V"* and its range is between 6529 and 8028. We can see chromosome name in the figure of question 3.3.
 
 
 ## Question 3.5
