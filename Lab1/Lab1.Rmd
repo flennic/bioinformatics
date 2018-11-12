@@ -264,15 +264,15 @@ This diagram shows exons and introns. We have 4 exons in our searching query. Ou
 
 * exon1:      6936 - 7110  
 
-* introns2:   7111 - 7157
+* introns1:   7111 - 7157
 
 * exon2:      7158 - 7393
 
-* introns3:   7394 - 7432
+* introns2:   7394 - 7432
 
 * exon3:      7433 - 7609
 
-* introns4:   7610 - 7650
+* introns3:   7610 - 7650
 
 * exon4:      7651 - 7818
 
@@ -352,7 +352,7 @@ cat(substr(exon1,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex1.png}
 
-
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex1.png}
 
 
 ### **exon 2**
@@ -367,7 +367,7 @@ cat(substr(exon2,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex2.png}
 
-
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex2.png}
 
 
 
@@ -383,7 +383,7 @@ cat(substr(exon3,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex3.png}
 
-
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex3.png}
 
 
 
@@ -399,9 +399,14 @@ cat(substr(exon4,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex4.png}
 
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex4.png}
+
+### Analysis
+
 After getting whole DNA code from all exons, we can search it on blastx to find which protein it is and its protein sequence. We can also see the protein sequence in the screenshots of *Sequence Text View Tool* in blast nucleotide search for each exons.
 
   - **blastx**
+This is overview of all exons:
 
 \includegraphics[width=\linewidth]{images/3.5_blastx_all_ex.png}
 
@@ -409,11 +414,11 @@ As we can see from output of blastx, all exons are used for producing *Eukaryoti
 After DNA code translation, blastx compared our protein sequence with a negative direction. While our query sequence order is decreasing, out subject sequence order is increasing.
 
 
-## 3.6
+## Question 3.6
 
 From https://www.wormbase.org/species/c_elegans/gene/WBGene00002061#0-3gi1-3 and https://www.ncbi.nlm.nih.gov/gene/178536 we can gain the below information:
 
-First of all, the gene's name is ife-3 and it belongs to the gene class ife. It can be found in humans, monkeys, cows and other animals and insects. It is one of the five c. elegans homologs responsible for the protein eIF4E(Eukaryotic translation initiation factor 4E-3). ??ts ancestry also related to Eukaryota, Metazoa, Ecdysozoa and other elegans. Moreover, except for c.elegans, which referred in previous parts of the exercise, BLASTP showed matches with some other species. For instance, the highest match (100%) is with c. brenneri and the lowest (73.7) with S. cerevisiae. Finally, from the gene's ontology perspective, ife - 3 participates in some molecular functions and biological functions such as RNA binding, protein metabolic process and gene expression. 
+First of all, the gene's name is ife-3 and it belongs to the gene class ife. It can be found in humans, monkeys, cows and other animals and insects. It is one of the five c. elegans homologs responsible for the protein eIF4E (Eukaryotic translation initiation factor 4E-3). Its ancestry is also related to Eukaryota, Metazoa, Ecdysozoa and other elegans. Moreover, except for c.elegans, which referred in previous parts of the exercise, BLASTP showed matches with some other species. For instance, the highest match (100%) is with c. brenneri and the lowest (73.7) with S. cerevisiae. Finally, from the gene's ontology perspective, ife - 3 participates in some molecular functions and biological functions such as RNA binding, protein metabolic process and gene expression. 
 
 
 # Appendix
