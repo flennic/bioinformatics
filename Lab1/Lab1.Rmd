@@ -1,5 +1,5 @@
 ---
-title: "Lab 1 - Gr. 14 - Bioinformatics (732A93)"
+title: "Lab 1 - Gr. 12 - Bioinformatics (732A93)"
 output: 
   pdf_document:
     toc: True
