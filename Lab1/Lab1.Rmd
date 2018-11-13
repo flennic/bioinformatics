@@ -141,6 +141,8 @@ In our case, the first four amino acids are:
 knitr::include_graphics("images/2.2_amino-acids.png")
 ```
 
+\newpage
+
 ## Question 2.3
 
 Note that nucleotides code for amino acids. They are molecules composed of a sugar, a phosphate and a base. The part of nucleotides that distinguishes them is the base.
@@ -340,6 +342,36 @@ writeLines(exon3, file("q3.5_exon3.txt"))
 writeLines(exon4, file("q3.5_exon4.txt"))
 ```
 
+
+### Analysis
+
+After getting whole DNA code from all exons, we can search it on blastx to find which protein it is and its protein sequence. We can also see the protein sequence in the screenshots of *Sequence Text View Tool* in blast nucleotide search for each exons.
+
+  - **blastx**
+This is overview of all exons:
+
+
+- **NP_503123.1**
+
+\includegraphics[width=\linewidth]{images/3.5_blastx_all_ex_NP_503123.1.png}
+
+
+\newpage
+
+- **NP_741502.1**
+
+\includegraphics[width=\linewidth]{images/3.5_blastx_all_ex_NP_751502.1.png}
+
+- **NP_503124.1**
+
+\includegraphics[width=\linewidth]{images/3.5_blastx_all_ex_NP_503124.1.png}
+
+As we can see from output of blastx, all exons are used for producing *Eukaryotic translation initiation factor 4E-3 [Caenorhabditis elegans]* protein by "NP_503123.1", "NP_741502.1" and "NP_503124.1" unique protein sequences.  
+In "NP_503123.1" sequence, we use all exons as a whole. But we can see some missing amino acids in "NP_741502.1" and "NP_503124.1". We can see easily at the figure of Question 3.2, missing parts are in exon2 alternatives. While "NP_503123.1" uses whole exon2, "NP_741502.1" and "NP_503124.1" do not use whole exon2. We will see which amino acids are produced from which exon sequence in the continuation of this question.  
+After DNA code translation, blastx compared our protein sequence with a negative direction. While our query sequence order is decreasing, out subject sequence order is increasing.
+
+
+
 ### **exon 1**
 
   - **get_exon** function output:
@@ -352,7 +384,18 @@ cat(substr(exon1,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex1.png}
 
-\includegraphics[width=\linewidth]{images/3.5_blastx_ex1.png}
+  - **blastx - NP_503123.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex1_NP_503123.1.png}
+
+  - **blastx - NP_741502.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex1_NP_741502.1.png}
+
+  - **blastx - NP_503124.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex1_NP_503124.1.png}
+
 
 
 ### **exon 2**
@@ -367,9 +410,22 @@ cat(substr(exon2,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex2.png}
 
-\includegraphics[width=\linewidth]{images/3.5_blastx_ex2.png}
+  - **blastx - NP_503123.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex2_NP_503123.1.png}
 
+  - **blastx - NP_741502.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex2_NP_741502.1.png}
 
+\newpage
+
+  - **blastx - NP_503124.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex2_NP_503124.1.png}
+
+As we can see the figure of **blastx - NP_741502.1**, we found one unmatched amino acid, this means if we want to produce factor 4E-3 protein by NP_741502.1 sequence, we have to use 1 aminoacid (1 codons, 3 nucleotids) shorter exon2.  
+And the same thing is valid for **blastx - NP_503124.1**. We found exactly matched 76 nucleotids out of 78 in exon2. If we want to produce factor 4E-3 protein by NP_503124.1, we have to use 2 aminoacid (2 codons, 6 nucleotids) shorter exon2.
 
 ### **exon 3**
 
@@ -383,7 +439,21 @@ cat(substr(exon3,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex3.png}
 
-\includegraphics[width=\linewidth]{images/3.5_blastx_ex3.png}
+
+  - **blastx - NP_503123.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex3_NP_503123.1.png}
+
+
+\newpage
+
+  - **blastx - NP_741502.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex3_NP_741502.1.png}
+
+  - **blastx - NP_503124.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex3_NP_503124.1.png}
 
 
 
@@ -399,19 +469,23 @@ cat(substr(exon4,1,50), "...")
 
 \includegraphics[width=\linewidth]{images/3.5_stv_tool_ex4.png}
 
-\includegraphics[width=\linewidth]{images/3.5_blastx_ex4.png}
 
-### Analysis
+  - **blastx - NP_503123.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex4_NP_503123.1.png}
 
-After getting whole DNA code from all exons, we can search it on blastx to find which protein it is and its protein sequence. We can also see the protein sequence in the screenshots of *Sequence Text View Tool* in blast nucleotide search for each exons.
+\newpage
 
-  - **blastx**
-This is overview of all exons:
+  - **blastx - NP_741502.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex4_NP_741502.1.png}
 
-\includegraphics[width=\linewidth]{images/3.5_blastx_all_ex.png}
+  - **blastx - NP_503124.1**  
+  
+\includegraphics[width=\linewidth]{images/3.5_blastx_ex4_NP_503124.1.png}
 
-As we can see from output of blastx, all exons are used for producing *Eukaryotic translation initiation factor 4E-3 [Caenorhabditis elegans]* protein.  
-After DNA code translation, blastx compared our protein sequence with a negative direction. While our query sequence order is decreasing, out subject sequence order is increasing.
+
+
 
 
 ## Question 3.6
@@ -420,6 +494,7 @@ From https://www.wormbase.org/species/c_elegans/gene/WBGene00002061#0-3gi1-3 and
 
 First of all, the gene's name is ife-3 and it belongs to the gene class ife. It can be found in humans, monkeys, cows and other animals and insects. It is one of the five c. elegans homologs responsible for the protein eIF4E (Eukaryotic translation initiation factor 4E-3). Its ancestry is also related to Eukaryota, Metazoa, Ecdysozoa and other elegans. Moreover, except for c.elegans, which referred in previous parts of the exercise, BLASTP showed matches with some other species. For instance, the highest match (100%) is with c. brenneri and the lowest (73.7) with S. cerevisiae. Finally, from the gene's ontology perspective, ife - 3 participates in some molecular functions and biological functions such as RNA binding, protein metabolic process and gene expression. 
 
+\newpage
 
 # Appendix
 
