@@ -372,9 +372,13 @@ there are 3 possible versions because there are 3 possible ranges for exon 2
 \includegraphics[width=\linewidth]{images/3.5_blastx_all_ex_NP_503124.1.png}
 
 As we can see from output of blastx, all exons are used for producing *Eukaryotic translation initiation factor 4E-3 [Caenorhabditis elegans]* protein by "NP_503123.1", "NP_741502.1" and "NP_503124.1" unique protein sequences.  
-In "NP_503123.1" sequence, we use all exons as a whole. But we can see some missing amino acids in "NP_741502.1" and "NP_503124.1". We can see easily at the figure of Question 3.2, missing parts are in exon2 alternatives. While "NP_503123.1" uses whole exon2, "NP_741502.1" and "NP_503124.1" do not use whole exon2. We will see which amino acids are produced from which exon sequence in the continuation of this question.  
-After DNA code translation, blastx compared our protein sequence with a negative direction. While our query sequence order is decreasing, out subject sequence order is increasing.
 
+In "NP_503123.1" sequence, we use all exons as a whole. But we can see some missing amino acids in "NP_741502.1" and "NP_503124.1". We can see easily at the figure of Question 3.2, that the lengths of the different exon2 alternatives
+differ. While "NP_503123.1" uses the whole exon2, "NP_741502.1" and "NP_503124.1" do not use the whole exon2. We 
+will see which amino acids are produced from which exon sequence in the continuation of this question.  
+
+After DNA code translation, blastx compared our protein sequence with a negative direction. While our query sequence 
+order is decreasing, our subject sequence order is increasing.
 
 
 ### **exon 1**
@@ -429,8 +433,14 @@ cat(substr(exon2,1,50), "...")
   
 \includegraphics[width=\linewidth]{images/3.5_blastx_ex2_NP_503124.1.png}
 
-As we can see the figure of **blastx - NP_741502.1**, we found one unmatched amino acid, this means if we want to produce factor 4E-3 protein by NP_741502.1 sequence, we have to use 1 aminoacid (1 codons, 3 nucleotids) shorter exon2.  
-And the same thing is valid for **blastx - NP_503124.1**. We found exactly matched 76 nucleotids out of 78 in exon2. If we want to produce factor 4E-3 protein by NP_503124.1, we have to use 2 aminoacid (2 codons, 6 nucleotids) shorter exon2.
+As we can see in the figure of **blastx - NP_741502.1**, there is one unmatched 
+amino acid. This means that if we want to produce the factor 4E-3 protein with the
+NP_741502.1 sequence, we have to use an exon2 which is by 1 aminoacid (1 codons, 
+3 nucleotids) shorter.   
+
+Similarly, for **blastx - NP_503124.1**, we found that 76 nucleotids out of 78 
+matched in exon2. If we want to produce factor 4E-3 protein by NP_503124.1, we 
+have to use an exon2 which is by 2 aminoacids (2 codons, 6 nucleotids) shorter.
 
 ### **exon 3**
 
