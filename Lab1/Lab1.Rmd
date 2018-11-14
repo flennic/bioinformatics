@@ -297,7 +297,7 @@ It is clear from this summary that the reverse sequence has opposite direction f
 
 ## Question 3.4
 
-Our query sequence is found at *"Caenorhabditis elegans chromosome V"* and its range is between 6529 and 8028. We can see chromosome name in the figure of question 3.3.
+Our query sequence is found at *"Caenorhabditis elegans chromosome V"* and its range is from 6528 to 8027. We can see chromosome name in the figure of question 3.3.
 
 
 ## Question 3.5
