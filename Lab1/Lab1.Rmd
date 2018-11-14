@@ -9,7 +9,8 @@ author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE) 
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+                      warning = FALSE, message = FALSE) 
 
 library(dplyr)
 library(tidyr)
@@ -286,7 +287,7 @@ We can find all the information needed  from the summary :
 
 The numbering of the sequences in the alignment is 1500. The identities section in the summary shows this result. In general, identities shows the number of identical bases between the query and the subject sequence. 
 
-The summary also conteins information about the orientation both of the query and the subject sequence, which can be found in "Strand" section.In this case the the database genomic sequence progress has the same direction as the query sequence because both of them are plus and they are increasing.
+The summary also contains information about the orientation both of the query and the subject sequence, which can be found in "Strand" section. In this case the the database genomic sequence progress has the same direction as the query sequence because both of them are plus and they are increasing.
 
 Using http://www.bioinformatics.nl/cgi-bin/emboss/revseq ,  we reverse the query sequence, we run again the BLAST tool and we get the below summary :
 
@@ -347,14 +348,18 @@ writeLines(exon4, file("q3.5_exon4.txt"))
 
 After getting whole DNA code from all exons, we can search it on blastx to find which protein it is and its protein sequence. We can also see the protein sequence in the screenshots of *Sequence Text View Tool* in blast nucleotide search for each exons.
 
-  - **blastx**
-This is overview of all exons:
+**blastx overview of all exons**
 
+This is overview of all exons (result of pasting together the nucleotide strings
+of all the exons and using the resulting aggregated string for blastx). Note that
+there are 3 possible versions because there are 3 possible ranges for exon 2 
+(see following screenshot):
+
+\includegraphics[width=\linewidth]{images/3.5_variations_exon2.png}
 
 - **NP_503123.1**
 
 \includegraphics[width=\linewidth]{images/3.5_blastx_all_ex_NP_503123.1.png}
-
 
 \newpage
 

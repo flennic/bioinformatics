@@ -7,7 +7,8 @@ author: author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius K
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE) 
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+                      warning = FALSE, message = FALSE) 
 
 library(dplyr)
 library(tidyr)
