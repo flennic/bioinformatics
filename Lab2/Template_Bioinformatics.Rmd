@@ -1,0 +1,96 @@
+---
+title: "Lab X - Gr. 12 - Bioinformatics (732A93)"
+output: pdf_document
+link-citations: true
+author: author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092), Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+                      warning = FALSE, message = FALSE) 
+
+library(dplyr)
+library(tidyr)
+library(magrittr)
+
+```
+
+# Assignment 1
+
+## 1.1
+
+Some text and equation here: 
+
+\begin{equation}
+  S = \sqrt{\frac{\sum_{r,s}(d_{rs} - \hat{d}_{rs})^2}{\sum_{r,s} d_{rs}^2}}.
+\end{equation}
+
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 1.1
+# ------------------------------------------------------------------------------
+
+```
+
+## 1.2
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 1.2
+# ------------------------------------------------------------------------------
+
+```
+
+# Assignment 2
+
+Note that, by convention, a *coding strand* is used when displaying a DNA sequence.
+"A coding strand, is the segment within double-stranded DNA that runs from 5' to 3', and which is complementary to the antisense strand of DNA, or template strand, which runs from 3' to 5'" (https://en.wikipedia.org/wiki/Sense_strand).
+
+https://www.ncbi.nlm.nih.gov/nuccore/CU329670
+
+
+## 2.1
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2.1
+# ------------------------------------------------------------------------------
+
+```
+
+## 2.2
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2.2
+# ------------------------------------------------------------------------------
+
+```
+
+# Assignment 3
+
+## 3.1
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 3.1
+# ------------------------------------------------------------------------------
+
+```
+
+## 3.2
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 3.2
+# ------------------------------------------------------------------------------
+
+```
+
+# Appendix
+
+```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+
+```
