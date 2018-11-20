@@ -1,7 +1,8 @@
 # Lab2 - Assignment 1 - question 1: R script of the extra documentation provided
 # NOTE: the final workspace is saved in the file "data_lizard.RData"
 
-# Based on http://www.jcsantosresearch.org/Class_2014_Spring_Comparative/pdf/week_2/Jan_13_15_2015_GenBank_part_2.pdf
+# Based on: 
+# http://www.jcsantosresearch.org/Class_2014_Spring_Comparative/pdf/week_2/Jan_13_15_2015_GenBank_part_2.pdf
 
 seq_1_DNAbin <- read.GenBank("JF806202")
 seq_1_DNAbin
@@ -71,7 +72,8 @@ write.fasta(sequences = lizard_seq_seqinr_format, names = lizards_sequences_GenB
 # function will assign the names in the order provided in the file and the name vector
 
 # We can use a package that use an API (application programming interface) 
-# to interact with the NCBI website. More info in: http://en.wikipedia.org/wiki/Application_programming_interface
+# to interact with the NCBI website. More info in: 
+# http://en.wikipedia.org/wiki/Application_programming_interface
 # RUN ONLY ONCE: install.packages ("rentrez")
 library(rentrez)
 
@@ -138,8 +140,9 @@ write(Liolaemus_CYTB_seqs_part_5, "Liolaemus_CYTB_seqs.fasta", sep="\n", append 
 # You will get a 1.3 Mb file with all 1500 sequences
 
 # We can read our fasta file using the seqinr package and rename the sequences
-Liolaemus_CYTB_seqs_seqinr_format <- read.fasta(file = "Liolaemus_CYTB_seqs.fasta",
-                                                seqtype = "DNA", as.string = TRUE, forceDNAtolower = FALSE)
+Liolaemus_CYTB_seqs_seqinr_format <- 
+  read.fasta(file = "Liolaemus_CYTB_seqs.fasta", seqtype = "DNA", as.string = TRUE, 
+             forceDNAtolower = FALSE)
 Liolaemus_CYTB_seqs_seqinr_format
 Liolaemnus_CYTB_names <- attr(Liolaemus_CYTB_seqs_seqinr_format, "name")
 Liolaemnus_CYTB_names
@@ -155,13 +158,14 @@ Liolaemus_CYTB_seqs_ape_format <- read.GenBank(Liolaemnus_CYTB_names)
 attr(Liolaemus_CYTB_seqs_ape_format, "species")
 # To get the species names of the sequence
 names(Liolaemus_CYTB_seqs_ape_format)
-Liolaemus_CYTB_seqs_GenBank_IDs <- paste(attr(Liolaemus_CYTB_seqs_ape_format,
-                                              "species"), names(Liolaemus_CYTB_seqs_ape_format), sep="_CYTB_")
+Liolaemus_CYTB_seqs_GenBank_IDs <- paste(attr(Liolaemus_CYTB_seqs_ape_format,"species"), 
+                                         names(Liolaemus_CYTB_seqs_ape_format), sep="_CYTB_")
 ## build a vector object with the species, GenBank accession numbers, and type of gene
 Liolaemus_CYTB_seqs_GenBank_IDs # Vector of names to add to sequences
 # Read our fasta file 'Liolaemus_CYTB_seqs.fasta' using seqinr package
-Liolaemus_CYTB_seqs_seqinr_format <- read.fasta(file = "Liolaemus_CYTB_seqs.fasta",
-                                                seqtype = "DNA", as.string = TRUE, forceDNAtolower = FALSE)
+Liolaemus_CYTB_seqs_seqinr_format <- 
+  read.fasta(file = "Liolaemus_CYTB_seqs.fasta", seqtype = "DNA", as.string = TRUE, 
+             forceDNAtolower = FALSE)
 # Rewrite our fasta file using the name vector that we created previously
 write.fasta(sequences = Liolaemus_CYTB_seqs_seqinr_format, names =
               Liolaemus_CYTB_seqs_GenBank_IDs, nbchar = 10, file.out =
@@ -184,3 +188,78 @@ pr.tree$tip.label
 
 write.tree(pr.tree)
 write.nexus(pr.tree, file = "primate.tre")
+
+# Branch lengths in the tree
+pr.tree$edge.length <- c(0.80,0.49,0.62,0.78,0.99,0.84,0.19,0.36,0.53,0.27,0.17,0.18,0.41,
+                         0.59,0.62,0.63,0.18,0.26,0.42,0.36,0.09,0.21,0.98,0.32)
+# To remove it:
+pr.tree$edge.length <- NULL
+
+# Set graphical parameters
+par(mfcol = c(2, 2))
+par(lend = 2)
+par(mar = rep(2, 4))
+par(cex = 0.8)
+# Plot the trees
+plot(pr.tree, edge.width = 2)  # phylogram
+plot(pr.tree, type = "cladogram", edge.width = 2)  # cladogram
+plot(unroot(pr.tree), type = "unrooted", edge.width = 2)  # unrooted
+plot(pr.tree, type = "fan", edge.width = 2)  # radial or fan
+
+# How to generate random trees?
+
+# rtree 
+# generates a tree by recursive random splitting; its interface is: 
+# rtree(n, rooted = TRUE, tip.label = NULL, br = runif, ...) where 
+# - n specifies the number of tips. 
+# - br specifies the function to generate random branch lengths
+# Further arguments for this function are given in place of ‘...’. 
+# By default, a uniform distribution between 0 and 1 is used.
+
+# rcoal 
+# generates a coalescent tree by random clustering of tips; its interface is: 
+# rcoal(n, tip.label = NULL, br = "coalescent", ...) where the options are similar to rtree. 
+# Note that the default for br is to generate branch lengths under a coalescent model 
+# with constant population parameter Θ.
+
+# rlineage and rbdtree
+# generate trees under a birth–death model of random speciation and extinction. Their options are:
+# (birth, death, Tmax = 50, BIRTH = NULL, DEATH = NULL, n0 = 2, eps = 1e-6)
+# where birth and death may be either single numeric values or functions 
+# specifying how speciation and extinction probabilities vary through time.
+# rlineage simulates a complete phylogeny including those that go extinct before Tmax 
+# rbdtree does not consider them and returns an ultrametric tree.
+
+# Let's simulate a Yule tree with rlineage:
+t3 <- rlineage(0.1, 0, Tmax=25)
+summary(t3)
+# Plot the tree:
+par(mfrow = c(1,1))
+plot(t3, show.tip.label = FALSE); axisPhylo() 
+title(expression(list(lambda == 0.1, mu == 0)))
+
+# Simulating biological sequence evolution
+library(phangorn)
+# The interface is:
+# simSeq(tree, l = 1000, Q = NULL, bf = NULL, rootseq = NULL, type = "DNA", 
+#        model = "USER", levels = NULL, rate = 1, ancestral = FALSE)
+# To simulate an alignment:
+ali <- simSeq(t3)
+# However, before we do this, we have to generate a new t3 tree 
+# (this is because our branches are too long in the original t3 for the rates of evolution we use!):
+t3 <- rlineage(1, 0, Tmax=2.5)
+
+# If Q is not specified, a single-rate model is used, and if bf is not specified as well, 
+# equal frequencies of the states are assumed. Thus by default a JC69 model is used because 
+# type = "DNA" by default.
+# Q is the lower half triangular rate matrix, so you have to specify six values:
+ali <- simSeq(t3, l = 1000, type="DNA", bf=c(.1,.2,.3,.4), Q=1:6)
+# To see alignment as characters, use:
+as.character(ali)
+# We can save this alignment as a text file :
+write.phyDat(ali, file="test.aln", format="phylip")
+
+# Random testing:
+set.seed(1545)
+test_tree <- rtree(5)
+simulated_seq <- simSeq(test_tree, l = 1000, type="DNA", bf=c(.1,.2,.3,.4), Q=1:6)
