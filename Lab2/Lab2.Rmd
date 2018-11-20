@@ -1,0 +1,140 @@
+---
+title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
+output: pdf_document
+link-citations: true
+author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092), Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE) 
+
+library(dplyr)
+library(tidyr)
+library(magrittr)
+library(ape)      # This is a general R-package for phylogenetics and comparative methods
+library(seqinr)   # This is an specialized package for nucleotide sequence management
+library(kableExtra)
+
+```
+
+# Assignment 1
+
+## Question 1.1
+
+Some text and equation here: 
+
+\begin{equation}
+  S = \sqrt{\frac{\sum_{r,s}(d_{rs} - \hat{d}_{rs})^2}{\sum_{r,s} d_{rs}^2}}.
+\end{equation}
+
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 1.1
+# ------------------------------------------------------------------------------
+
+source("732A51_BioinformaticsHT2018_Lab02_GenBankGetCode.R")
+
+lizards_format_sequences <- read.fasta(file = "lizard_seqs.fasta")  # Alternative version of the file
+# Useful in some ways?
+
+n <- length(lizards_accession_numbers)  # Number of sequences to reproduce
+p <- base.freq(lizards_sequences)  # Probability of the base sequences
+simulated_lizards <- list()  # Object that will contain our simulated data
+
+# The names of the simulated data are the original names + "_sim"
+# NOTE: it does not follow the format from GenBank
+simulated_names <- paste(lizards_accession_numbers, "_sim", sep = "")  
+
+set.seed(1535)  # Set seed in order to reproduce the experiment
+for(i in 1:n) {  # Cycle through every single object of the lizard_sequences
+  len_seq <- length(lizards_sequences[[i]])  # Lenght of each sequence
+  simulated_lizards[[ simulated_names[i] ]] <- 
+    sample(c("a", "c", "g", "t"), len_seq, replace = T, prob = p)
+  # Creating the artificial sequence sampling with probabilities p equal to the original ones 
+}
+
+# Save as fasta file
+write.dna(simulated_lizards, file = "simulated_lizards.fasta", format = "fasta", append = F,
+          nbcol = 6, colsep = " ", colw = 10)
+
+# Table with simulated base frequency
+df_table <- data.frame("Base" = c("a", "c", "g", "t"), 
+                       "Original\nfrequency" = p,
+                       "Simulated\nfrequency" = base.freq(as.DNAbin(simulated_lizards)), 
+                       row.names = NULL)
+kable(df_table, booktabs = T, align = c("r", "l", "l"), digits = c(NA, 4, 4),
+      col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency"), format = "latex")
+```
+
+## Question 1.2
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 1.2
+# ------------------------------------------------------------------------------
+
+
+```
+
+# Assignment 2
+
+Note that, by convention, a *coding strand* is used when displaying a DNA sequence.
+"A coding strand, is the segment within double-stranded DNA that runs from 5' to 3', and which is complementary to the antisense strand of DNA, or template strand, which runs from 3' to 5'" (https://en.wikipedia.org/wiki/Sense_strand).
+
+https://www.ncbi.nlm.nih.gov/nuccore/CU329670
+
+
+## 2.1
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2.1
+# ------------------------------------------------------------------------------
+
+```
+
+## 2.2
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2.2
+# ------------------------------------------------------------------------------
+
+```
+
+## 2.3
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2.2
+# ------------------------------------------------------------------------------
+
+```
+
+# Assignment 3
+
+## 3.1
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 3.1
+# ------------------------------------------------------------------------------
+
+```
+
+## 3.2
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 3.2
+# ------------------------------------------------------------------------------
+
+```
+
+# Appendix
+
+```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+
+```
