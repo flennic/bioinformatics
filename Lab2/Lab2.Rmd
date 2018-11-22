@@ -7,7 +7,8 @@ author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE) 
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+                      warning = FALSE, message = FALSE) 
 
 library(dplyr)
 library(tidyr)
@@ -18,6 +19,7 @@ library(seqinr)       # This is an specialized package for
                       # nucleotide sequence management
 library(phangorn)
 library(knitr)
+library(markovchain)  # For fitting, evaluating markov chains (question 2)
 
 ```
 
@@ -142,39 +144,271 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"), digits = c(N
 
 ```
 
-
 # Assignment 2
 
-## 2.1
+## Question 2.1
+
+**1. Some basic statistics on each sequence dataset:**
 
 ```{r}
 # ------------------------------------------------------------------------------
 # Question 2.1
 # ------------------------------------------------------------------------------
 
+# First read in all the data again
+original = ape::read.FASTA(file = "data/lizard_seqs.fasta", type = "DNA")
+sim_sample = ape::read.FASTA(file = "data/simulated_lizards.fasta", type = "DNA")
+sim_tree = ape::read.FASTA(file = "data/simulated_lizards_tree.fasta", type = "DNA")
+
+# 1. Some basic statistics on each sequence dataset ----------------------------
+
+# Individual base composition
+knitr::kable(data.frame(Original = ape::base.freq(original), 
+             Simulated_Sample = ape::base.freq(sim_sample), 
+             Simulated_Tree = ape::base.freq(sim_tree)), 
+             caption = "Base composition")
+     
+# GC content
+knitr::kable(data.frame(Original = ape::GC.content(original), 
+             Simulated_Sample = ape::GC.content(sim_sample), 
+             Simulated_Tree = ape::GC.content(sim_tree)), 
+             caption = "Percentage of G + C")
+
+# AT content
+knitr::kable(data.frame(Original = 1 - ape::GC.content(original), 
+             Simulated_Sample = 1 - ape::GC.content(sim_sample), 
+             Simulated_Tree = 1 - ape::GC.content(sim_tree)), 
+             caption = "Percentage of A + T")
+
 ```
 
-## 2.2
+
+**2. Translate nucleotid sequences into protein sequences & report amino acid composition:**
 
 ```{r}
+
+# 2. Translate nucleotid sequences into protein sequences & report amino acid comp.
+
+# Create function to obtain amino acid percentages from DNAbin
+get_aa_comp = function(DNAbin, relative = TRUE){
+  
+  # Data conversion to obtain amino distribution
+  
+  original_amino = ape::trans(DNAbin) # Convert DNAbin to AAbin (amino acids)
+  original_amino = as.character(original_amino) # convert AAbin to char list
+  original_amino = unlist(original_amino) # convert char list to char vector
+
+  # Report amino acid composition
+  
+  if (relative == TRUE) {
+    # Compute percentages
+    metric = as.numeric(table(original_amino)) / length(original_amino)
+    names(metric) = names(table(original_amino))
+  } else {
+    # Compute counts
+    metric = as.numeric(table(original_amino))
+    names(metric) = names(table(original_amino))
+  }
+
+  return(metric)
+}
+
+# Obtain percentages by amino acid precentages
+Simulated_Sample = get_aa_comp(sim_sample)
+Simulated_Tree = get_aa_comp(sim_tree)
+Original = get_aa_comp(original)
+
+# Original has an X at second to last position, we need to account for that
+# According to docu of ape::trans, this is because of alignment gaps when 
+# e.g. the sequence does not have full 3 proteins.
+Simulated_Sample = c(Simulated_Sample, X = 0)
+Simulated_Tree = c(Simulated_Tree, X = 0)
+Original = Original[c(1:(length(Original)-2), length(Original), length(Original)-1)]
+
+knitr::kable(data.frame(Name = c(seqinr::aaa(), "gaps"),
+                        Original, 
+                        Simulated_Sample,
+                        Simulated_Tree),
+             caption = "Amino Acid Composition (in %)")
+            
+```
+
+**3. Obtain number of stop codons in simulated sequences & compare to true seq:**
+
+There are 1270 stop codons in the original sequence, 1298 stop codons in the
+simulated sequence without and 1333 stop codons in the simulated sequence with  
+trees.
+
+```{r}
+
+# 3. Obtain number of stop codons in simulated sequences & compare to true seq 
+
+Simulated_Sample = get_aa_comp(sim_sample, relative = FALSE)
+Simulated_Tree = get_aa_comp(sim_tree, relative = FALSE)
+Original = get_aa_comp(original, relative = FALSE)
+
+knitr::kable(t(data.frame(Original = Original["*"], 
+               Simulated_Sample = Simulated_Sample["*"],
+               Simulated_Tree = Simulated_Tree["*"])),
+             caption = "Number of Stop Codons")
+
+```
+
+## Question 2.2
+
+**Expected Markov chain order:**
+
+I would expect order of 2 (or more) for the original data sets because three 
+nucleotids code for an amino-acid and since the amino-acids are not fully 
+independent in the DNA. Note that the number of required free parameters increases
+a lot from 2 to 3 (see below). The larger the number of parameters, the less
+reliable the estimated probabilities for the transition matrix will be.
+
+For the simulated data sets, I would expect order of 1 because here, the 
+nucleotids are indeed random and should therefore be independent.
+
+Number of free parameters required for order of 1:
+$$4 * (4-1) = 12$$
+Number of free parameters required for order of 2:
+$$4^2 * (4^2-1) = 240$$
+
+Number of free parameters required for order of 3:
+$$4^3 * (4^3-1) = 4032$$
+
+Actual number of nucleotids by dataset:
+
+`> length(unlist(original))`
+
+`[1] 65435`
+
+`> length(unlist(sim_sample))`
+
+`[1] 65435`
+
+`> length(unlist(sim_tree))`
+
+`[1] 66000`
+
+**First**, we concatenate the sequences from the three data sets and remove any
+characters that are not "a", "c", "g", "t". **Second**, we conduct a Chi-Square test
+with the H0: Sequence is of 1st order. The H0 get's rejected for the original 
+sequence (since p = 0) but not for the two sampled sequences (as p > 0.05). This
+is what we expected: First order Markov chains for the randomly sampled sequence
+but second or higher order Markov chains for the original sequence (in which 
+dependency exists). 
+
+```{r}
+
 # ------------------------------------------------------------------------------
 # Question 2.2
 # ------------------------------------------------------------------------------
 
+# 1. Concatenate the sequences from the three data sets and remove any
+# characters that are not "a", "c", "g", "t"
+
+original_seq = unlist(as.character(original)) # obtain character vector
+original_seq = original_seq[original_seq %in% c("a", "c", "g", "t")] # a, c, g, t
+
+sim_sample_seq = unlist(as.character(sim_sample)) # obtain character vector
+sim_sample_seq = sim_sample_seq[sim_sample_seq %in% c("a", "c", "g", "t")] # a, c, g, t
+
+sim_tree_seq = unlist(as.character(sim_tree)) # obtain character vector
+sim_tree_seq = sim_tree_seq[sim_tree_seq %in% c("a", "c", "g", "t")] # a, c, g, t
+
+# 2. Assess the order with Chi-Square test
+
+# This test returns a list of the chi-squared value and the p-value. 
+# If the p-value is greater than the given significance level, we cannot reject 
+# the hypothesis that the sequence is of first order.
+
+cat("Assess the order with Chi-Square test:\n")
+cat("Original:\n"); assessOrder(original_seq); cat("\n-------------\n")
+cat("Simulated_Sample:\n"); assessOrder(sim_sample_seq); cat("\n-------------\n")
+cat("Simulated_Tree:\n"); assessOrder(sim_tree_seq); cat("\n-------------\n")
+
 ```
 
-## 2.3
+\  
+\  
+
+**Third**, we fit 1st order Markov chains for all three data sets. 
+Note that we tried to fit a higher order Markov chain for the original 
+data set (since this would be appropriate based on the Chi-Square-Test). 
+However, the function fitHigherOrder from the markovchain package did not
+produce correct transition matrices and we also did not find any other package
+that could fit a higher order Markov chain correctly. Therefore, we also fit
+a 1st order Markov chain for the original data set.
+
+\  
+
+```{r}
+# 3. Fit markov chains
+
+# 1st order markov chains for sampled data --------------------------------------
+
+original_fit = markovchainFit(data = original_seq, confidencelevel = 0.95,
+                              name = "Original")
+original_fit$estimate; cat("\n-------------\n")
+
+sim_sample_fit = markovchainFit(data = sim_sample_seq, confidencelevel = 0.95, 
+                              name = "Simulated_Sample")
+sim_sample_fit$estimate; cat("\n-------------\n")
+
+
+sim_tree_fit = markovchainFit(data = sim_tree_seq, confidencelevel = 0.95, 
+                              name = "Simulated_Tree")
+sim_tree_fit$estimate
+
+
+# Fitting higher order markov chains did not work
+# original_fit_2nd = fitHigherOrder(original_seq, order = 2)
+# cat("Original, 2nd order:\n\n"); original_fit_2nd; cat("\n-------------\n")
+
+```
+
+\  
+\  
+
+**Lastly**, we consider the assumptions behind the analyses (see book 
+"Statistical Methods in Bioinformatics"):
+
+1. *Markov property*: "current state is all that matters in determining the 
+probabilities for the states that the process will occupy in the future.
+2. *Temporally homogenous transition probabilities property*: given that at 
+time t, the process is in state $E_{j}$, the probability that one time unit
+later it is in state $E_{k}$ is independent of t.
+
+We consider nucleotid sequences here. 
+
+1. The *Markov property* may be violated, especially in the original sequence 
+because the nucleotids code for amino-acids that will later on be translated into 
+proteins. Therefore, one cannot actually assume that the previous nucleotids 
+don't matter in determining the probabilities for the next states. 
+
+2. Regarding the second property, we don't consider time here but space (i.e.
+position of the nucleotids). From my point of view, it is a valid assumption 
+that the position does not matter (however the type of the previous nucleotids 
+does, see 1.).
+
+\  
+
+## Question 2.3
+
+1. Choose a distance measure between sequences.
+2. Calculate for each alignment the distances between all pairs of sequences. 
+3. Plot heatmaps visualizing the distances. 
+4. Comment on what you can observe.
 
 ```{r}
 # ------------------------------------------------------------------------------
-# Question 2.2
+# Question 2.3
 # ------------------------------------------------------------------------------
 
 ```
 
-# Assignment 3
+# Question 3
 
-## 3.1
+## Question 3.1
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -183,7 +417,7 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"), digits = c(N
 
 ```
 
-## 3.2
+## Question 3.2
 
 ```{r}
 # ------------------------------------------------------------------------------
