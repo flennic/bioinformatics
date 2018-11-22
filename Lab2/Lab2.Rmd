@@ -42,7 +42,7 @@ After the artificial DNA has been created, the base frequencies are compared in 
 # Question 1.1
 # ------------------------------------------------------------------------------
 
-lizards_format_sequences = read.fasta(file = "lizard_seqs.fasta")  
+lizards_format_sequences = read.fasta(file = "data/lizard_seqs.fasta")  
 # Alternative version of the file. Useful in some ways?
 
 n = length(lizards_accession_numbers)  # Number of sequences to reproduce
@@ -64,7 +64,7 @@ for(i in 1:n) {  # Cycle through every single object of the lizard_sequences
 }
 
 # Save as fasta file
-write.dna(simulated_lizards, file = "simulated_lizards.fasta", format = "fasta", 
+write.dna(simulated_lizards, file = "data/simulated_lizards.fasta", format = "fasta", 
           append = F, nbcol = 6, colsep = " ", colw = 10)
 
 # Table with simulated base frequency
@@ -127,7 +127,7 @@ tree_sequences_sim = as.DNAbin(tree_sequences_sim)
 # Save simulated sequences as fasta file ---------------------------------------
 
 # Write simulated lizard sequences as fasta file
-ape::write.dna(tree_sequences_sim, file ="lizard_seqs_tree_sim.fasta", 
+ape::write.dna(tree_sequences_sim, file ="data/simulated_lizards_tree.fasta", 
                format = "fasta", append = F, nbcol = 6, colsep = " ", colw = 10)
 
 # Report base composition ------------------------------------------------------
