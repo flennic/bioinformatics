@@ -33,3 +33,12 @@ writeXStringSet(as(sim_sample_aligned, "XStringSet"),
 writeXStringSet(as(sim_tree_aligned, "XStringSet"),
                 "data/simulated_lizards_tree_aligned.fasta", append = FALSE,
                 compress = FALSE, compression_level = NA, format = "fasta")
+
+# This actually gives a nice output! Seems like there a a little bit to many
+# spaces in between
+library(DECIPHER)
+seqs <- readDNAStringSet("data/lizard_seqs.fasta", format = "fasta")
+#seqs <- OrientNucleotides(seqs)
+aligned <- AlignSeqs(seqs)
+BrowseSeqs(aligned, highlight=0)
+
