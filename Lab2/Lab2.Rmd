@@ -73,10 +73,11 @@ df_table = data.frame("Base" = c("a", "c", "g", "t"),
                        "Simulated\nfrequency" = 
                         base.freq(as.DNAbin(simulated_lizards)), 
                        row.names = NULL)
-kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"), digits = c(NA, 4, 4),
+kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
       col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency"), 
       format = "latex", caption = "Base frequencies of the 33 original and 
-      generated DNA sequences.")
+      generated DNA sequences.", digits = c(NA, 4, 4)) %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
 
@@ -126,8 +127,8 @@ tree_sequences_sim = as.DNAbin(tree_sequences_sim)
 # Save simulated sequences as fasta file ---------------------------------------
 
 # Write simulated lizard sequences as fasta file
-ape::write.dna(tree_sequences_sim, file ="lizard_seqs_tree_sim.fasta", format = "fasta", 
-               append = FALSE, nbcol = 6, colsep = " ", colw = 10)
+ape::write.dna(tree_sequences_sim, file ="lizard_seqs_tree_sim.fasta", 
+               format = "fasta", append = F, nbcol = 6, colsep = " ", colw = 10)
 
 # Report base composition ------------------------------------------------------
 
@@ -137,10 +138,12 @@ df_table = data.frame("Base" = c("a", "c", "g", "t"),
                        "Simulated\nfrequency" = base.freq(tree_sequences_sim), 
                        row.names = NULL)
 
-kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"), digits = c(NA, 4, 4),
+kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
+      digits = c(NA, 4, 4),
       col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency"), 
       format = "latex", caption = "Base frequencies of the 33 original DNA 
-      sequences and of the 33 simulated phylogenetic trees.")
+      sequences and of the 33 simulated phylogenetic trees.") %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
 
@@ -163,22 +166,25 @@ sim_tree = ape::read.FASTA(file = "data/simulated_lizards_tree.fasta", type = "D
 # 1. Some basic statistics on each sequence dataset ----------------------------
 
 # Individual base composition
-knitr::kable(data.frame(Original = ape::base.freq(original), 
+kableExtra::kable(data.frame(Original = ape::base.freq(original), 
              Simulated_Sample = ape::base.freq(sim_sample), 
              Simulated_Tree = ape::base.freq(sim_tree)), 
-             caption = "Base composition")
+             caption = "Base composition", booktabs = T) %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
      
 # GC content
-knitr::kable(data.frame(Original = ape::GC.content(original), 
+kableExtra::kable(data.frame(Original = ape::GC.content(original), 
              Simulated_Sample = ape::GC.content(sim_sample), 
              Simulated_Tree = ape::GC.content(sim_tree)), 
-             caption = "Percentage of G + C")
+             caption = "Percentage of G + C", booktabs = T) %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
 
 # AT content
-knitr::kable(data.frame(Original = 1 - ape::GC.content(original), 
+kableExtra::kable(data.frame(Original = 1 - ape::GC.content(original), 
              Simulated_Sample = 1 - ape::GC.content(sim_sample), 
              Simulated_Tree = 1 - ape::GC.content(sim_tree)), 
-             caption = "Percentage of A + T")
+             caption = "Percentage of A + T", booktabs = T) %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
 
@@ -225,11 +231,12 @@ Simulated_Sample = c(Simulated_Sample, X = 0)
 Simulated_Tree = c(Simulated_Tree, X = 0)
 Original = Original[c(1:(length(Original)-2), length(Original), length(Original)-1)]
 
-knitr::kable(data.frame(Name = c(seqinr::aaa(), "gaps"),
+kableExtra::kable(data.frame(Name = c(seqinr::aaa(), "gaps"),
                         Original, 
                         Simulated_Sample,
                         Simulated_Tree),
-             caption = "Amino Acid Composition (in %)")
+             caption = "Amino Acid Composition (in \\%)", booktabs = T) %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
             
 ```
 
@@ -247,10 +254,11 @@ Simulated_Sample = get_aa_comp(sim_sample, relative = FALSE)
 Simulated_Tree = get_aa_comp(sim_tree, relative = FALSE)
 Original = get_aa_comp(original, relative = FALSE)
 
-knitr::kable(t(data.frame(Original = Original["*"], 
+kableExtra::kable(t(data.frame(Original = Original["*"], 
                Simulated_Sample = Simulated_Sample["*"],
                Simulated_Tree = Simulated_Tree["*"])),
-             caption = "Number of Stop Codons")
+             caption = "Number of Stop Codons", booktabs = T) %>%
+  kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
 
