@@ -1,8 +1,12 @@
 ---
 title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
-output: pdf_document
-link-citations: true
-author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092), Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
+author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092),
+  Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+link-citations: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -21,6 +25,16 @@ library(phangorn)
 library(knitr)
 library(markovchain)  # For fitting, evaluating markov chains (question 2)
 
+# Use this if BiocManager is not installed
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+#library("BiocManager")
+
+# BiocManager packages
+#BiocManager::install("ComplexHeatmap", version = "3.8")
+
+library(ComplexHeatmap)
+library(circlize)
 ```
 
 # Assignment 1
@@ -411,7 +425,63 @@ does, see 1.).
 # ------------------------------------------------------------------------------
 # Question 2.3
 # ------------------------------------------------------------------------------
+# It'd be nice to do the multiple sequence alignment in R code, but due to the
+# fact that for the moment it's not working and that it takes a long compilation
+# time (>1 minute) we will use Clustal Omega for now:
+# (https://www.ebi.ac.uk/Tools/msa/clustalo/)
+# In the stack overflow thread Krzysztof suggested the package 'DECIPHER' is
+# also recommended.: (http://www2.decipher.codes/Alignment.html)
+# The progress of the testing of the multiple sequence alignemnt in R can be
+# found in multi_sequence_alignment.R
+# For the heatmapes ths may be used: https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
 
+# Read the DNA alignments
+original_as_alignment =
+  read.alignment("data/aligned_clustalo_lizard_seqs.fasta",
+                 format = "fasta")
+sim_sample_as_alignment =
+  read.alignment("data/aligned_clustalo_simulated_lizards.fasta",
+                 format = "fasta")
+sim_tree_as_alignment =
+  read.alignment("data/aligned_clustalo_simulated_lizards_tree.fasta",
+                 format = "fasta")
+
+# Get the distance matrices. The distance function is "unclear", the
+# documentation says "specified distance measure". We can also use a different
+# one.
+dist_mat_original =
+  as.matrix(dist.alignment(original_as_alignment, matrix = "identity"))
+dist_mat_sim_sample =
+  as.matrix(dist.alignment(sim_sample_as_alignment, matrix = "identity"))
+dist_mat_sim_tree =
+  as.matrix(dist.alignment(sim_tree_as_alignment, matrix = "identity"))
+
+```
+
+\newpage
+
+Heatmap for the original sequences.
+
+```{r, echo = FALSE}
+# Heatmap examples cen be found here:
+# https://bioconductor.org/packages/release/bioc/vignettes/ComplexHeatmap/inst/doc/s2.single_heatmap.html
+# If you don't like Heatmeap, we can also use someting else
+Heatmap(dist_mat_original, column_title = "Original Sequences",
+        show_row_names = FALSE)
+```
+
+Heatmap for the simulated sequences.
+
+```{r, echo = FALSE}
+Heatmap(dist_mat_sim_sample, column_title = "Simulated Sequences",
+        show_row_names = FALSE)
+```
+
+Heatmap for the simulated sequences (tree).
+
+```{r, echo = FALSE}
+Heatmap(dist_mat_sim_tree, column_title = "Simulated Sequences (Tree)",
+        show_row_names = FALSE)
 ```
 
 # Question 3
