@@ -1,0 +1,25 @@
+---
+title: "bioinf_playground"
+author: "Stefano Toffol (steto820)"
+date: "22 November 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(msa)
+```
+
+```{r}
+
+sim_sample_as_AAStringSet =
+  readAAStringSet("data/simulated_lizards.fasta", format = "fasta")
+
+sim_sample_aligned = msa(sim_sample_as_AAStringSet, method = "ClustalW")
+
+msaPrettyPrint(sim_sample_aligned, output="pdf", showNames="none",
+  showLogo="none", askForOverwrite=FALSE, verbose=FALSE)
+
+```
+

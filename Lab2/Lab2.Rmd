@@ -446,15 +446,20 @@ sim_tree_as_alignment =
   read.alignment("data/aligned_clustalo_simulated_lizards_tree.fasta",
                  format = "fasta")
 
-# Get the distance matrices. The distance function is "unclear", the
+# Get the distances (useful in 3.1). The distance function is "unclear", the
 # documentation says "specified distance measure". We can also use a different
 # one.
-dist_mat_original =
-  as.matrix(dist.alignment(original_as_alignment, matrix = "identity"))
-dist_mat_sim_sample =
-  as.matrix(dist.alignment(sim_sample_as_alignment, matrix = "identity"))
-dist_mat_sim_tree =
-  as.matrix(dist.alignment(sim_tree_as_alignment, matrix = "identity"))
+dist_original =
+  dist.alignment(original_as_alignment, matrix = "identity")
+dist_sim_sample =
+  dist.alignment(sim_sample_as_alignment, matrix = "identity")
+dist_sim_tree =
+  dist.alignment(sim_tree_as_alignment, matrix = "identity")
+
+# Get the distance matrixes (for heatmaps)
+dist_mat_original = Biostrings::as.matrix(dist_original)
+dist_mat_sim_sample = Biostrings::as.matrix(dist_sim_sample)
+dist_mat_sim_tree =Biostrings::as.matrix(dist_sim_tree)
 
 ```
 
@@ -492,6 +497,98 @@ Heatmap(dist_mat_sim_tree, column_title = "Simulated Sequences (Tree)",
 # ------------------------------------------------------------------------------
 # Question 3.1
 # ------------------------------------------------------------------------------
+
+# Answers based on phagron package vignette 
+# https://cran.r-project.org/web/packages/phangorn/vignettes/Trees.pdf
+# Rooted trees
+
+tree_upgma_original = upgma(dist_original)
+tree_upgma_sim_sample = upgma(dist_sim_sample)
+tree_upgma_sim_tree = upgma(dist_sim_tree)
+
+```
+
+Estimated tree from original data.
+
+```{r, echo = FALSE, out.width="100%"}
+
+plot(tree_upgma_original, type = "phylogram", 
+     main="UPGMA tree of the original data", cex = 0.5, no.margin = T)
+
+```
+
+Estimated tree from simulated data.
+
+```{r, echo = FALSE, out.width="100%"}
+
+plot(tree_upgma_sim_sample, type = "phylogram", cex = 0.5, no.margin = T, 
+     main="UPGMA tree of the simulated data")
+
+```
+
+Estimated tree from simulated data according to the tree structure.
+
+```{r, echo = FALSE, out.width="100%"}
+
+plot(tree_upgma_sim_tree, type = "phylogram", cex = 0.5, no.margin = T, 
+     main="UPGMA tree of the simulated data (tree)")
+
+```
+
+Bootstrap of original sequences
+
+```{r}
+
+# Bootstrapping
+# Followed the examples in ?boot.phylo
+boot_original = ape::boot.phylo(nj(dist_mat_original), dist_mat_original, 
+                                nj, trees = T)$trees
+clad_original = prop.clades(tree_upgma_original, boot_original, rooted = TRUE)
+boot = prop.clades(tree_upgma_original, boot_original)
+
+plot(tree_upgma_original, type = "phylogram", 
+     main="UPGMA tree of the original data with the bootstrap support 
+     for the individual clades", cex = 0.5, no.margin = T)
+drawSupportOnEdges(boot)
+nodelabels(clad_original)
+
+```
+
+Bootstrap of simulated sequences
+
+```{r}
+
+# Bootstrapping
+# Followed the examples in ?boot.phylo
+boot_sim_sample = ape::boot.phylo(nj(dist_mat_sim_sample), dist_mat_sim_sample, 
+                                nj, trees = T)$trees
+clad_sim_sample = prop.clades(tree_upgma_sim_sample, boot_sim_sample, rooted = T)
+boot = prop.clades(tree_upgma_sim_sample, boot_sim_sample)
+
+plot(tree_upgma_sim_sample, type = "phylogram", 
+     main="UPGMA tree of the simulated data with the bootstrap support 
+     for the individual clades", cex = 0.5, no.margin = T)
+drawSupportOnEdges(boot)
+nodelabels(clad_sim_sample)
+
+```
+
+Bootstrap of simulated sequences from tree
+
+```{r}
+
+# Bootstrapping
+# Followed the examples in ?boot.phylo
+boot_sim_tree = ape::boot.phylo(nj(dist_mat_sim_tree), dist_mat_sim_tree, 
+                                nj, trees = T)$trees
+clad_sim_tree = prop.clades(tree_upgma_sim_tree, boot_sim_tree, rooted = T)
+boot = prop.clades(tree_upgma_sim_tree, boot_sim_tree)
+
+plot(tree_upgma_sim_tree, type = "phylogram", 
+     main="UPGMA tree of the simulated data (from tree) with the bootstrap support 
+     for the individual clades", cex = 0.5, no.margin = T)
+drawSupportOnEdges(boot)
+nodelabels(clad_sim_tree)
 
 ```
 
