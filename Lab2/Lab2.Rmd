@@ -103,7 +103,7 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
 
 * Result: 33 phylogenetic tree, one for DNA sequence, each with 33 tips. 
 
-```{r}
+```{r fig.height = 6}
 
 # ------------------------------------------------------------------------------
 # Question 1.2
@@ -112,11 +112,6 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
 # Simulate phylogenetic tree with 33 tips in phylo format (ape) ----------------
 set.seed(1)
 tree = ape::rtree(n = 33)
-
-# Plot resulting tree ----------------------------------------------------------
-
-plot(tree, edge.width = 1, main = "Plot of simulated phylogenetic tree")
-# phytools::plotTree(tree) # Alternative
 
 # Simulate sequences on this tree using phangorn::simSeq() ---------------------
 Q = matrix(c(.1, .8, .05, .05, 
@@ -159,6 +154,11 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
       sequences and of the 33 simulated phylogenetic trees.") %>%
   kableExtra::kable_styling(latex_options = "hold_position")
 
+# Plot the tree tree ----------------------------------------------------------
+
+plot(tree, edge.width = 1, main = "Plot of simulated phylogenetic tree")
+# phytools::plotTree(tree) # Alternative
+
 ```
 
 # Assignment 2
@@ -166,6 +166,9 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
 ## Question 2.1
 
 **1. Some basic statistics on each sequence dataset:**
+
+As you can be see below, base composition, G+C content and A+T content are very
+similar but not exactly the same across data sets (because of the random samples).
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -205,6 +208,15 @@ kableExtra::kable(data.frame(Original = 1 - ape::GC.content(original),
 
 **2. Translate nucleotid sequences into protein sequences & report amino acid composition:**
 
+The overview of the amino-acid composition by data set can be seen in the table
+"Amino Acid Composition (in %)".
+
+- *Overall:* Overall, the amino-acid compositions are similar. However, they can 
+differ by up to ca. 3% by amino-acid.
+- *Gaps:* Note that gaps ("X") were recognized for the original data set but not 
+for the sampled data sets. According to the docu of ape::trans, this is because 
+of alignment gaps when e.g. the sequence does not have full 3 proteins.
+
 ```{r}
 
 # 2. Translate nucleotid sequences into protein sequences & report amino acid comp.
@@ -221,7 +233,7 @@ get_aa_comp = function(DNAbin, relative = TRUE){
   # Report amino acid composition
   
   if (relative == TRUE) {
-    # Compute percentages
+    # Compute percentages (default)
     metric = as.numeric(table(original_amino)) / length(original_amino)
     names(metric) = names(table(original_amino))
   } else {
@@ -241,9 +253,10 @@ Original = get_aa_comp(original)
 # Original has an X at second to last position, we need to account for that
 # According to docu of ape::trans, this is because of alignment gaps when 
 # e.g. the sequence does not have full 3 proteins.
-Simulated_Sample = c(Simulated_Sample, X = 0)
-Simulated_Tree = c(Simulated_Tree, X = 0)
-Original = Original[c(1:(length(Original)-2), length(Original), length(Original)-1)]
+Simulated_Sample = c(Simulated_Sample, X = 0) # Add X = 0 to simulated sample
+Simulated_Tree = c(Simulated_Tree, X = 0)     # Add X = 0 to simulated sample
+Original = Original[c(1:(length(Original)-2), # Let X be last value in original
+                      length(Original), length(Original)-1)]
 
 kableExtra::kable(data.frame(Name = c(seqinr::aaa(), "gaps"),
                         Original, 
@@ -256,8 +269,9 @@ kableExtra::kable(data.frame(Name = c(seqinr::aaa(), "gaps"),
 
 **3. Obtain number of stop codons in simulated sequences & compare to true seq:**
 
-There are 1270 stop codons in the original sequence, 1298 stop codons in the
-simulated sequence without and 1333 stop codons in the simulated sequence with  
+The number of stop codons can be seen in the table "Number of Stop Codons".
+There are 1270 stop codons in the original sequence, 1318 stop codons in the
+simulated sequence without and 1333 stop codons in the simulated sequence with 
 trees.
 
 ```{r}
@@ -280,14 +294,19 @@ kableExtra::kable(t(data.frame(Original = Original["*"],
 
 **Expected Markov chain order:**
 
-I would expect order of 2 (or more) for the original data sets because three 
+For the simulated data sets, we would expect order of 1 because here, the 
+nucleotids are indeed random and should therefore be independent.
+
+We would expect order of 2 (or more) for the original data sets because three 
 nucleotids code for an amino-acid and since the amino-acids are not fully 
 independent in the DNA. Note that the number of required free parameters increases
 a lot from 2 to 3 (see below). The larger the number of parameters, the less
-reliable the estimated probabilities for the transition matrix will be.
-
-For the simulated data sets, I would expect order of 1 because here, the 
-nucleotids are indeed random and should therefore be independent.
+reliable the estimated probabilities for the transition matrix will be. The
+number of nucleotids for the data sets are: 65435 for original data set and
+sampled data set and 66000 for the data set sampled from the trees. If you 
+consider the number of parameters for the 1st to 3rd order below, it should be
+realistic to estimate parameters for at least 2nd order given the amount of 
+data available.
 
 Number of free parameters required for order of 1:
 $$4 * (4-1) = 12$$
@@ -297,22 +316,10 @@ $$4^2 * (4^2-1) = 240$$
 Number of free parameters required for order of 3:
 $$4^3 * (4^3-1) = 4032$$
 
-Actual number of nucleotids by dataset:
+**Assess Markov chain order:**
 
-`> length(unlist(original))`
-
-`[1] 65435`
-
-`> length(unlist(sim_sample))`
-
-`[1] 65435`
-
-`> length(unlist(sim_tree))`
-
-`[1] 66000`
-
-**First**, we concatenate the sequences from the three data sets and remove any
-characters that are not "a", "c", "g", "t". **Second**, we conduct a Chi-Square test
+First, we concatenate the sequences from the three data sets and remove any
+characters that are not "a", "c", "g", "t". Then, we conduct a Chi-Square test
 with the H0: Sequence is of 1st order. The H0 get's rejected for the original 
 sequence (since p = 0) but not for the two sampled sequences (as p > 0.05). This
 is what we expected: First order Markov chains for the randomly sampled sequence
@@ -344,16 +351,26 @@ sim_tree_seq = sim_tree_seq[sim_tree_seq %in% c("a", "c", "g", "t")] # a, c, g, 
 # the hypothesis that the sequence is of first order.
 
 cat("Assess the order with Chi-Square test:\n")
-cat("Original:\n"); assessOrder(original_seq); cat("\n-------------\n")
-cat("Simulated_Sample:\n"); assessOrder(sim_sample_seq); cat("\n-------------\n")
-cat("Simulated_Tree:\n"); assessOrder(sim_tree_seq); cat("\n-------------\n")
+
+cat("Original: p = ",
+assessOrder(original_seq, verbose = FALSE)$p.value)
+
+cat("\nSimulated_Sample: p =", 
+assessOrder(sim_sample_seq, verbose = FALSE)$p.value)
+
+cat("\nSimulated_Tree: p =", 
+assessOrder(sim_tree_seq, verbose = FALSE)$p.value)
 
 ```
 
 \  
 \  
 
-**Third**, we fit 1st order Markov chains for all three data sets. 
+**Fit Markov chains:**
+
+Lastly, we fit 1st order Markov chains for all three data sets. The 
+corresponding three transition matrices can be found below.
+
 Note that we tried to fit a higher order Markov chain for the original 
 data set (since this would be appropriate based on the Chi-Square-Test). 
 However, the function fitHigherOrder from the markovchain package did not
@@ -391,7 +408,7 @@ sim_tree_fit$estimate
 \  
 \  
 
-**Lastly**, we consider the assumptions behind the analyses (see book 
+Now, we consider the assumptions behind the analyses (see book 
 "Statistical Methods in Bioinformatics"):
 
 1. *Markov property*: "current state is all that matters in determining the 
@@ -408,9 +425,8 @@ proteins. Therefore, one cannot actually assume that the previous nucleotids
 don't matter in determining the probabilities for the next states. 
 
 2. Regarding the second property, we don't consider time here but space (i.e.
-position of the nucleotids). From my point of view, it is a valid assumption 
-that the position does not matter (however the type of the previous nucleotids 
-does, see 1.).
+position of the nucleotids). It is a valid assumption that the position does not 
+matter (however the type of the previous nucleotids does, see 1.).
 
 \  
 
