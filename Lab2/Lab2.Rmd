@@ -87,6 +87,8 @@ df_table = data.frame("Base" = c("a", "c", "g", "t"),
                        "Simulated\nfrequency" = 
                         base.freq(as.DNAbin(simulated_lizards)), 
                        row.names = NULL)
+#base.freq computes the frequencies of the four DNA bases from a sample of sequences.
+
 kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
       col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency"), 
       format = "latex", caption = "Base frequencies of the 33 original and 
@@ -154,7 +156,7 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
       sequences and of the 33 simulated phylogenetic trees.") %>%
   kableExtra::kable_styling(latex_options = "hold_position")
 
-# Plot the tree tree ----------------------------------------------------------
+# Plot the tree ----------------------------------------------------------
 
 plot(tree, edge.width = 1, main = "Plot of simulated phylogenetic tree")
 # phytools::plotTree(tree) # Alternative
@@ -507,7 +509,10 @@ Heatmap(dist_mat_sim_tree, column_title = "Simulated Sequences (Tree)",
 
 # Question 3
 
+
 ## Question 3.1
+
+**Construct phylogenetic trees from the three multiple alignments (or distance matrices)**
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -521,6 +526,8 @@ Heatmap(dist_mat_sim_tree, column_title = "Simulated Sequences (Tree)",
 tree_upgma_original = upgma(dist_original)
 tree_upgma_sim_sample = upgma(dist_sim_sample)
 tree_upgma_sim_tree = upgma(dist_sim_tree)
+
+
 
 ```
 
@@ -550,6 +557,8 @@ plot(tree_upgma_sim_tree, type = "phylogram", cex = 0.5, no.margin = T,
      main="UPGMA tree of the simulated data (tree)")
 
 ```
+
+**Perform a phylogenetic bootstrap analysis**
 
 Bootstrap of original sequences
 
@@ -609,6 +618,8 @@ nodelabels(clad_sim_tree)
 ```
 
 ## Question 3.2
+
+**Compare your inferred trees and also your simulated one - calculate various indices related to them and distances between the trees**
 
 ```{r}
 # ------------------------------------------------------------------------------
