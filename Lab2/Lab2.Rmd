@@ -3,9 +3,9 @@ title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: yes
 bibliography: bibliography.bib
 ---
@@ -13,8 +13,6 @@ bibliography: bibliography.bib
 ```{r setup, include=FALSE}
 
 ## TODO
-# - 2.3 clarify the distance metric (ask other groups, name it, use a different library)
-# - description how to Use ClustalOmega
 # - heatmaps: Name and describe the clusters (adjacency representation)
 # - 3.1 Specifially answer "Are the two based on the simulated data similar to expected?"
 # - 3.2 check for grammar mistakes
@@ -477,13 +475,13 @@ calculating the distances. The documentation states:
 > similarity (Fitch matrix, for protein sequences only) or identity matrix (for protein
 > and DNA sequences).
 
-We looked up the source code at GitHub (<https://github.com/cran/seqinr/blob/master/R/dist.alignment.R#L27>)
-where it says, that the C distance function is used (line 27). The call looks
-like this:
+After the function call we get a identity matrix. The definition of the identity as a distance measure is
+that both sequences which are to be compared are aligned in any way (Clustal Omega here), Then
+we count the number of nucleotides which are identical and divide it by the length
+of the sequences. We get a percentage score which is the value in the matrix.
+We went for this as the sequence distance at it is most often used for that purpose
+(<http://tbb.bio.uu.nl/BDA/2017/20170221_quantifying_sequence_similarity.pdf> slide 4).
 
-```dist <- .Call("distance", sequences, nbseq, matNumber, seqtype,0, PACKAGE = "seqinr")```
-
-The C code can be found at <https://github.com/cran/seqinr/blob/master/src/alignment.c#L256>.
 
 Here are the generated Heatmaps visualizing the distance matrices:
 
