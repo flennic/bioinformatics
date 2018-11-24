@@ -435,10 +435,31 @@ matter (however the type of the previous nucleotids does, see 1.).
 
 ## Question 2.3
 
-1. Choose a distance measure between sequences.
-2. Calculate for each alignment the distances between all pairs of sequences. 
-3. Plot heatmaps visualizing the distances. 
-4. Comment on what you can observe.
+- **Choose a distance measure between sequences.**
+- **Calculate for each alignment the distances between all pairs of sequences.**
+- **Plot heatmaps visualizing the distances. **
+- **Comment on what you can observe.**
+
+Clustal Omega (<https://www.ebi.ac.uk/Tools/msa/clustalo/>) was used for performing
+the multiple sequence alignment. An alternative would be using the package
+```DECIPHER``` with the function ```AlignSeqs```.
+
+We used the function ```dist.alignment``` from the ```seqinr``` package for
+calculating the distances. The documentation states:
+
+> These functions compute a matrix of pairwise distances from aligned sequencesusing
+> similarity (Fitch matrix, for protein sequences only) or identity matrix (for protein
+> and DNA sequences).
+
+We looked up the source code at GitHub (<https://github.com/cran/seqinr/blob/master/R/dist.alignment.R#L27>)
+where it says, that the C distance function is used (line 27). The call looks
+like this:
+
+```dist <- .Call("distance", sequences, nbseq, matNumber, seqtype,0, PACKAGE = "seqinr")```
+
+The C code can be found at <https://github.com/cran/seqinr/blob/master/src/alignment.c#L256>.
+
+Here are the generated Heatmaps visualizing the distance matrices:
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -450,7 +471,7 @@ matter (however the type of the previous nucleotids does, see 1.).
 # (https://www.ebi.ac.uk/Tools/msa/clustalo/)
 # In the stack overflow thread Krzysztof suggested the package 'DECIPHER' is
 # also recommended.: (http://www2.decipher.codes/Alignment.html)
-# The progress of the testing of the multiple sequence alignemnt in R can be
+# The progress of the testing of the multiple sequence alignment in R can be
 # found in multi_sequence_alignment.R
 # For the heatmapes ths may be used: https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
 
@@ -513,6 +534,19 @@ Heatmap(dist_mat_sim_tree, column_title = "Simulated Sequences (Tree)",
         show_row_names = FALSE)
 
 ```
+
+Small distances are blue with a value of 0.0 while greater distances are red with
+a value of 1.0. We can see that, of course, the diagonal shows a distance of 0.0
+from one sequence to itself. The simulated data, including the simulated tree,
+has on average a higher distance. Only around the diagonal it can be seen that
+some sequences have a greater similarity. The original dataset shows that the
+sequences on average are way more similar.
+
+We assume the reason for this is that the original data is indeed not independent,
+which is the same conslusion we could observe trying fitting the markov chains.
+The simulated data is independent, therefore we cannot observe that many similarities.
+The only thing which sticks out is, that on the diagonal, we can observe some
+sequences which seem to be related.
 
 # Question 3
 
