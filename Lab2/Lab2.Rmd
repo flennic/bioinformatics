@@ -1,12 +1,13 @@
 ---
 title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
-author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092),
-  Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
+author: Julius Kittler (julki092), Stefano Toffol (steto820),
+        Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
   pdf_document: default
   html_document:
     df_print: paged
 link-citations: yes
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -35,6 +36,10 @@ library(markovchain)  # For fitting, evaluating markov chains (question 2)
 
 library(ComplexHeatmap)
 library(circlize)
+
+library(TotalCopheneticIndex) #for getting tree index
+library(dendextend) #for getting correlation distance
+
 ```
 
 # Assignment 1
@@ -78,8 +83,8 @@ for(i in 1:n) {  # Cycle through every single object of the lizard_sequences
 }
 
 # Save as fasta file
-write.dna(simulated_lizards, file = "data/simulated_lizards.fasta", format = "fasta", 
-          append = F, nbcol = 6, colsep = " ", colw = 10)
+write.dna(simulated_lizards, file = "data/simulated_lizards.fasta",
+          format = "fasta", append = F, nbcol = 6, colsep = " ", colw = 10)
 
 # Table with simulated base frequency
 df_table = data.frame("Base" = c("a", "c", "g", "t"), 
@@ -87,6 +92,9 @@ df_table = data.frame("Base" = c("a", "c", "g", "t"),
                        "Simulated\nfrequency" = 
                         base.freq(as.DNAbin(simulated_lizards)), 
                        row.names = NULL)
+# base.freq computes the frequencies of the four DNA bases from a sample of
+# sequences.
+
 kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
       col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency"), 
       format = "latex", caption = "Base frequencies of the 33 original and 
@@ -154,7 +162,7 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
       sequences and of the 33 simulated phylogenetic trees.") %>%
   kableExtra::kable_styling(latex_options = "hold_position")
 
-# Plot the tree tree ----------------------------------------------------------
+# Plot the tree ----------------------------------------------------------
 
 plot(tree, edge.width = 1, main = "Plot of simulated phylogenetic tree")
 # phytools::plotTree(tree) # Alternative
@@ -432,10 +440,31 @@ matter (however the type of the previous nucleotids does, see 1.).
 
 ## Question 2.3
 
-1. Choose a distance measure between sequences.
-2. Calculate for each alignment the distances between all pairs of sequences. 
-3. Plot heatmaps visualizing the distances. 
-4. Comment on what you can observe.
+- **Choose a distance measure between sequences.**
+- **Calculate for each alignment the distances between all pairs of sequences.**
+- **Plot heatmaps visualizing the distances. **
+- **Comment on what you can observe.**
+
+Clustal Omega (<https://www.ebi.ac.uk/Tools/msa/clustalo/>) was used for performing
+the multiple sequence alignment. An alternative would be using the package
+```DECIPHER``` with the function ```AlignSeqs```.
+
+We used the function ```dist.alignment``` from the ```seqinr``` package for
+calculating the distances. The documentation states:
+
+> These functions compute a matrix of pairwise distances from aligned sequencesusing
+> similarity (Fitch matrix, for protein sequences only) or identity matrix (for protein
+> and DNA sequences).
+
+We looked up the source code at GitHub (<https://github.com/cran/seqinr/blob/master/R/dist.alignment.R#L27>)
+where it says, that the C distance function is used (line 27). The call looks
+like this:
+
+```dist <- .Call("distance", sequences, nbseq, matNumber, seqtype,0, PACKAGE = "seqinr")```
+
+The C code can be found at <https://github.com/cran/seqinr/blob/master/src/alignment.c#L256>.
+
+Here are the generated Heatmaps visualizing the distance matrices:
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -447,7 +476,7 @@ matter (however the type of the previous nucleotids does, see 1.).
 # (https://www.ebi.ac.uk/Tools/msa/clustalo/)
 # In the stack overflow thread Krzysztof suggested the package 'DECIPHER' is
 # also recommended.: (http://www2.decipher.codes/Alignment.html)
-# The progress of the testing of the multiple sequence alignemnt in R can be
+# The progress of the testing of the multiple sequence alignment in R can be
 # found in multi_sequence_alignment.R
 # For the heatmapes ths may be used: https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
 
@@ -484,30 +513,51 @@ dist_mat_sim_tree =Biostrings::as.matrix(dist_sim_tree)
 Heatmap for the original sequences.
 
 ```{r, echo = FALSE}
+
 # Heatmap examples cen be found here:
 # https://bioconductor.org/packages/release/bioc/vignettes/ComplexHeatmap/inst/doc/s2.single_heatmap.html
 # If you don't like Heatmeap, we can also use someting else
 Heatmap(dist_mat_original, column_title = "Original Sequences",
         show_row_names = FALSE)
+
 ```
 
 Heatmap for the simulated sequences.
 
 ```{r, echo = FALSE}
+
 Heatmap(dist_mat_sim_sample, column_title = "Simulated Sequences",
         show_row_names = FALSE)
+
 ```
 
 Heatmap for the simulated sequences (tree).
 
 ```{r, echo = FALSE}
+
 Heatmap(dist_mat_sim_tree, column_title = "Simulated Sequences (Tree)",
         show_row_names = FALSE)
+
 ```
+
+Small distances are blue with a value of 0.0 while greater distances are red with
+a value of 1.0. We can see that, of course, the diagonal shows a distance of 0.0
+from one sequence to itself. The simulated data, including the simulated tree,
+has on average a higher distance. Only around the diagonal it can be seen that
+some sequences have a greater similarity. The original dataset shows that the
+sequences on average are way more similar.
+
+We assume the reason for this is that the original data is indeed not independent,
+which is the same conslusion we could observe trying fitting the markov chains.
+The simulated data is independent, therefore we cannot observe that many similarities.
+The only thing which sticks out is, that on the diagonal, we can observe some
+sequences which seem to be related.
 
 # Question 3
 
 ## Question 3.1
+
+**Construct phylogenetic trees from the three multiple alignments (or distance matrices)**
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -524,36 +574,40 @@ tree_upgma_sim_tree = upgma(dist_sim_tree)
 
 ```
 
-Estimated tree from original data.
+### UPGMA tree of the original data
 
 ```{r, echo = FALSE, out.width="100%"}
 
 plot(tree_upgma_original, type = "phylogram", 
-     main="UPGMA tree of the original data", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 
 ```
 
-Estimated tree from simulated data.
+### UPGMA tree of the simulated data
 
 ```{r, echo = FALSE, out.width="100%"}
 
 plot(tree_upgma_sim_sample, type = "phylogram", cex = 0.5, no.margin = T, 
-     main="UPGMA tree of the simulated data")
+     main="")
 
 ```
 
+### UPGMA tree of the simulated data (tree)
 Estimated tree from simulated data according to the tree structure.
 
 ```{r, echo = FALSE, out.width="100%"}
 
 plot(tree_upgma_sim_tree, type = "phylogram", cex = 0.5, no.margin = T, 
-     main="UPGMA tree of the simulated data (tree)")
+     main="")
 
 ```
 
-Bootstrap of original sequences
+**Perform a phylogenetic bootstrap analysis**
 
-```{r}
+### Bootstrap of original sequences
+UPGMA tree of the original data with the bootstrap support for the individual clades.
+
+```{r, echo = FALSE, include = FALSE}
 
 # Bootstrapping
 # Followed the examples in ?boot.phylo
@@ -562,17 +616,22 @@ boot_original = ape::boot.phylo(nj(dist_mat_original), dist_mat_original,
 clad_original = prop.clades(tree_upgma_original, boot_original, rooted = TRUE)
 boot = prop.clades(tree_upgma_original, boot_original)
 
+```
+
+```{r, echo = FALSE}
+
 plot(tree_upgma_original, type = "phylogram", 
-     main="UPGMA tree of the original data with the bootstrap support 
-     for the individual clades", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 drawSupportOnEdges(boot)
 nodelabels(clad_original)
 
 ```
 
-Bootstrap of simulated sequences
 
-```{r}
+### Bootstrap of simulated sequences
+UPGMA tree of the simulated data with the bootstrap support for the individual clades.
+
+```{r, echo = FALSE, include = FALSE}
 
 # Bootstrapping
 # Followed the examples in ?boot.phylo
@@ -581,17 +640,22 @@ boot_sim_sample = ape::boot.phylo(nj(dist_mat_sim_sample), dist_mat_sim_sample,
 clad_sim_sample = prop.clades(tree_upgma_sim_sample, boot_sim_sample, rooted = T)
 boot = prop.clades(tree_upgma_sim_sample, boot_sim_sample)
 
+```
+
+```{r, echo = FALSE}
+
 plot(tree_upgma_sim_sample, type = "phylogram", 
-     main="UPGMA tree of the simulated data with the bootstrap support 
-     for the individual clades", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 drawSupportOnEdges(boot)
 nodelabels(clad_sim_sample)
 
 ```
 
-Bootstrap of simulated sequences from tree
 
-```{r}
+### Bootstrap of simulated sequences from tree
+UPGMA tree of the simulated data (from tree) with the bootstrap support for the individual clades.
+
+```{r, echo = FALSE, include = FALSE}
 
 # Bootstrapping
 # Followed the examples in ?boot.phylo
@@ -600,25 +664,105 @@ boot_sim_tree = ape::boot.phylo(nj(dist_mat_sim_tree), dist_mat_sim_tree,
 clad_sim_tree = prop.clades(tree_upgma_sim_tree, boot_sim_tree, rooted = T)
 boot = prop.clades(tree_upgma_sim_tree, boot_sim_tree)
 
+
+```
+
+```{r, echo = FALSE}
+
 plot(tree_upgma_sim_tree, type = "phylogram", 
-     main="UPGMA tree of the simulated data (from tree) with the bootstrap support 
-     for the individual clades", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 drawSupportOnEdges(boot)
 nodelabels(clad_sim_tree)
 
 ```
 
-## Question 3.2
+
+## Question 3.2 Compare your inferred trees and also your simulated one
+
+**by comparing indices** 
+tci() function from TotalCopheneticIndex package - it calculates the total 
+cophenetic index for any tree, which is a measure of tree balance.
 
 ```{r}
-# ------------------------------------------------------------------------------
-# Question 3.2
-# ------------------------------------------------------------------------------
+index_original = tci(tree_upgma_original)
+index_sample = tci(tree_upgma_sim_sample)
+index_tree = tci(tree_upgma_sim_tree)
+
+kableExtra::kable(t(data.frame(original_tree = index_original, 
+                               simulated_sample = index_original,
+                               simulated_tree = index_tree)),
+                  caption = "Total cophenetic index for tree",
+                  booktabs = T) %>%
+        kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
+For every pair of leaves $i,j$  in a phylogenetic tree $T$, their cophenetic 
+value is the depth of their lowest common ancestor. The total cophenetic index 
+of a phylogenetic tree  is the sum of the cophenetic values of its pairs of 
+different leaves[@MIR2013125].The tree with the smallest total cophenetic value 
+is the maximally balanced while the tree with the largest total cophenetic value
+is the caterpillar shaped tree. From the table above, we can conclude that given
+three trees are not in balanced shape.
+  
+  
+**by comparing distances**
+We applied two method to compare the distances between the trees: treedist() 
+function from phangorn package and cor_cophenetic() function from dendextend
+package. After applying two method, we were able to conclude that among given
+trees, the tree from simulated alignment and the tree with the alignmnet from 
+simulated tree show the most similarity.
+
+- treedist() function from phangorn package
+```{r}
+
+dist1 = treedist(tree_upgma_original,tree_upgma_sim_sample, check.labels = F)
+dist2 = treedist(tree_upgma_original,tree_upgma_sim_tree, check.labels = F)
+dist3 = treedist(tree_upgma_sim_sample,tree_upgma_sim_tree, check.labels = F)
+
+kableExtra::kable(data.frame(Ori_vs_Sample = dist1,
+                               Ori_vs_Tree = dist2,
+                               Sample_vs_Tree = dist3),
+                  #caption = "Distance between two trees",
+                  booktabs = T) %>%
+        kableExtra::kable_styling(latex_options = "hold_position") 
+
+```
+Treedist() returns a vector containing the following tree distance methods:
+symmetric difference, branch score difference, path difference and quadratic path
+difference. The larger the value is, the more different the trees are. From the 
+table below, we can figure out that in overall, the tree from simulated alignment 
+and the tree with the alignmnet from simulated tree are the most similar
+among the given trees. 
+\
+\ 
+- cor_cophenetic() function from dendextend package
+```{r}
+cor1 = cor_cophenetic(tree_upgma_original,tree_upgma_sim_sample)
+cor2 = cor_cophenetic(tree_upgma_original,tree_upgma_sim_tree)
+cor3 = cor_cophenetic(tree_upgma_sim_sample,tree_upgma_sim_tree)
+
+kableExtra::kable(data.frame(Original_vs_simulatedSample = cor1, 
+                               Original_vs_simulatedTree = cor2,
+                               simualtedSample_vs_simulatedTree = cor3),
+                  #caption = "Cophenetic Correlation between two trees",
+                booktabs = T) %>%
+        kableExtra::kable_styling(latex_options = "hold_position")
+
+```
+  
+With near 0 values meaning that the two trees are not statistically similar. 
+From the table below, we can figure out that all output values stay close to 0,
+so it is hard to say that those trees are statistically similar. 
+However, the tree from sampled alignment and the tree from alignment of simulated 
+tree shows the largest absolute value, so we can say that the tree from simulated
+sample and the tree with the alignmnet from simulated tree are the most similar
+among the given trees.
+  
 
 # Appendix
 
 ```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
 
 ```
+
+# Bibliography
