@@ -459,7 +459,16 @@ matter (however the type of the previous nucleotids does, see 1.).
 
 Clustal Omega (<https://www.ebi.ac.uk/Tools/msa/clustalo/>) was used for performing
 the multiple sequence alignment. An alternative would be using the package
-```DECIPHER``` with the function ```AlignSeqs```.
+```DECIPHER``` with the function ```AlignSeqs```. On the webpage the following three
+steps were done for each of the sequences in the ```data``` folder.
+
+1. DNA was selected as the set and the ```.fasta```file was uploaded via the ```Browse``` button.
+2. The output format was changed to ```Pearson/FASTA```.
+3. The job was submitted.
+
+The job will run for a few seconds or minutes. After that the button "Download Alignment File"
+can be used to inspect the generated ```.fasta``` file containing the aligned sequences.
+We saved the file in the ```data``` folder.
 
 We used the function ```dist.alignment``` from the ```seqinr``` package for
 calculating the distances. The documentation states:
