@@ -678,7 +678,7 @@ nodelabels(clad_sim_tree)
 
 ## Question 3.2 Compare your inferred trees and also your simulated one
 
-** by comparing indices** 
+**by comparing indices** 
 tci() function from TotalCopheneticIndex package - it calculates the total 
 cophenetic index for any tree, which is a measure of tree balance.
 
@@ -721,6 +721,7 @@ kableExtra::kable(data.frame(Original_vs_simulatedSample = dist1,
         kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
+  
 Treedist() returns a vector containing the following tree distance methods:
 symmetric difference, branch score difference, path difference and quadratic path
 difference. The larger the value is, the more different the trees are. From the 
@@ -743,6 +744,7 @@ kableExtra::kable(data.frame(Original_vs_simulatedSample = cor1,
         kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
+  
 With near 0 values meaning that the two trees are not statistically similar. 
 From the table below, we can figure out that all output values stay close to 0,
 so it is hard to say that those trees are statistically similar. 
