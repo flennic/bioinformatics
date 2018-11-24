@@ -24,7 +24,6 @@ library(seqinr)       # This is an specialized package for
 library(phangorn)
 library(knitr)
 library(markovchain)  # For fitting, evaluating markov chains (question 2)
-library(dendextend)
 
 # Use this if BiocManager is not installed
 #if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -36,6 +35,10 @@ library(dendextend)
 
 library(ComplexHeatmap)
 library(circlize)
+
+library(TotalCopheneticIndex) #for getting tree index
+library(dendextend) #for getting correlation distance
+
 ```
 
 # Assignment 1
@@ -676,12 +679,20 @@ nodelabels(clad_sim_tree)
 ## Question 3.2 Compare your inferred trees and also your simulated one
 
 ** by comparing indices** 
+tci() function from TotalCopheneticIndex package - it calculates the total 
+cophenetic index for any tree, which is a measure of tree balance.
 
 ```{r}
-# ------------------------------------------------------------------------------
-# Question 3.2
-# ------------------------------------------------------------------------------
+index_original = tci(tree_upgma_original)
+index_sample = tci(tree_upgma_sim_sample)
+index_tree = tci(tree_upgma_sim_tree)
 
+kableExtra::kable(t(data.frame(original_tree = index_original, 
+                               simulated_sample = index_original,
+                               simulated_tree = index_tree)),
+                  caption = "Total cophenetic index for tree",
+                  booktabs = T) %>%
+        kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
   
@@ -705,7 +716,7 @@ dist_frame = rbind(dist1,dist2,dist3)
 kableExtra::kable(data.frame(Original_vs_simulatedSample = dist1,
                                Original_vs_simulatedTree = dist2,
                                simualtedSample_vs_simulatedTree = dist3),
-                  #caption = " between two trees",
+                  #caption = "Distance between two trees",
                   booktabs = T) %>%
         kableExtra::kable_styling(latex_options = "hold_position")
 
