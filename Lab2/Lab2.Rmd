@@ -711,18 +711,18 @@ kableExtra::kable(t(data.frame(original_tree = index_original,
 For every pair of leaves $i,j$  in a phylogenetic tree $T$, their cophenetic 
 value is the depth of their lowest common ancestor. The total cophenetic index 
 of a phylogenetic tree  is the sum of the cophenetic values of its pairs of 
-different leaves[@MIR2013125].The tree with the smallest total cophenetic value 
+different leaves[@MIR2013125]. The tree with the smallest total cophenetic value 
 is the maximally balanced while the tree with the largest total cophenetic value
 is the caterpillar shaped tree. From the table above, we can conclude that given
 three trees are not in balanced shape.
   
   
 **by comparing distances**
-We applied two method to compare the distances between the trees: treedist() 
+We applied two methods to compare the distances between the trees: treedist() 
 function from phangorn package and cor_cophenetic() function from dendextend
-package. After applying two method, we were able to conclude that among given
+package. After applying these two methods, we were able to conclude that among given
 trees, the tree from simulated alignment and the tree with the alignmnet from 
-simulated tree show the most similarity.
+simulated tree show the smallest distance (smallest values in the table).
 
 - treedist() function from phangorn package
 ```{r}
