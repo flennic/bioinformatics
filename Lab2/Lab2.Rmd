@@ -1,7 +1,7 @@
 ---
 title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
-author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092),
-  Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
+author: Julius Kittler (julki092), Stefano Toffol (steto820),
+        Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
   html_document:
     df_print: paged
@@ -78,8 +78,8 @@ for(i in 1:n) {  # Cycle through every single object of the lizard_sequences
 }
 
 # Save as fasta file
-write.dna(simulated_lizards, file = "data/simulated_lizards.fasta", format = "fasta", 
-          append = F, nbcol = 6, colsep = " ", colw = 10)
+write.dna(simulated_lizards, file = "data/simulated_lizards.fasta",
+          format = "fasta", append = F, nbcol = 6, colsep = " ", colw = 10)
 
 # Table with simulated base frequency
 df_table = data.frame("Base" = c("a", "c", "g", "t"), 
@@ -87,7 +87,8 @@ df_table = data.frame("Base" = c("a", "c", "g", "t"),
                        "Simulated\nfrequency" = 
                         base.freq(as.DNAbin(simulated_lizards)), 
                        row.names = NULL)
-#base.freq computes the frequencies of the four DNA bases from a sample of sequences.
+# base.freq computes the frequencies of the four DNA bases from a sample of
+# sequences.
 
 kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
       col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency"), 
@@ -486,29 +487,34 @@ dist_mat_sim_tree =Biostrings::as.matrix(dist_sim_tree)
 Heatmap for the original sequences.
 
 ```{r, echo = FALSE}
+
 # Heatmap examples cen be found here:
 # https://bioconductor.org/packages/release/bioc/vignettes/ComplexHeatmap/inst/doc/s2.single_heatmap.html
 # If you don't like Heatmeap, we can also use someting else
 Heatmap(dist_mat_original, column_title = "Original Sequences",
         show_row_names = FALSE)
+
 ```
 
 Heatmap for the simulated sequences.
 
 ```{r, echo = FALSE}
+
 Heatmap(dist_mat_sim_sample, column_title = "Simulated Sequences",
         show_row_names = FALSE)
+
 ```
 
 Heatmap for the simulated sequences (tree).
 
 ```{r, echo = FALSE}
+
 Heatmap(dist_mat_sim_tree, column_title = "Simulated Sequences (Tree)",
         show_row_names = FALSE)
+
 ```
 
 # Question 3
-
 
 ## Question 3.1
 
@@ -527,42 +533,42 @@ tree_upgma_original = upgma(dist_original)
 tree_upgma_sim_sample = upgma(dist_sim_sample)
 tree_upgma_sim_tree = upgma(dist_sim_tree)
 
-
-
 ```
 
-Estimated tree from original data.
+### UPGMA tree of the original data
 
 ```{r, echo = FALSE, out.width="100%"}
 
 plot(tree_upgma_original, type = "phylogram", 
-     main="UPGMA tree of the original data", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 
 ```
 
-Estimated tree from simulated data.
+### UPGMA tree of the simulated data
 
 ```{r, echo = FALSE, out.width="100%"}
 
 plot(tree_upgma_sim_sample, type = "phylogram", cex = 0.5, no.margin = T, 
-     main="UPGMA tree of the simulated data")
+     main="")
 
 ```
 
+### UPGMA tree of the simulated data (tree)
 Estimated tree from simulated data according to the tree structure.
 
 ```{r, echo = FALSE, out.width="100%"}
 
 plot(tree_upgma_sim_tree, type = "phylogram", cex = 0.5, no.margin = T, 
-     main="UPGMA tree of the simulated data (tree)")
+     main="")
 
 ```
 
 **Perform a phylogenetic bootstrap analysis**
 
-Bootstrap of original sequences
+### Bootstrap of original sequences
+UPGMA tree of the original data with the bootstrap support for the individual clades.
 
-```{r}
+```{r, echo = FALSE, include = FALSE}
 
 # Bootstrapping
 # Followed the examples in ?boot.phylo
@@ -571,17 +577,22 @@ boot_original = ape::boot.phylo(nj(dist_mat_original), dist_mat_original,
 clad_original = prop.clades(tree_upgma_original, boot_original, rooted = TRUE)
 boot = prop.clades(tree_upgma_original, boot_original)
 
+```
+
+```{r, echo = FALSE}
+
 plot(tree_upgma_original, type = "phylogram", 
-     main="UPGMA tree of the original data with the bootstrap support 
-     for the individual clades", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 drawSupportOnEdges(boot)
 nodelabels(clad_original)
 
 ```
 
-Bootstrap of simulated sequences
 
-```{r}
+### Bootstrap of simulated sequences
+UPGMA tree of the simulated data with the bootstrap support for the individual clades.
+
+```{r, echo = FALSE, include = FALSE}
 
 # Bootstrapping
 # Followed the examples in ?boot.phylo
@@ -590,17 +601,22 @@ boot_sim_sample = ape::boot.phylo(nj(dist_mat_sim_sample), dist_mat_sim_sample,
 clad_sim_sample = prop.clades(tree_upgma_sim_sample, boot_sim_sample, rooted = T)
 boot = prop.clades(tree_upgma_sim_sample, boot_sim_sample)
 
+```
+
+```{r, echo = FALSE}
+
 plot(tree_upgma_sim_sample, type = "phylogram", 
-     main="UPGMA tree of the simulated data with the bootstrap support 
-     for the individual clades", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 drawSupportOnEdges(boot)
 nodelabels(clad_sim_sample)
 
 ```
 
-Bootstrap of simulated sequences from tree
 
-```{r}
+### Bootstrap of simulated sequences from tree
+UPGMA tree of the simulated data (from tree) with the bootstrap support for the individual clades.
+
+```{r, echo = FALSE, include = FALSE}
 
 # Bootstrapping
 # Followed the examples in ?boot.phylo
@@ -609,13 +625,18 @@ boot_sim_tree = ape::boot.phylo(nj(dist_mat_sim_tree), dist_mat_sim_tree,
 clad_sim_tree = prop.clades(tree_upgma_sim_tree, boot_sim_tree, rooted = T)
 boot = prop.clades(tree_upgma_sim_tree, boot_sim_tree)
 
+
+```
+
+```{r, echo = FALSE}
+
 plot(tree_upgma_sim_tree, type = "phylogram", 
-     main="UPGMA tree of the simulated data (from tree) with the bootstrap support 
-     for the individual clades", cex = 0.5, no.margin = T)
+     main="", cex = 0.5, no.margin = T)
 drawSupportOnEdges(boot)
 nodelabels(clad_sim_tree)
 
 ```
+
 
 ## Question 3.2
 
