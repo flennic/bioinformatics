@@ -3,9 +3,9 @@ title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: yes
 ---
 
@@ -24,6 +24,7 @@ library(seqinr)       # This is an specialized package for
 library(phangorn)
 library(knitr)
 library(markovchain)  # For fitting, evaluating markov chains (question 2)
+library(dendextend)
 
 # Use this if BiocManager is not installed
 #if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -701,10 +702,10 @@ dist3 = treedist(tree_upgma_sim_sample,tree_upgma_sim_tree, check.labels = F)
 #put them into one dataframe
 dist_frame = rbind(dist1,dist2,dist3)
 
-kableExtra::kable(t(data.frame(Original_vs_simulatedSample = dist1,
+kableExtra::kable(data.frame(Original_vs_simulatedSample = dist1,
                                Original_vs_simulatedTree = dist2,
-                               simualtedSample_vs_simulatedTree = dist3)),
-                  caption = " between two trees",
+                               simualtedSample_vs_simulatedTree = dist3),
+                  #caption = " between two trees",
                   booktabs = T) %>%
         kableExtra::kable_styling(latex_options = "hold_position")
 
@@ -723,10 +724,10 @@ cor1 = cor_cophenetic(tree_upgma_original,tree_upgma_sim_sample)
 cor2 = cor_cophenetic(tree_upgma_original,tree_upgma_sim_tree)
 cor3 = cor_cophenetic(tree_upgma_sim_sample,tree_upgma_sim_tree)
 
-kableExtra::kable(t(data.frame(Original_vs_simulatedSample = cor1, 
+kableExtra::kable(data.frame(Original_vs_simulatedSample = cor1, 
                                Original_vs_simulatedTree = cor2,
-                               simualtedSample_vs_simulatedTree = cor3)),
-                  caption = "Cophenetic Correlation between two trees",
+                               simualtedSample_vs_simulatedTree = cor3),
+                  #caption = "Cophenetic Correlation between two trees",
                 booktabs = T) %>%
         kableExtra::kable_styling(latex_options = "hold_position")
 
