@@ -626,7 +626,7 @@ nodelabels(clad_sim_tree)
 # Question 3.2
 # ------------------------------------------------------------------------------
 
-#from TotalCopheneticIndex package : 
+###from TotalCopheneticIndex package : 
 library(TotalCopheneticIndex)
 
 ##tci() - it calculates the total cophenetic index for any tree
@@ -642,7 +642,7 @@ range_index_sample = tci.context(tree_upgma_sim_sample)
 range_index_tree = tci.context(tree_upgma_sim_tree)
 
 
-#distance between trees
+###distance between trees
 library(phangorn)
 dist1 = treedist(tree_upgma_original,tree_upgma_sim_sample, check.labels = F)
 dist2 = treedist(tree_upgma_original,tree_upgma_sim_tree, check.labels = F)
@@ -652,6 +652,9 @@ dist3 = treedist(tree_upgma_sim_sample,tree_upgma_sim_tree, check.labels = F)
 RF.dist1 = RF.dist(tree_upgma_original,tree_upgma_sim_sample, check.labels = F)
 RF.dist2 = RF.dist(tree_upgma_original,tree_upgma_sim_tree, check.labels = F)
 RF.dist3 = RF.dist(tree_upgma_sim_sample,tree_upgma_sim_tree, check.labels = F)
+
+
+
 
 ```
 
