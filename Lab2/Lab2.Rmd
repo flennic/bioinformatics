@@ -3,14 +3,26 @@ title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 link-citations: yes
 bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
+
+## TODO
+# - 2.3 clarify the distance metric (ask other groups, name it, use a different library)
+# - description how to Use ClustalOmega
+# - heatmaps: Name and describe the clusters (adjacency representation)
+# - 3.1 Specifially answer "Are the two based on the simulated data similar to expected?"
+# - 3.2 check for grammar mistakes
+# - "phylogenetic bootstrap analysis", not just plotting, also describing
+# - save the trees as a file and read them
+# - 3.2 Interpet table
+# - 3.2 Fix bug: simulated_sample = index_original is wrong
+
 
 knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
                       warning = FALSE, message = FALSE) 
