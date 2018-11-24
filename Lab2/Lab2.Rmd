@@ -3,9 +3,9 @@ title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 link-citations: yes
 ---
 
@@ -672,46 +672,73 @@ nodelabels(clad_sim_tree)
 ```
 
 
-## Question 3.2
+## Question 3.2 Compare your inferred trees and also your simulated one
 
-**Compare your inferred trees and also your simulated one - calculate various indices related to them and distances between the trees**
+** by comparing indices** 
 
 ```{r}
 # ------------------------------------------------------------------------------
 # Question 3.2
 # ------------------------------------------------------------------------------
 
-###from TotalCopheneticIndex package : 
-library(TotalCopheneticIndex)
 
-##tci() - it calculates the total cophenetic index for any tree
-##        The Total Cophenetic Index is a measure of tree balance.
-total_index_original = tci(tree_upgma_original)
-total_index_sample = tci(tree_upgma_sim_sample)
-total_index_tree = tci(tree_upgma_sim_tree)
+```
+  
+**by comparing distnaces**
+We applied two method to compare the distances between the trees: treedist() 
+function from phangorn package and cor_cophenetic() function from dendextend
+package. After applying two method, we were able to conclude that among given
+trees, the tree from simulated alignment and the tree with the alignmnet from 
+simulated tree show the most similarity.
 
-##tci.context() - Calculate the range of values that the Total Cophenetic Index 
-#can take, and expected values under the Yule and Uniform models of evolution
-range_index_original = tci.context(tree_upgma_original)
-range_index_sample = tci.context(tree_upgma_sim_sample)
-range_index_tree = tci.context(tree_upgma_sim_tree)
+- treedist() function from phangorn package
+```{r}
 
-
-###distance between trees
-library(phangorn)
 dist1 = treedist(tree_upgma_original,tree_upgma_sim_sample, check.labels = F)
 dist2 = treedist(tree_upgma_original,tree_upgma_sim_tree, check.labels = F)
 dist3 = treedist(tree_upgma_sim_sample,tree_upgma_sim_tree, check.labels = F)
 
-#RF.dist - get the distance that only depends on the topology of the trees.
-RF.dist1 = RF.dist(tree_upgma_original,tree_upgma_sim_sample, check.labels = F)
-RF.dist2 = RF.dist(tree_upgma_original,tree_upgma_sim_tree, check.labels = F)
-RF.dist3 = RF.dist(tree_upgma_sim_sample,tree_upgma_sim_tree, check.labels = F)
+#put them into one dataframe
+dist_frame = rbind(dist1,dist2,dist3)
 
-
-
+kableExtra::kable(t(data.frame(Original_vs_simulatedSample = dist1,
+                               Original_vs_simulatedTree = dist2,
+                               simualtedSample_vs_simulatedTree = dist3)),
+                  caption = " between two trees",
+                  booktabs = T) %>%
+        kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
+Treedist() returns a vector containing the following tree distance methods:
+symmetric difference, branch score difference, path difference and quadratic path
+difference. The larger the value is, the more different the trees are. From the 
+table below, we can figure out that in overall, the tree from simulated alignment 
+and the tree with the alignmnet from simulated tree are the most similar
+among the given trees. 
+  
+  
+- cor_cophenetic() function from dendextend package
+```{r}
+cor1 = cor_cophenetic(tree_upgma_original,tree_upgma_sim_sample)
+cor2 = cor_cophenetic(tree_upgma_original,tree_upgma_sim_tree)
+cor3 = cor_cophenetic(tree_upgma_sim_sample,tree_upgma_sim_tree)
+
+kableExtra::kable(t(data.frame(Original_vs_simulatedSample = cor1, 
+                               Original_vs_simulatedTree = cor2,
+                               simualtedSample_vs_simulatedTree = cor3)),
+                  caption = "Cophenetic Correlation between two trees",
+                booktabs = T) %>%
+        kableExtra::kable_styling(latex_options = "hold_position")
+
+```
+With near 0 values meaning that the two trees are not statistically similar. 
+From the table below, we can figure out that all output values stay close to 0,
+so it is hard to say that those trees are statistically similar. 
+However, the tree from sampled alignment and the tree from alignment of simulated 
+tree shows the largest absolute value, so we can say that the tree from simulated
+sample and the tree with the alignmnet from simulated tree are the most similar
+among the given trees.
+  
 
 # Appendix
 
