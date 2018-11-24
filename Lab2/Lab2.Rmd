@@ -3,9 +3,9 @@ title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
 author: Andreas Stasinakis (andst745), Hector Plata (hecpl268), Julius Kittler (julki092),
   Mim Kemal Tekin (mimte666), Stefano Toffol (steto820)
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 link-citations: yes
 ---
 
@@ -634,6 +634,7 @@ library(TotalCopheneticIndex)
 total_index_original = tci(tree_upgma_original)
 total_index_sample = tci(tree_upgma_sim_sample)
 total_index_tree = tci(tree_upgma_sim_tree)
+
 
 ##tci.context() - Calculate the range of values that the Total Cophenetic Index 
 #can take, and expected values under the Yule and Uniform models of evolution
