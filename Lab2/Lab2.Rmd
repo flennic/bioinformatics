@@ -7,6 +7,7 @@ output:
   html_document:
     df_print: paged
 link-citations: yes
+bibliography: bibliography.bib
 ---
 
 ```{r setup, include=FALSE}
@@ -695,8 +696,16 @@ kableExtra::kable(t(data.frame(original_tree = index_original,
         kableExtra::kable_styling(latex_options = "hold_position")
 
 ```
+For every pair of leaves $i,j$  in a phylogenetic tree $T$, their cophenetic 
+value is the depth of their lowest common ancestor. The total cophenetic index 
+of a phylogenetic tree  is the sum of the cophenetic values of its pairs of 
+different leaves[@MIR2013125].The tree with the smallest total cophenetic value 
+is the maximally balanced while the tree with the largest total cophenetic value
+is the caterpillar shaped tree. From the table above, we can conclude that given
+three trees are not in balanced shape.
   
-**by comparing distnaces**
+  
+**by comparing distances**
 We applied two method to compare the distances between the trees: treedist() 
 function from phangorn package and cor_cophenetic() function from dendextend
 package. After applying two method, we were able to conclude that among given
@@ -710,26 +719,22 @@ dist1 = treedist(tree_upgma_original,tree_upgma_sim_sample, check.labels = F)
 dist2 = treedist(tree_upgma_original,tree_upgma_sim_tree, check.labels = F)
 dist3 = treedist(tree_upgma_sim_sample,tree_upgma_sim_tree, check.labels = F)
 
-#put them into one dataframe
-dist_frame = rbind(dist1,dist2,dist3)
-
-kableExtra::kable(data.frame(Original_vs_simulatedSample = dist1,
-                               Original_vs_simulatedTree = dist2,
-                               simualtedSample_vs_simulatedTree = dist3),
+kableExtra::kable(data.frame(Ori_vs_Sample = dist1,
+                               Ori_vs_Tree = dist2,
+                               Sample_vs_Tree = dist3),
                   #caption = "Distance between two trees",
                   booktabs = T) %>%
-        kableExtra::kable_styling(latex_options = "hold_position")
+        kableExtra::kable_styling(latex_options = "hold_position") 
 
 ```
-  
 Treedist() returns a vector containing the following tree distance methods:
 symmetric difference, branch score difference, path difference and quadratic path
 difference. The larger the value is, the more different the trees are. From the 
 table below, we can figure out that in overall, the tree from simulated alignment 
 and the tree with the alignmnet from simulated tree are the most similar
 among the given trees. 
-  
-  
+\
+\ 
 - cor_cophenetic() function from dendextend package
 ```{r}
 cor1 = cor_cophenetic(tree_upgma_original,tree_upgma_sim_sample)
@@ -759,3 +764,5 @@ among the given trees.
 ```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
 
 ```
+
+# Bibliography
