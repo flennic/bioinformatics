@@ -61,8 +61,12 @@ source("732A51_BioinformaticsHT2018_Lab02_GenBankGetCode.R")
 ```
 
 
-Starting from 33 DNA sequence of various species of casque-headed lizard (Basiliscus basiliscus), other 33 sequences of nucleotides have been generated. The sampling probabilities are the same of the real proportions of the original dataset.  
-After the artificial DNA has been created, the base frequencies are compared in Table 1. As expected, the observed proportions of the generated data closely resemble the theoretical ones.
+Starting from 33 DNA sequence of various species of casque-headed lizard 
+(Basiliscus basiliscus), other 33 sequences of nucleotides have been generated. 
+The sampling probabilities are the same of the real proportions of the original dataset.  
+After the artificial DNA has been created, the base frequencies are compared 
+in Table 1. As expected, the observed proportions of the generated data closely 
+resemble the theoretical ones.
 
 
 ```{r A1Q1, fig.align="center", echo=FALSE}
@@ -115,11 +119,37 @@ kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
 
 ## Question 1.2
 
-* Created one phylogenetic tree with 33 tips
+**1. Create a random phylogenetic tree with 33 tips**
 
-* For each original DNA sequence of the 33 available, used the function `simSeq(.)` from package `phangorn` to simulate the sequences.
+In order to achieve the desired result, the function `rtree(.)` from the package 
+`ape` has been use. The function allows the user to generate a tree by splitting 
+randomly the edges. The obtained tree is a rooted one and its branch lenghts 
+have been generated using the default options (uniform distribution). 
 
-* Result: 33 phylogenetic tree, one for DNA sequence, each with 33 tips. 
+**2. Simulate sequences on the tree**
+
+As suggested, the function `simSeq(.)` from the package `phagron` has been used.
+A sequence of lenght 2000, approximately equal to the mean lenght of the DNA 
+sequences of the lizards, has been generated for every tip of the tree.
+The frequencies of the Markov-chain states are set to be equal to the observed
+nucleotides frequencies of the original dataset. The transition matrix has been
+picked from Special Exercise 1 (Question 3) and is:
+
+\begin{equation*}
+  Q =
+  \left[ {\begin{array}{cccc}
+    0.10 & 0.80 & 0.05 & 0.05\\ 
+    0.35 & 0.10 & 0.10 & 0.45\\
+    0.30 & 0.20 & 0.20 & 0.30\\
+    0.60 & 0.10 & 0.25 & 0.05\\
+  \end{array} } \right]
+\end{equation*}
+
+The matrix does not have the desired stationarity distribution. If we analyze 
+Table 2, the theoretical stationary distribution derived from matrix Q differs 
+of more than 0.1 for cytosine and guanine in respect of the observed base frequency
+in the lizard dataset. However, the simulated data from the tree show a 
+base composition extremely similar to the one of the original frequencies.
 
 ```{r fig.height = 6}
 
@@ -157,17 +187,21 @@ tree_sequences_sim = as.DNAbin(tree_sequences_sim)
 ape::write.dna(tree_sequences_sim, file ="data/simulated_lizards_tree.fasta", 
                format = "fasta", append = F, nbcol = 6, colsep = " ", colw = 10)
 
+stationary = Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q%*%Q
+
 # Report base composition ------------------------------------------------------
 
 # Table with simulated base frequency
 df_table = data.frame("Base" = c("a", "c", "g", "t"), 
-                       "Original\nfrequency" = Original,
-                       "Simulated\nfrequency" = base.freq(tree_sequences_sim), 
-                       row.names = NULL)
+                      "Original\nfrequency" = Original,
+                      "Simulated\nfrequency" = base.freq(tree_sequences_sim),
+                      "Stationary\ndistribution" = stationary[1,],
+                      row.names = NULL)
 
-kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l"),
-      digits = c(NA, 4, 4),
-      col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency"), 
+kableExtra::kable(df_table, booktabs = T, align = c("r", "l", "l", "l"),
+      digits = c(NA, 4, 4, 4),
+      col.names = c("Base", "Original\nfrequency", "Simulated\nfrequency",
+                    "Stationary\ndistribution"), 
       format = "latex", caption = "Base frequencies of the 33 original DNA 
       sequences and of the 33 simulated phylogenetic trees.") %>%
   kableExtra::kable_styling(latex_options = "hold_position")
