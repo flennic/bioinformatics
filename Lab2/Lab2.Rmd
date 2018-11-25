@@ -19,7 +19,7 @@ bibliography: bibliography.bib
 # - "phylogenetic bootstrap analysis", not just plotting, also describing
 # - save the trees as a file and read them
 # - 3.2 Interpet table
-# - 3.2 Fix bug: simulated_sample = index_original is wrong
+# - 3.2 Fix bug: simulated_sample = index_original is wrong (done)
 
 
 knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
@@ -742,7 +742,7 @@ index_sample = tci(tree_upgma_sim_sample)
 index_tree = tci(tree_upgma_sim_tree)
 
 kableExtra::kable(t(data.frame(original_tree = index_original, 
-                               simulated_sample = index_original,
+                               simulated_sample = index_sample,
                                simulated_tree = index_tree)),
                   caption = "Total cophenetic index for tree",
                   booktabs = T) %>%
