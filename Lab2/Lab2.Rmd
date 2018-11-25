@@ -3,9 +3,9 @@ title: "Lab 2 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 link-citations: yes
 bibliography: bibliography.bib
 ---
@@ -14,11 +14,11 @@ bibliography: bibliography.bib
 
 ## TODO
 # - heatmaps: Name and describe the clusters (adjacency representation)
-# - 3.1 Specifially answer "Are the two based on the simulated data similar to expected?"
+# - 3.1 Specifially answer "Are the two based on the simulated data similar to expected?"(done)
 # - 3.2 check for grammar mistakes
 # - "phylogenetic bootstrap analysis", not just plotting, also describing
 # - save the trees as a file and read them
-# - 3.2 Interpet table
+# - 3.2 Interpet table (i think it's done)
 # - 3.2 Fix bug: simulated_sample = index_original is wrong (done)
 
 
@@ -633,7 +633,6 @@ tree_upgma_sim_tree = upgma(dist_sim_tree)
 
 plot(tree_upgma_original, type = "phylogram", 
      main="", cex = 0.5, no.margin = T)
-
 ```
 
 ### UPGMA tree of the simulated data
@@ -654,6 +653,10 @@ plot(tree_upgma_sim_tree, type = "phylogram", cex = 0.5, no.margin = T,
      main="")
 
 ```
+
+Are the two based on the simulated data similar to expected? 
+:Compare to the tree from original data, tree from two simulated data is more balanced. From the tree based on original data, we can see that lizards are phylogenetically related so we can group them into few family group. However, tree from two simulated data are more randomly distributed, less lizards are phylogenetically related.
+
 
 **Perform a phylogenetic bootstrap analysis**
 
