@@ -654,8 +654,9 @@ plot(tree_upgma_sim_tree, type = "phylogram", cex = 0.5, no.margin = T,
 
 ```
 
-Are the two based on the simulated data similar to expected? 
-:Compare to the tree from original data, tree from two simulated data is more balanced. From the tree based on original data, we can see that lizards are phylogenetically related so we can group them into few family group. However, tree from two simulated data are more randomly distributed, less lizards are phylogenetically related.
+**Are the two based on the simulated data similar to expected?** 
+
+Compared to the tree from original data, the tree from two simulated data is more balanced. From the tree based on original data, we can see that lizards are phylogenetically related so we can group them into few family group. Howevers, the trees from two simulated data are more randomly distributed, less lizards are phylogenetically related.
 
 
 **Perform a phylogenetic bootstrap analysis**
