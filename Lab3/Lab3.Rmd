@@ -32,6 +32,7 @@ library(phyloch)
 ################################################################################
 # IMPORTANT
 # Install ClustalW from http://www.clustal.org/download/current/
+# Don't forget to add it to your PATH!
 ################################################################################
 ```
 
@@ -57,7 +58,17 @@ running times.
 
 **Question:** Explain all the steps in the script required to obtain the phylogeny and trait data.
 
-We moved all library imports to the top of our RMarkdown file.
+The keep it clean we keep track of everything as a bullet point list:
+
+### Setup
+- We moved all library imports to the top of our RMarkdown file.
+- Install ClustalW from http://www.clustal.org/download/current/
+- Add ClustalW to the PATH variable of your system
+- Install ```phyloch``` with ```install_github("fmichonneau/phyloch")```
+  - <http://www.christophheibl.de/Rpackages.html>
+- Next error: /usr/local/bin/mafft
+
+### Script
 
 ```{r, eval=FALSE, echo=TRUE}
 # ------------------------------------------------------------------------------
