@@ -1,0 +1,120 @@
+---
+title: "Lab 3 - Gr. 14 - Bioinformatics (732A93)"
+author: Julius Kittler (julki092), Stefano Toffol (steto820),
+        Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+link-citations: true
+
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+                      warning = FALSE, message = FALSE) 
+
+library(knitr)
+
+# Use this if BiocManager is not installed
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+#library("BiocManager")
+
+# BiocManager packages
+#BiocManager::install("ComplexHeatmap", version = "3.8")
+
+```
+
+# Assignment 1
+
+Using the script <http://ape-package.ird.fr/APER/APER2/SylviaWarblers.R> obtain the Sylvia
+warblers phylogeny (the script saves in the file ```sylvia_nj_k80.tre```). The geographical range
+data can be found in <http://ape-package.ird.fr/APER/APER2/sylvia_data.txt> and in the
+script is referenced as DF$geo.range. Notice that one tip is removed due to missing dat
+
+```tr <- drop.tip(tr, "Chamaea_fasciata")```
+
+and the data has to be ordered by the tips of the phylogeny
+
+```DF <- sylvia.eco[tr$tip.label, ]```
+
+**WARNING:** Running the script bare might result in errors and very long
+running times.
+
+**Choose only the lines that you actually need!**
+
+## 1.1
+
+**Question:** Explain all the steps in the script required to obtain the phylogeny and trait data.
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 1.1
+# ------------------------------------------------------------------------------
+
+```
+
+## 1.2
+
+**Question:** Analyze the discrete (```type=discrete```) geographical range variable
+(```DF$geo.range```) using ```ape::ace```.
+Consider different models (parameter ```model```). Report on the results and interpret the estimated
+rates and their standard errors..
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 1.2
+# ------------------------------------------------------------------------------
+
+```
+
+# Assignment 2
+
+Install the ```ade4``` R package. Included with it you will find the carnivores dataset, ```data(carni70)```.
+
+## 2.1
+
+**Question:** Explore the data set and report what can be found in it. Provide some plots.
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2.1
+# ------------------------------------------------------------------------------
+
+```
+
+## 2.2
+
+**Question:**
+
+- Analyze the two traits (size and range) with a number of different phylogenetic comparative models.
+  1. Both traits evolve as independent Brownian motions.
+  2. The traits evolve as a correlated Brownian motion.
+  3. Both traits evolve as independent Ornstein{Uhlenbeck processes.
+  4. The traits evolve as a bivariate Ornstein{Uhlenbeck process (use ```mvMORPH``` or ```mvSLOUCH``` but be careful and check under what assumptions the estimation is done).
+  5. ```size``` evolves as a Brownian motion and ```range``` as an Ornstein-Uhlenbeck process adapting to it (use ```slouch``` or ```mvSLOUCH``` and be careful about column order).
+- Compare the five models and say which one seems to fit better to the data.
+- Summarize (in your own words, NOT just provide the printout, as it can be very long) the output under each model. If for some reason the running time will be prohibitive (more than 12 hours) report how long you ran the code and skip the model. Report on any problems you experienced in your study.
+
+**WARNING:** It is possible to have very long running times for correlated OUOU and OUBM
+models (the last two), especially on slow computers. Give yourself plenty of reserve time. If you
+do not manage to complete the last two models in time for submission, submit without them,
+reporting (with e.g. screenshots) how much time the estimation procedures were running for.
+Then, you will complete this part on a later mutually agreed on date
+
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2.2
+# ------------------------------------------------------------------------------
+
+```
+
+
+# Appendix
+
+```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+
+```
