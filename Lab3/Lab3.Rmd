@@ -69,6 +69,8 @@ The keep it clean we keep track of everything as a bullet point list:
   - <http://www.christophheibl.de/Rpackages.html>
 - Next error: /usr/local/bin/mafft
 - Install 'MAFFT' from <https://mafft.cbrc.jp/alignment/software/>
+  - Use the ```path```parameter to point to the executable OR
+  - Add to PATH
 
 ### Script
 
@@ -119,6 +121,7 @@ taxa.sylvia[1] <- "Sylvia_atricapilla"
 taxa.sylvia[24] <- "Sylvia_abyssinica"
 
 # Now we read from the text file which was provided via a link.
+# It holds the geographical range data.
 # Note that we changed the name of the file.
 sylvia.eco <- read.table("SylviaData.txt")
 # Shows the structure of the importet data.frame. It has 26 obvervations and 3
@@ -135,10 +138,18 @@ save(sylvia.clus, taxa.sylvia, sylvia.eco,
 ### Chapter 5
 ###
 
+# These functions create a matrix of parwise distances from DNA sequences using
+# a model of DNA evolution (taking from Help file).
+# The calls also have the argument 'pairwise.deletion' which is set to TRUE.
+# This deletes the sites with missing data in a pairwise way.
+# The model parameter specifies which model is to be used. As 'K80' is the
+# default model, this parameter is not specified for the first call.
+# A description of the models can be found in the Help file.
 syl.K80 <- dist.dna(sylvia.seq.ali, pairwise.deletion = TRUE)
 syl.F84 <- dist.dna(sylvia.seq.ali, model = "F84", p = TRUE)
 syl.TN93 <- dist.dna(sylvia.seq.ali, model = "TN93", p = TRUE)
 syl.GG95 <- dist.dna(sylvia.seq.ali, model = "GG95", p = TRUE)
+
 
 round(cor(cbind(syl.K80, syl.F84, syl.TN93, syl.GG95)), 3)
 
