@@ -33,6 +33,7 @@ library(phyloch)
 # IMPORTANT
 # Install ClustalW from http://www.clustal.org/download/current/
 # Don't forget to add it to your PATH!
+# Install MAFFT version 7 from https://mafft.cbrc.jp/alignment/software/
 ################################################################################
 ```
 
@@ -67,6 +68,7 @@ The keep it clean we keep track of everything as a bullet point list:
 - Install ```phyloch``` with ```install_github("fmichonneau/phyloch")```
   - <http://www.christophheibl.de/Rpackages.html>
 - Next error: /usr/local/bin/mafft
+- Install 'MAFFT' from <https://mafft.cbrc.jp/alignment/software/>
 
 ### Script
 
@@ -77,31 +79,56 @@ The keep it clean we keep track of everything as a bullet point list:
 
 #source("SylviaWarblers.R")
 # As we have to explain the code line by line we will not source it but paste it
-# here do add comment.
+# here do add comments.
 
 ###
 ### Chapter 3
 ###
 
+# These line create a vector whioch contains 'Z73494' followed by 'AJ5345' with
+# ascending numbers at the end ranging from 26 to 49. Then the GenBank database
+# is searched and the result saved in 'sylvia.seq' which holds 25 results.
 x <- paste("AJ5345", 26:49, sep = "")
 x <- c("Z73494", x)
 sylvia.seq <- read.GenBank(x)
 
+# 'clustal()' alignes a set of nucletotide sequences. The programm ClustalW must
+# be installed locally for this to work.
 sylvia.clus <- clustal(sylvia.seq)
 
-sylvia.maff <- mafft(sylvia.seq)
+# MAFFT must be installed. For windows the easiest way is to point to the exe-
+# cutable. As it's > 60MB of size, it's not included in the giut repository.
+# On Linux or macOS this might work out of the box, simply remove the 'path'
+# argument.
+# MAFFT is used for sequence and profile aligning. It seems like that both
+# clustal and mafft return the same result.
+sylvia.maff <- mafft(sylvia.seq, path = 
+                       "C:/Users/flennic/Downloads/mafft-win/mafft.bat")
+# This function checks if two R objects are equal, which retruns TRUE, so our
+# guess was correct.
 identical(sylvia.clus[x, ], sylvia.maff[x, ])
 
+# Add's the attribute 'species' to a new object.
 taxa.sylvia <- attr(sylvia.seq, "species")
+# The names we mentioned above are assigned to this new object.
 names(taxa.sylvia) <- names(sylvia.seq)
+# This removes the previous object read from the GenBank.
 rm(sylvia.seq)
+# The first and the 24th entry get names.
 taxa.sylvia[1] <- "Sylvia_atricapilla"
 taxa.sylvia[24] <- "Sylvia_abyssinica"
 
-sylvia.eco <- read.table("sylvia_data.txt")
+# Now we read from the text file which was provided via a link.
+# Note that we changed the name of the file.
+sylvia.eco <- read.table("SylviaData.txt")
+# Shows the structure of the importet data.frame. It has 26 obvervations and 3
+# variables.
 str(sylvia.eco)
+# Displays the rownames of the data.frame which are a bunch of names 'Sylvia_*'.
 rownames(sylvia.eco)
-save(sylvia.clu, taxa.sylvia, sylvia.eco,
+# We save the three objects to the file called 'sylvia.RData'.
+# Note that we added an 'S' to 'sylvia.cluS' as it was misspelled.
+save(sylvia.clus, taxa.sylvia, sylvia.eco,
      file = "sylvia.RData")
 
 ###
