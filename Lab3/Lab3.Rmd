@@ -358,18 +358,17 @@ rates and their standard errors..
 # ------------------------------------------------------------------------------
 # Question 1.2
 # ------------------------------------------------------------------------------
-library(ape)
 
 ace(DF$geo.range,nj.est,type="discrete",model="ER")
 ace(DF$geo.range,nj.est,type="discrete",model="ARD")
 ace(DF$geo.range,nj.est,type="discrete",model="SYM")
 
 ```
+
 Function ```ape::ace```  Ancestral Character Estimation, estimates ancestral character states, and the associated uncertainty, for continuous or discrete characters. For this question, we are analyzing the discrete geographical range variable, there are 3 available model for type=discrete : "ER", "ARD", "SYM".
  - "ER" is an equal-rates model 
  - "ARD" is an all-rates-different model 
  - "SYM" is a symmetrical model 
-
   
 # Assignment 2
 

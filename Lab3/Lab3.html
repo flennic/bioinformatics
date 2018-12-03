@@ -144,17 +144,17 @@ $(document).ready(function () {
 <div id="setup" class="section level3">
 <h3>Setup</h3>
 <ul>
-<li>We moved all library imports to the top of our RMarkdown file.</li>
+<li>We moved all library imports to the top of our RMarkdown file</li>
 <li>Install ClustalW from <a href="http://www.clustal.org/download/current/" class="uri">http://www.clustal.org/download/current/</a></li>
 <li>Add ClustalW to the PATH variable of your system</li>
 <li>Install <code>phyloch</code> with <code>install_github(&quot;fmichonneau/phyloch&quot;)</code></li>
 <li><a href="http://www.christophheibl.de/Rpackages.html" class="uri">http://www.christophheibl.de/Rpackages.html</a></li>
 <li>Install ‘MAFFT’ from <a href="https://mafft.cbrc.jp/alignment/software/" class="uri">https://mafft.cbrc.jp/alignment/software/</a></li>
-<li>Use the <code>path</code>parameter to point to the executable OR</li>
+<li>Use the <code>path</code> parameter to point to the executable OR</li>
 <li>Add to PATH</li>
 <li>PhyML 3.0 must be installed</li>
 <li><a href="http://www.atgc-montpellier.fr/phyml/download.php" class="uri">http://www.atgc-montpellier.fr/phyml/download.php</a></li>
-<li>Point to the executable in the execpath arguments or add to PATH.</li>
+<li>Point to the executable in the execpath arguments or add to PATH</li>
 </ul>
 </div>
 <div id="script" class="section level3">
@@ -415,6 +415,74 @@ sapply(list(syl.er, syl.sym, syl.mod), AIC)
 <div id="section-1" class="section level2">
 <h2>1.2</h2>
 <p><strong>Question:</strong> Analyze the discrete (<code>type=discrete</code>) geographical range variable (<code>DF$geo.range</code>) using <code>ape::ace</code>. Consider different models (parameter <code>model</code>). Report on the results and interpret the estimated rates and their standard errors..</p>
+<pre><code>## 
+##     Ancestral Character Estimation
+## 
+## Call: ace(x = DF$geo.range, phy = nj.est, type = &quot;discrete&quot;, model = &quot;ER&quot;)
+## 
+##     Log-likelihood: -19.94478 
+## 
+## Rate index matrix:
+##          temp temptrop trop
+## temp        .        1    1
+## temptrop    1        .    1
+## trop        1        1    .
+## 
+## Parameter estimates:
+##  rate index estimate std-err
+##           1   5.9888  2.2301
+## 
+## Scaled likelihoods at the root (type '...$lik.anc' to get them for all nodes):
+##       temp   temptrop       trop 
+## 0.02488517 0.90928439 0.06583044</code></pre>
+<pre><code>## 
+##     Ancestral Character Estimation
+## 
+## Call: ace(x = DF$geo.range, phy = nj.est, type = &quot;discrete&quot;, model = &quot;ARD&quot;)
+## 
+##     Log-likelihood: -19.08202 
+## 
+## Rate index matrix:
+##          temp temptrop trop
+## temp        .        3    5
+## temptrop    1        .    6
+## trop        2        4    .
+## 
+## Parameter estimates:
+##  rate index estimate std-err
+##           1   2.9677  2.3318
+##           2   0.0000  2.7875
+##           3   0.0000     NaN
+##           4   0.0000     NaN
+##           5   0.0000  9.7610
+##           6   7.2025  2.5990
+## 
+## Scaled likelihoods at the root (type '...$lik.anc' to get them for all nodes):
+##     temp temptrop     trop 
+##        0        1        0</code></pre>
+<pre><code>## 
+##     Ancestral Character Estimation
+## 
+## Call: ace(x = DF$geo.range, phy = nj.est, type = &quot;discrete&quot;, model = &quot;SYM&quot;)
+## 
+##     Log-likelihood: -18.40128 
+## 
+## Rate index matrix:
+##          temp temptrop trop
+## temp        .        1    2
+## temptrop    1        .    3
+## trop        2        3    .
+## 
+## Parameter estimates:
+##  rate index estimate std-err
+##           1   3.9839  2.3194
+##           2   0.0000     NaN
+##           3  11.8850  5.9166
+## 
+## Scaled likelihoods at the root (type '...$lik.anc' to get them for all nodes):
+##        temp    temptrop        trop 
+## 0.002427204 0.772384704 0.225188093</code></pre>
+<p>Function <code>ape::ace</code> Ancestral Character Estimation, estimates ancestral character states, and the associated uncertainty, for continuous or discrete characters. For this question, we are analyzing the discrete geographical range variable, there are 3 available model for type=discrete : “ER”, “ARD”, “SYM”. - “ER” is an equal-rates model - “ARD” is an all-rates-different model - “SYM” is a symmetrical model</p>
 </div>
 </div>
 <div id="assignment-2" class="section level1">
@@ -452,9 +520,14 @@ sapply(list(syl.er, syl.sym, syl.mod), AIC)
 library(ape)
 library(knitr)
 library(lattice)
-# The easiest way to get this package is via
+
+# The easiest way to get &quot;phyloch&quot; package is via
 # install_github(&quot;fmichonneau/phyloch&quot;) more information can be found at
 # http://www.christophheibl.de/Rpackages.html
+# if you got the error saying incomplete final line blah blah
+# open the file .Rprofile and put the curser at the very end and type enter, 
+# save the file and try installing them again.
+
 library(phyloch)
 
 # Use this if BiocManager is not installed
@@ -731,6 +804,10 @@ nodelabels(thermo = syl.mod$lik.anc, cex = 0.8,
 # ------------------------------------------------------------------------------
 # Question 1.2
 # ------------------------------------------------------------------------------
+
+ace(DF$geo.range,nj.est,type=&quot;discrete&quot;,model=&quot;ER&quot;)
+ace(DF$geo.range,nj.est,type=&quot;discrete&quot;,model=&quot;ARD&quot;)
+ace(DF$geo.range,nj.est,type=&quot;discrete&quot;,model=&quot;SYM&quot;)
 
 # ------------------------------------------------------------------------------
 # Question 2.1
