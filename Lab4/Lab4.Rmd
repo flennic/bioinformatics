@@ -1,0 +1,64 @@
+---
+title: "Lab 4 - Gr. 14 - Bioinformatics (732A93)"
+author: Julius Kittler (julki092), Stefano Toffol (steto820),
+        Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+link-citations: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+                      warning = FALSE, message = FALSE) 
+```
+
+# Assignment 1
+
+
+```{r, eval = TRUE, echo = TRUE, results='hide'}
+# ------------------------------------------------------------------------------
+# Question 1
+# ------------------------------------------------------------------------------
+
+
+```
+
+
+## Assignment 2
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 2
+# ------------------------------------------------------------------------------
+
+
+```
+
+# Assignment 3
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 3
+# ------------------------------------------------------------------------------
+
+```
+
+## Assignment 4
+
+
+```{r}
+# ------------------------------------------------------------------------------
+# Question 4
+# ------------------------------------------------------------------------------
+
+```
+
+
+# Appendix
+
+```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+
+```
