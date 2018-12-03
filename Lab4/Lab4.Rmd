@@ -13,31 +13,59 @@ link-citations: true
 
 knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
                       warning = FALSE, message = FALSE) 
+
+# All privided Links:
+# R Bio: Untangling Genomes
+# https://www.bioconductor.org/help/course-materials/ 2015/Uruguay2015/
+# Step by Step HUVEC and OVE
+# https://www.bioconductor.org/help/course-materials/2015/Uruguay2015/ day3-gene.expression.html 
+# Cell Data:
+# ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE20nnn/GSE20986/suppl/
+# Description of Cell Data:
+# https://www.ncbi.nlm.nih.gov/geo/query/acc. cgi?acc=GSE20986
+# Additional
+#  https://www.bioconductor.org/help/course-materials/ 2015/Uruguay2015/day5-data_analysis.html
+# Explanaitions Graphic
+# https://www.bioconductor.org/help/course-materia 2015/Uruguay2015/V6-RNASeq.html
+
 ```
 
 # Assignment 1
 
+**Task:**
 
-```{r, eval = TRUE, echo = TRUE, results='hide'}
+- Run all the R code and reproduce the graphics.
+- Go carefully through the R code and explain in your words what each step does.
+
+```{r, echo = FALSE}
 # ------------------------------------------------------------------------------
 # Question 1
 # ------------------------------------------------------------------------------
-
 
 ```
 
 
 ## Assignment 2
 
+**Task:**
+
+- Present the variables versus each other original, log–scaled and MA–plot for each considered pair both before and after normalization.
+- A cluster analysis is performed on the page but not report. Present plots and also draw heatmaps.
+
 ```{r}
 # ------------------------------------------------------------------------------
 # Question 2
 # ------------------------------------------------------------------------------
 
-
 ```
 
 # Assignment 3
+
+**Task:**
+
+- Provide volcano plots for the other pairs.
+- Indicate significantly differentially expressed genes.
+- Explain how they are found.
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -47,6 +75,14 @@ knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE,
 ```
 
 ## Assignment 4
+
+**Task:**
+
+- Try to find more information on the genes that are reported to be significantly differentially expressed. Report in your own words on what you find.
+- Report all the Gene Ontology (GO) terms associated with each gene.
+  - Are any of the GO terms common between genes?
+  - If so do the common GO terms seem to be related to anything particular?
+- Try to present GO analysis in an informative manner, if possible visualize.
 
 
 ```{r}
