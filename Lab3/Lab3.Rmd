@@ -3,9 +3,9 @@ title: "Lab 3 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: true
 ---
 
@@ -59,22 +59,22 @@ running times.
 The keep it clean we keep track of everything as a bullet point list:
 
 ### Setup
-- We moved all library imports to the top of our RMarkdown file.
+
+- We moved all library imports to the top of our RMarkdown file
 - Install ClustalW from http://www.clustal.org/download/current/
 - Add ClustalW to the PATH variable of your system
 - Install ```phyloch``` with ```install_github("fmichonneau/phyloch")```
   - <http://www.christophheibl.de/Rpackages.html>
-- Next error: /usr/local/bin/mafft
 - Install 'MAFFT' from <https://mafft.cbrc.jp/alignment/software/>
-  - Use the ```path```parameter to point to the executable OR
+  - Use the ```path``` parameter to point to the executable OR
   - Add to PATH
 - PhyML 3.0 must be installed
   - http://www.atgc-montpellier.fr/phyml/download.php
-  - Point to the executable in the execpath arguments or add to PATH.
+  - Point to the executable in the execpath arguments or add to PATH
 
 ### Script
 
-```{r, eval = TRUE, echo = FALSE}
+```{r, eval = TRUE, echo = TRUE, results='hide'}
 # ------------------------------------------------------------------------------
 # Question 1.1
 # ------------------------------------------------------------------------------
@@ -297,15 +297,6 @@ sapply(list(syl.er, syl.sym, syl.mod), AIC)
 #rownames(P) <- c("temp", "temptrop", "trop")
 #colnames(P) <- rownames(P)
 
-# That's the plot which is nice so we should leave it :)
-co <- rep("grey", 24)
-co[DF$geo.range == "temp"] <- "black"
-co[DF$geo.range == "trop"] <- "white"
-plot(nj.est, "c", FALSE, no.margin = TRUE, label.offset = 1)
-tiplabels(pch = 22, bg = co, cex = 2, adj = 1)
-nodelabels(thermo = syl.mod$lik.anc, cex = 0.8,
-           piecol = c("black", "grey", "white"))
-
 # This works but do we need this?
 #sylvia.chrono <- read.tree("sylvia.chrono.tre")
 #yule(sylvia.chrono)
@@ -336,6 +327,8 @@ nodelabels(thermo = syl.mod$lik.anc, cex = 0.8,
 
 ```
 
+Here we have the phylogenetic tree of Sylvia:
+
 ```{r, echo = FALSE}
 # That's the plot which is nice so we should leave it :)
 co <- rep("grey", 24)
@@ -345,8 +338,9 @@ plot(nj.est, "c", FALSE, no.margin = TRUE, label.offset = 1)
 tiplabels(pch = 22, bg = co, cex = 2, adj = 1)
 nodelabels(thermo = syl.mod$lik.anc, cex = 0.8,
            piecol = c("black", "grey", "white"))
-
 ```
+
+
 
 ## 1.2
 
