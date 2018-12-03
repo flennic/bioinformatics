@@ -129,7 +129,7 @@ sylvia.seq <- read.GenBank(x)
 
 # 'clustal()' alignes a set of nucletotide sequences. The programm ClustalW must
 # be installed locally for this to work.
-sylvia.clus <- clustal(sylvia.seq, exec = "/Users/flennic/Downloads/clustalw2")
+sylvia.clus <- clustal(sylvia.seq)
 
 # MAFFT must be installed. For windows the easiest way is to point to the exe-
 # cutable. As it's > 60MB of size, it's not included in the git repository.
@@ -380,25 +380,24 @@ nodelabels(thermo = syl.mod$lik.anc, cex = 0.8,
 variable (```DF$geo.range```) using ```ape::ace```.
 Consider different models (parameter ```model```). Report on the results and interpret the estimated
 rates and their standard errors..
-
-```{r eval = FALSE}
-# ------------------------------------------------------------------------------
-# Question 1.2
-# ------------------------------------------------------------------------------
-
-ace(DF$geo.range,nj.est,type="discrete",model="ER")
-ace(DF$geo.range,nj.est,type="discrete",model="ARD")
-ace(DF$geo.range,nj.est,type="discrete",model="SYM")
-
-```
-
+  
+  
 Function ```ape::ace```  Ancestral Character Estimation, estimates ancestral
 character states, and the associated uncertainty, for continuous or discrete
 characters. For this question, we are analyzing the discrete geographical range
 variable, there are 3 available model for type=discrete : "ER", "ARD", "SYM".
  - "ER" is an equal-rates model 
+```{r, eval=FALSE}
+ace(DF$geo.range,nj.est,type="discrete",model="ER")
+```
  - "ARD" is an all-rates-different model 
+```{r, eval=FALSE}
+ace(DF$geo.range,nj.est,type="discrete",model="ARD")
+```
  - "SYM" is a symmetrical model 
+```{r, eval=FALSE}
+ace(DF$geo.range,nj.est,type="discrete",model="SYM")
+```
   
 # Assignment 2
 
