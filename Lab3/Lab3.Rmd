@@ -3,9 +3,9 @@ title: "Lab 3 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: true
 ---
 
@@ -17,9 +17,14 @@ knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE,
 library(ape)
 library(knitr)
 library(lattice)
-# The easiest way to get this package is via
+
+# The easiest way to get "phyloch" package is via
 # install_github("fmichonneau/phyloch") more information can be found at
 # http://www.christophheibl.de/Rpackages.html
+# if you got the error saying incomplete final line blah blah
+# open the file .Rprofile and put the curser at the very end and type enter, 
+# save the file and try installing them again.
+
 library(phyloch)
 
 # Use this if BiocManager is not installed
@@ -39,10 +44,11 @@ library(phyloch)
 
 # Assignment 1
 
-Using the script <http://ape-package.ird.fr/APER/APER2/SylviaWarblers.R> obtain the Sylvia
-warblers phylogeny (the script saves in the file ```sylvia_nj_k80.tre```). The geographical range
-data can be found in <http://ape-package.ird.fr/APER/APER2/sylvia_data.txt> and in the
-script is referenced as DF$geo.range. Notice that one tip is removed due to missing dat
+Using the script <http://ape-package.ird.fr/APER/APER2/SylviaWarblers.R> obtain
+the Sylvia warblers phylogeny (the script saves in the file
+```sylvia_nj_k80.tre```). The geographical range data can be found in
+<http://ape-package.ird.fr/APER/APER2/sylvia_data.txt> and in the script is
+referenced as DF$geo.range. Notice that one tip is removed due to missing data.
 
 ```tr <- drop.tip(tr, "Chamaea_fasciata")```
 
@@ -57,24 +63,28 @@ running times.
 
 ## 1.1
 
-**Question:** Explain all the steps in the script required to obtain the phylogeny and trait data.
+**Question:** Explain all the steps in the script required to obtain the
+phylogeny and trait data.
 
 The keep it clean we keep track of everything as a bullet point list:
 
 ### Setup
-- We moved all library imports to the top of our RMarkdown file.
+
+- We moved all library imports to the top of our RMarkdown file
 - Install ClustalW from http://www.clustal.org/download/current/
 - Add ClustalW to the PATH variable of your system
 - Install ```phyloch``` with ```install_github("fmichonneau/phyloch")```
   - <http://www.christophheibl.de/Rpackages.html>
-- Next error: /usr/local/bin/mafft
 - Install 'MAFFT' from <https://mafft.cbrc.jp/alignment/software/>
-  - Use the ```path```parameter to point to the executable OR
+  - Use the ```path``` parameter to point to the executable OR
   - Add to PATH
+- PhyML 3.0 must be installed
+  - http://www.atgc-montpellier.fr/phyml/download.php
+  - Point to the executable in the execpath arguments or add to PATH
 
 ### Script
 
-```{r, eval=FALSE, echo=TRUE}
+```{r, eval = TRUE, echo = TRUE, results='hide'}
 # ------------------------------------------------------------------------------
 # Question 1.1
 # ------------------------------------------------------------------------------
@@ -96,19 +106,18 @@ sylvia.seq <- read.GenBank(x)
 
 # 'clustal()' alignes a set of nucletotide sequences. The programm ClustalW must
 # be installed locally for this to work.
-sylvia.clus <- clustal(sylvia.seq)
+sylvia.clus <- clustal(sylvia.seq, exec = "/Users/flennic/Downloads/clustalw2")
 
 # MAFFT must be installed. For windows the easiest way is to point to the exe-
-# cutable. As it's > 60MB of size, it's not included in the giut repository.
+# cutable. As it's > 60MB of size, it's not included in the git repository.
 # On Linux or macOS this might work out of the box, simply remove the 'path'
 # argument.
 # MAFFT is used for sequence and profile aligning. It seems like that both
 # clustal and mafft return the same result.
-sylvia.maff <- mafft(sylvia.seq, path = 
-                       "C:/Users/flennic/Downloads/mafft-win/mafft.bat")
+sylvia.maff <- mafft(sylvia.seq)
 # This function checks if two R objects are equal, which retruns TRUE, so our
 # guess was correct.
-identical(sylvia.clus[x, ], sylvia.maff[x, ])
+#identical(sylvia.clus[x, ], sylvia.maff[x, ])
 
 # Add's the attribute 'species' to a new object.
 taxa.sylvia <- attr(sylvia.seq, "species")
@@ -126,9 +135,9 @@ taxa.sylvia[24] <- "Sylvia_abyssinica"
 sylvia.eco <- read.table("SylviaData.txt")
 # Shows the structure of the importet data.frame. It has 26 obvervations and 3
 # variables.
-str(sylvia.eco)
+#str(sylvia.eco)
 # Displays the rownames of the data.frame which are a bunch of names 'Sylvia_*'.
-rownames(sylvia.eco)
+#rownames(sylvia.eco)
 # We save the three objects to the file called 'sylvia.RData'.
 # Note that we added an 'S' to 'sylvia.cluS' as it was misspelled.
 save(sylvia.clus, taxa.sylvia, sylvia.eco,
@@ -145,93 +154,129 @@ save(sylvia.clus, taxa.sylvia, sylvia.eco,
 # The model parameter specifies which model is to be used. As 'K80' is the
 # default model, this parameter is not specified for the first call.
 # A description of the models can be found in the Help file.
-syl.K80 <- dist.dna(sylvia.seq.ali, pairwise.deletion = TRUE)
-syl.F84 <- dist.dna(sylvia.seq.ali, model = "F84", p = TRUE)
-syl.TN93 <- dist.dna(sylvia.seq.ali, model = "TN93", p = TRUE)
-syl.GG95 <- dist.dna(sylvia.seq.ali, model = "GG95", p = TRUE)
+syl.K80 <- dist.dna(sylvia.clus, pairwise.deletion = TRUE)
+syl.F84 <- dist.dna(sylvia.clus, model = "F84", p = TRUE)
+syl.TN93 <- dist.dna(sylvia.clus, model = "TN93", p = TRUE)
+syl.GG95 <- dist.dna(sylvia.clus, model = "GG95", p = TRUE)
 
+# This just plots a distance matrix and is not needed for saving the tree.
+#round(cor(cbind(syl.K80, syl.F84, syl.TN93, syl.GG95)), 3)
 
-round(cor(cbind(syl.K80, syl.F84, syl.TN93, syl.GG95)), 3)
+syl.JC69 <- dist.dna(sylvia.clus, model = "JC69", p = TRUE)
+syl.raw <- dist.dna(sylvia.clus, model = "raw", p = TRUE)
 
-syl.JC69 <- dist.dna(sylvia.seq.ali, model = "JC69", p = TRUE)
-syl.raw <- dist.dna(sylvia.seq.ali, model = "raw", p = TRUE)
-layout(matrix(1:2, 1))
-plot(syl.JC69, syl.raw)
-abline(b = 1, a = 0) # draw x = y line
-plot(syl.K80, syl.JC69)
-abline(b = 1, a = 0)
+# The following code is used for more plotting which we don't need for obtaining
+# the tree.
+#layout(matrix(1:2, 1))
+#plot(syl.JC69, syl.raw)
+#abline(b = 1, a = 0) # draw x = y line
+#plot(syl.K80, syl.JC69)
+#abline(b = 1, a = 0)
 
-layout(matrix(1:3, 1))
-for (i in 1:3) {
-    s <- logical(3); s[i] <- TRUE
-    x <- sylvia.seq.ali[, s]
-    d <- dist.dna(x, p = TRUE)
-    ts <- dist.dna(x, "Ts", p = TRUE)
-    tv <- dist.dna(x, "Tv", p = TRUE)
-    plot(ts, d, xlab = "Number of Ts or Tv", col = "blue",
-         ylab = "K80 distance", xlim = range(c(ts, tv)),
-         main = paste("Position", i))
-    points(tv, d, col = "red")
-}
+#layout(matrix(1:3, 1))
+#for (i in 1:3) {
+#    s <- logical(3); s[i] <- TRUE
+#    x <- sylvia.clus[, s]
+#    d <- dist.dna(x, p = TRUE)
+#    ts <- dist.dna(x, "Ts", p = TRUE)
+#    tv <- dist.dna(x, "Tv", p = TRUE)
+#    plot(ts, d, xlab = "Number of Ts or Tv", col = "blue",
+#         ylab = "K80 distance", xlim = range(c(ts, tv)),
+#         main = paste("Position", i))
+#    points(tv, d, col = "red")
+#}
 
-y <- numeric()
-for (i in 1:3) {
-    s <- logical(3); s[i] <- TRUE
-    y <- c(y, dist.dna(sylvia.seq.ali[, s], p = TRUE))
-}
-g <- gl(3, length(y) / 3)
-histogram(~ y | g, breaks = 20)
+#y <- numeric()
+#for (i in 1:3) {
+#    s <- logical(3); s[i] <- TRUE
+#    y <- c(y, dist.dna(sylvia.clus[, s], p = TRUE))
+#}
+#g <- gl(3, length(y) / 3)
 
+# Plots the histogram
+#histogram(~ y | g, breaks = 20)
+
+# The function nj is doing a neighbor-joining tree estimation
 nj.sylvia.K80 <- nj(syl.K80)
 nj.sylvia.GG95 <- nj(syl.GG95)
-dist.topo(nj.sylvia.K80, nj.sylvia.GG95)
 
-grep("Chamaea", taxa.sylvia, value = TRUE)
+# dist.topo calculates the topological distance between two trees (12 here).
+# It's not needed for saving the tree, so we uncomment it.
+#dist.topo(nj.sylvia.K80, nj.sylvia.GG95)
+
+# Just the unix command getting "Chamaea_fasciata"
+#grep("Chamaea", taxa.sylvia, value = TRUE)
 f <- function(xx) root(nj(dist.dna(xx, p=TRUE)), "AJ534526")
-tr <- f(sylvia.seq.ali)
+tr <- f(sylvia.clus)
 ## same than: tr <- root(nj.sylvia.K80, "AJ534526")
-nj.boot.sylvia <- boot.phylo(tr, sylvia.seq.ali, f, 200,
+# nj.phylo analyse bipartitions found in series of trees (from documntation)
+nj.boot.sylvia <- boot.phylo(tr, sylvia.clus, f, 200,
                              rooted = TRUE)
-nj.boot.codon <- boot.phylo(tr, sylvia.seq.ali, f, 200, 3,
+nj.boot.codon <- boot.phylo(tr, sylvia.clus, f, 200, 3,
                             rooted = TRUE)
 nj.est <- tr
 nj.est$tip.label <- taxa.sylvia[tr$tip.label]
-plot(nj.est, no.margin = TRUE)
-nodelabels(round(nj.boot.sylvia / 200, 2), bg = "white")
-add.scale.bar(length = 0.01)
+
+# The plot is not needed
+#plot(nj.est, no.margin = TRUE)
+#nodelabels(round(nj.boot.sylvia / 200, 2), bg = "white")
+#add.scale.bar(length = 0.01)
+
+# Saves the tree to the file
 write.tree(nj.est, "sylvia_nj_k80.tre")
 
-write.dna(sylvia.seq.ali, "sylvia.txt")
-phyml.sylvia <- phymltest("sylvia.txt", execname = "~/phyml")
-summary(phyml.sylvia)
-plot(phyml.sylvia, col = "black")
+# Writes 25 sequences to a file. Length is 1143.
+write.dna(sylvia.clus, "sylvia.txt")
+
+# Calls PhyML and fits 28 models of DNA evolution. They're saved to disk and
+# in R returned as a vector. The log-likelihood is saved in this vector.
+phyml.sylvia <- phymltest("sylvia.txt", execname = "/Users/flennic/Downloads/PhyML31")
+
+# Again not needed for obtaining the tree
+#summary(phyml.sylvia)
+#plot(phyml.sylvia, col = "black")
+
+# Read the tree from the txt.
 TR <- read.tree("sylvia.txt_phyml_tree.txt")
+
+# Adding some labels and descriptions to the tree
 mltr.sylvia <- TR[[28]]
 mltr.sylvia$tip.label <- taxa.sylvia[mltr.sylvia$tip.label]
 mltr.sylvia <- root(mltr.sylvia, "Chamaea_fasciata")
-plot(mltr.sylvia, no.margin = TRUE)
-add.scale.bar(length = 0.01)
+#plot(mltr.sylvia, no.margin = TRUE)
+#add.scale.bar(length = 0.01)
 
+# The tip is dropped as explained in the exercise
 tr.ml <- drop.tip(mltr.sylvia, "Chamaea_fasciata")
 res <- vector("list", 9)
+
+# The for loop takes some time. chronopl estimates the node ages of trees by
+# using a semi-parametric method based on penalized likelihood (see docu-
+# mentation).
 for (L in -4:4)
     res[[L + 5]] <- chronopl(tr.ml, 10^L, 12, 16, CV = TRUE)
 Lambda <- 10^(-4:4)
 CV <- sapply(res, function(x) sum(attr(x, "D2")))
-plot(Lambda, CV / 1e5, log = "x")
+#plot(Lambda, CV / 1e5, log = "x")
 
+# Add the attribute "rates" to the tree with 24 tips and 23 internal nodes
 sylvia.chrono <- res[[2]]
 rts <- attr(sylvia.chrono, "rates")
-summary(rts)
+#summary(rts)
 
-par(mar = c(2, 0, 0, 0))
-plot(sylvia.chrono, edge.width = 100*rts, label.offset = .15)
-axisPhylo()
+# Not needed for obtaining the tree
+#par(mar = c(2, 0, 0, 0))
+#plot(sylvia.chrono, edge.width = 100*rts, label.offset = .15)
+#axisPhylo()
+
+# Finally writes the tree to the file.
 write.tree(sylvia.chrono, "sylvia.chrono.tre")
 
 ###
 ### Chapter 6
 ###
+
+### Do we need all of this source code? Is is about getting the traits?!
 
 load("sylvia.RData")
 nj.est <- read.tree("sylvia_nj_k80.tre")
@@ -250,18 +295,52 @@ syl.mod <- ace(DF$geo.range, nj.est, type="d", model=mod)
 
 sapply(list(syl.er, syl.sym, syl.mod), AIC)
 
-Q <- syl.mod$index.matrix
-diag(Q) <- 0
-Q[1, 2] <- Q[2, 1] <- syl.mod$rates[1]
-Q[2, 3] <- Q[3, 2] <- syl.mod$rates[2]
+#Q <- syl.mod$index.matrix
+#diag(Q) <- 0
+#Q[1, 2] <- Q[2, 1] <- syl.mod$rates[1]
+#Q[2, 3] <- Q[3, 2] <- syl.mod$rates[2]
 
-Q[] <- c(0, syl.mod$rates)[Q + 1]
-diag(Q) <- -rowSums(Q)
+#Q[] <- c(0, syl.mod$rates)[Q + 1]
+#diag(Q) <- -rowSums(Q)
 
-P <- matexpo(0.05 * Q)
-rownames(P) <- c("temp", "temptrop", "trop")
-colnames(P) <- rownames(P)
+#P <- matexpo(0.05 * Q)
+#rownames(P) <- c("temp", "temptrop", "trop")
+#colnames(P) <- rownames(P)
 
+# This works but do we need this?
+#sylvia.chrono <- read.tree("sylvia.chrono.tre")
+#yule(sylvia.chrono)
+#birthdeath(sylvia.chrono)
+#1 - pchisq(2*(-1.034112 - -1.113822), 1)
+
+#x <- sylvia.eco[sylvia.chrono$tip.label, "geo.range"]
+#ANC <- ace(x, sylvia.chrono, type = "d", model = mod)
+#ANC$lik.anc[1:3, ]
+#anc <- apply(ANC$lik.anc, 1, which.max)
+#X <- factor(c(x, anc))
+# This breaks as we have NAs!
+#yule.cov(sylvia.chrono, ~ X)
+#1 / (1 + exp(-(-0.0535529)))
+#1 / (1 + exp(-(-0.0535529 -1.4608019)))
+#1 / (1 + exp(-(-0.0535529 -0.9775966)))
+
+#fsamp <- function(x) sample(length(x), size = 1, prob = x)
+#nrep <- 1e3
+#Pvls <- numeric(nrep)
+#for (i in 1:nrep) {
+#    anc <- apply(ANC$lik.anc, 1, fsamp)
+#    X <- factor(c(x, anc))
+#    Pvls[i] <- yule.cov(sylvia.chrono, ~ X)$Pval
+#}
+#hist(Pvls, freq = FALSE, main = "")
+#lines(density(Pvls))
+
+```
+
+Here we have the phylogenetic tree of Sylvia:
+
+```{r, echo = FALSE}
+# That's the plot which is nice so we should leave it :)
 co <- rep("grey", 24)
 co[DF$geo.range == "temp"] <- "black"
 co[DF$geo.range == "trop"] <- "white"
@@ -269,39 +348,14 @@ plot(nj.est, "c", FALSE, no.margin = TRUE, label.offset = 1)
 tiplabels(pch = 22, bg = co, cex = 2, adj = 1)
 nodelabels(thermo = syl.mod$lik.anc, cex = 0.8,
            piecol = c("black", "grey", "white"))
-
-sylvia.chrono <- read.tree("sylvia.chrono.tre")
-yule(sylvia.chrono)
-birthdeath(sylvia.chrono)
-1 - pchisq(2*(-1.034112 - -1.113822), 1)
-
-x <- sylvia.eco[sylvia.chrono$tip.label, "geo.range"]
-ANC <- ace(x, sylvia.chrono, type = "d", model = mod)
-ANC$lik.anc[1:3, ]
-anc <- apply(ANC$lik.anc, 1, which.max)
-X <- factor(c(x, anc))
-yule.cov(sylvia.chrono, ~ X)
-1 / (1 + exp(-(-0.0535529)))
-1 / (1 + exp(-(-0.0535529 -1.4608019)))
-1 / (1 + exp(-(-0.0535529 -0.9775966)))
-
-fsamp <- function(x) sample(length(x), size = 1, prob = x)
-nrep <- 1e3
-Pvls <- numeric(nrep)
-for (i in 1:nrep) {
-    anc <- apply(ANC$lik.anc, 1, fsamp)
-    X <- factor(c(x, anc))
-    Pvls[i] <- yule.cov(sylvia.chrono, ~ X)$Pval
-}
-hist(Pvls, freq = FALSE, main = "")
-lines(density(Pvls))
-
 ```
+
+
 
 ## 1.2
 
-**Question:** Analyze the discrete (```type=discrete```) geographical range variable
-(```DF$geo.range```) using ```ape::ace```.
+**Question:** Analyze the discrete (```type=discrete```) geographical range
+variable (```DF$geo.range```) using ```ape::ace```.
 Consider different models (parameter ```model```). Report on the results and interpret the estimated
 rates and their standard errors..
 
@@ -310,15 +364,29 @@ rates and their standard errors..
 # Question 1.2
 # ------------------------------------------------------------------------------
 
+ace(DF$geo.range,nj.est,type="discrete",model="ER")
+ace(DF$geo.range,nj.est,type="discrete",model="ARD")
+ace(DF$geo.range,nj.est,type="discrete",model="SYM")
+
 ```
 
+Function ```ape::ace```  Ancestral Character Estimation, estimates ancestral
+character states, and the associated uncertainty, for continuous or discrete
+characters. For this question, we are analyzing the discrete geographical range
+variable, there are 3 available model for type=discrete : "ER", "ARD", "SYM".
+ - "ER" is an equal-rates model 
+ - "ARD" is an all-rates-different model 
+ - "SYM" is a symmetrical model 
+  
 # Assignment 2
 
-Install the ```ade4``` R package. Included with it you will find the carnivores dataset, ```data(carni70)```.
+Install the ```ade4``` R package. Included with it you will find the carnivores
+dataset, ```data(carni70)```.
 
 ## 2.1
 
-**Question:** Explore the data set and report what can be found in it. Provide some plots.
+**Question:** Explore the data set and report what can be found in it. Provide
+some plots.
 
 ```{r}
 # ------------------------------------------------------------------------------
@@ -335,16 +403,24 @@ Install the ```ade4``` R package. Included with it you will find the carnivores 
   1. Both traits evolve as independent Brownian motions.
   2. The traits evolve as a correlated Brownian motion.
   3. Both traits evolve as independent Ornstein{Uhlenbeck processes.
-  4. The traits evolve as a bivariate Ornstein{Uhlenbeck process (use ```mvMORPH``` or ```mvSLOUCH``` but be careful and check under what assumptions the estimation is done).
-  5. ```size``` evolves as a Brownian motion and ```range``` as an Ornstein-Uhlenbeck process adapting to it (use ```slouch``` or ```mvSLOUCH``` and be careful about column order).
+  4. The traits evolve as a bivariate Ornstein{Uhlenbeck process (use
+  ```mvMORPH``` or ```mvSLOUCH``` but be careful and check under what
+  assumptions the estimation is done).
+  5. ```size``` evolves as a Brownian motion and ```range``` as an
+  Ornstein-Uhlenbeck process adapting to it (use ```slouch``` or ```mvSLOUCH```
+  and be careful about column order).
 - Compare the five models and say which one seems to fit better to the data.
-- Summarize (in your own words, NOT just provide the printout, as it can be very long) the output under each model. If for some reason the running time will be prohibitive (more than 12 hours) report how long you ran the code and skip the model. Report on any problems you experienced in your study.
+- Summarize (in your own words, NOT just provide the printout, as it can be very
+long) the output under each model. If for some reason the running time will be
+prohibitive (more than 12 hours) report how long you ran the code and skip the
+model. Report on any problems you experienced in your study.
 
-**WARNING:** It is possible to have very long running times for correlated OUOU and OUBM
-models (the last two), especially on slow computers. Give yourself plenty of reserve time. If you
-do not manage to complete the last two models in time for submission, submit without them,
-reporting (with e.g. screenshots) how much time the estimation procedures were running for.
-Then, you will complete this part on a later mutually agreed on date
+**WARNING:** It is possible to have very long running times for correlated OUOU
+and OUBM models (the last two), especially on slow computers. Give yourself
+plenty of reserve time. If you do not manage to complete the last two models in
+time for submission, submit without them,reporting (with e.g. screenshots) how
+much time the estimation procedures were running for. Then, you will complete
+this part on a later mutually agreed on date.
 
 
 ```{r}
