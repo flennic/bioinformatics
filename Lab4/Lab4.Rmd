@@ -25,8 +25,8 @@ knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE,
 # https://www.ncbi.nlm.nih.gov/geo/query/acc. cgi?acc=GSE20986
 # Additional
 #  https://www.bioconductor.org/help/course-materials/ 2015/Uruguay2015/day5-data_analysis.html
-# Explanaitions Graphic
-# https://www.bioconductor.org/help/course-materia 2015/Uruguay2015/V6-RNASeq.html
+# Explanations Graphic
+# https://www.bioconductor.org/help/course-materials/2015/Uruguay2015/V6-RNASeq.html
 
 library(ggplot2)
 
@@ -84,7 +84,8 @@ phenodata$Targets <- c("iris",
                        "huvec", 
                        "huvec", 
                        "huvec")
-write.table(phenodata, "data/phenodata.txt", quote = F, sep = "\t", row.names = F)
+write.table(phenodata, "data/phenodata.txt", quote = F, sep = "\t",
+            row.names = F)
 celfiles <- read.affy(covdesc = "phenodata.txt", path = "data")
 boxplot(celfiles)
 
@@ -150,11 +151,13 @@ volcano <- ggplot(data = results,
 volcano <- volcano + 
   geom_point() + 
   scale_color_manual(values = c("black", "red", "green"), 
-                     labels = c("Not Significant", "Upregulated", "Downregulated"), 
-                     name = "Key/Legend")
+                 labels = c("Not Significant", "Upregulated", "Downregulated"), 
+                 name = "Key/Legend")
 
 volcano + 
-  geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5), aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold, label = getsymbols)  )
+  geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5),
+            aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
+                label = getsymbols)  )
 
 ```
 
