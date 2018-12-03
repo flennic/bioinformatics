@@ -299,21 +299,33 @@ write.tree(sylvia.chrono, "sylvia.chrono.tre")
 ### Chapter 6
 ###
 
-### Do we need all of this source code? Is is about getting the traits?!
-
+# Load the RData
 load("sylvia.RData")
+# Read the tree
 nj.est <- read.tree("sylvia_nj_k80.tre")
+# Drop the tip as mentioned in the exercise
 nj.est <- drop.tip(nj.est, "Chamaea_fasciata")
+
+# Get mig.dist, mig.behav and geo.range and safe if to DF
 DF <- sylvia.eco[nj.est$tip.label, ]
+
+# Create a table with the range and the behav, so its long, resid, short against
+# temp, temptrop and trop
 table(DF$geo.range, DF$mig.behav)
 
+# Ace ist used to estimate the ancestral character states and the corresponding
+# uncertainty (traits), the "d" defines that we're handeling discrete
+# characters. Seond call changes the model, which is a numeric matrix
 syl.er <- ace(DF$geo.range, nj.est, type = "d")
 syl.sym <- ace(DF$geo.range, nj.est, type="d", model="SYM")
-anova(syl.er, syl.sym)
+# Variance/Deviance for the fitted models (incl. Likelihood) and Chi Testing
+#anova(syl.er, syl.sym)
 
 mod <- matrix(0, 3, 3)
 mod[2, 1] <- mod[1, 2] <- 1
 mod[2, 3] <- mod[3, 2] <- 2
+
+# Now we use the creates model to estimate again
 syl.mod <- ace(DF$geo.range, nj.est, type="d", model=mod)
 
 sapply(list(syl.er, syl.sym, syl.mod), AIC)
@@ -326,6 +338,7 @@ sapply(list(syl.er, syl.sym, syl.mod), AIC)
 #Q[] <- c(0, syl.mod$rates)[Q + 1]
 #diag(Q) <- -rowSums(Q)
 
+# THIS IS NOT WORKING AS WE HAVE NAs IN THE MATRIX
 #P <- matexpo(0.05 * Q)
 #rownames(P) <- c("temp", "temptrop", "trop")
 #colnames(P) <- rownames(P)
