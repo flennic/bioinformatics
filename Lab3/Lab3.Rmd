@@ -11,7 +11,7 @@ link-citations: true
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+knitr::opts_chunk$set(fig.width = 7, fig.height = 4.5, echo = FALSE, 
                       warning = FALSE, message = FALSE) 
 
 library(ape)
@@ -40,6 +40,29 @@ library(phyloch)
 # Don't forget to add it to your PATH!
 # Install MAFFT version 7 from https://mafft.cbrc.jp/alignment/software/
 ################################################################################
+
+
+# For all ----------------------------------------------------------------------
+
+library(dplyr)
+library(tidyr)
+library(magrittr)
+
+# Question 2.1 -----------------------------------------------------------------
+library(ade4)      # carni70 data set
+library(plotly)    # Heatmap
+library(seriation) # Ordering heatmap
+library(ggplot2)   # All other plots
+library(phylogram) # Phylogenetic tree visualization 
+library(ggdendro)  # Phylogenetic tree visualization 
+
+# Question 2.2 -----------------------------------------------------------------
+library(ape)
+library(mvMORPH)  
+library(mvSLOUCH)
+library(ouch)   
+library(slouch) # devtools::install_github("https://github.com/kopperud/slouch")
+
 ```
 
 # Assignment 1
@@ -61,7 +84,7 @@ running times.
 
 **Choose only the lines that you actually need!**
 
-## 1.1
+## Task 1.1
 
 **Question:** Explain all the steps in the script required to obtain the
 phylogeny and trait data.
@@ -84,7 +107,7 @@ The keep it clean we keep track of everything as a bullet point list:
 
 ### Script
 
-```{r, eval = TRUE, echo = TRUE, results='hide'}
+```{r, eval = FALSE, results='hide'}
 # ------------------------------------------------------------------------------
 # Question 1.1
 # ------------------------------------------------------------------------------
@@ -339,7 +362,7 @@ sapply(list(syl.er, syl.sym, syl.mod), AIC)
 
 Here we have the phylogenetic tree of Sylvia:
 
-```{r, echo = FALSE}
+```{r, eval = FALSE}
 # That's the plot which is nice so we should leave it :)
 co <- rep("grey", 24)
 co[DF$geo.range == "temp"] <- "black"
@@ -351,15 +374,14 @@ nodelabels(thermo = syl.mod$lik.anc, cex = 0.8,
 ```
 
 
-
-## 1.2
+## Task 1.2
 
 **Question:** Analyze the discrete (```type=discrete```) geographical range
 variable (```DF$geo.range```) using ```ape::ace```.
 Consider different models (parameter ```model```). Report on the results and interpret the estimated
 rates and their standard errors..
 
-```{r}
+```{r eval = FALSE}
 # ------------------------------------------------------------------------------
 # Question 1.2
 # ------------------------------------------------------------------------------
@@ -380,53 +402,180 @@ variable, there are 3 available model for type=discrete : "ER", "ARD", "SYM".
   
 # Assignment 2
 
-Install the ```ade4``` R package. Included with it you will find the carnivores
-dataset, ```data(carni70)```.
+## Task 2.1
 
-## 2.1
+We are given a data set about carnivores. The first task is to explore this data
+set. Overall, it is a list consisting of a) a phylogenetic tree in Newick format 
+and b) quantitative traits of the species in the tree. The quantitative traits 
+consist of two variables, `size` (body size) and `range` (geographic range in km).
+There are 70 species in total. The exploratory analyzis follows after the 
+visualizations below.
 
-**Question:** Explore the data set and report what can be found in it. Provide
-some plots.
+```{r fig.height=4}
 
-```{r}
 # ------------------------------------------------------------------------------
-# Question 2.1
+# Question 2, Task 1
 # ------------------------------------------------------------------------------
+
+# Data import ------------------------------------------------------------------
+
+data("carni70")
+df = carni70$tab   # quantitative traits
+tree = carni70$tre # phylogenetic tree
+rm(carni70)
+
+# Create Plots -----------------------------------------------------------------
+
+# Descriptive Statistics -------------------------------------------------------
+knitr::kable(as.data.frame(round(psych::describe(df), 2)), 
+             caption = "Descriptive Statistics of Quantitative Traits")
+
+# Scatterplot of size by range -------------------------------------------------
+ggplot(df, aes(range, size)) + geom_point(color = "skyblue3", alpha = 0.8) + 
+  labs(title = "Scatterplot of Body Size (in kg) by Geographic Range (in km)", 
+       y = "Body Size", x = "Geografic Range") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+# Density plots of size and range ----------------------------------------------
+ggplot(df, aes(size)) + geom_density(fill = "skyblue3", alpha = 0.8) + 
+  labs(title = "Density Plot of Body Size (in kg)", 
+       y = "Density", x = "Body Size") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+cat("\n\n\n")
+
+ggplot(df, aes(range)) + geom_density(fill = "skyblue3", alpha = 0.8) + 
+  labs(title = "Density Plot of Geografic Range (in km)", 
+       y = "Density", x = "Geografic range") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
+
+# Heatmap of observation by size and range -------------------------------------
+library(plotly) 
+library(seriation)
+df_scaled = scale(df)
+rowdist=dist(df_scaled) 
+set.seed(12345)
+order=seriate(rowdist, "HC") 
+ord=get_order(order) 
+reordmatr=df_scaled[rev(ord),]
+
+p = plot_ly(x=colnames(reordmatr), y=rownames(reordmatr), z=reordmatr, 
+   type="heatmap", colors = ~rev(scales::viridis_pal(option = "viridris")(3)), 
+   xgap = 1, ygap = 1) %>%
+   layout(title = "Heatmap: Body Size and Geografic Range by Species [normalized]", 
+          font = list(size = 8))
+
+# CONVERTING PLOTLY OBJ. TO PNG (MAPBOX_TOKEN + orca INSTALLATION REQUIRED)
+# Sys.setenv("MAPBOX_TOKEN" = "YOURTOKEN")
+# plotly::orca(p, file = "images/heatmap.png", scale = 3, height = 950, width = 700)
+
+knitr::include_graphics("images/heatmap.png")
+
+# Scatterplot colored by clusters identified by heatmap ------------------------
+df_cluster = data.frame(species = rev(rownames(reordmatr)), 
+                        cluster = rep("outliers", nrow(reordmatr)), 
+                        stringsAsFactors = FALSE)
+df_cluster[7:41, "cluster"] = "cluster1"
+df_cluster[42:nrow(df_cluster), "cluster"] = "cluster2"
+
+df_plot = df
+df_plot$species = rownames(df_plot)
+df_plot %<>% left_join(df_cluster, by = "species")
+
+# Scatterplot of size by range -------------------------------------------------
+ggplot(df_plot, aes(range, size)) + geom_point(aes(color = cluster), alpha = 0.8)+ 
+  labs(title = "Scatterplot with Clusters Identified from Heatmap", 
+       y = "Body Size", x = "Geografic Range", color = "Cluster") +
+  theme_bw() + theme(plot.title = element_text(hjust = 0.5))
 
 ```
 
-## 2.2
+**Exploratory Analysis: Main Findings [Quantitative Variables]**
 
-**Question:**
+*Scatterplot*
 
-- Analyze the two traits (size and range) with a number of different phylogenetic comparative models.
-  1. Both traits evolve as independent Brownian motions.
-  2. The traits evolve as a correlated Brownian motion.
-  3. Both traits evolve as independent Ornstein{Uhlenbeck processes.
-  4. The traits evolve as a bivariate Ornstein{Uhlenbeck process (use
-  ```mvMORPH``` or ```mvSLOUCH``` but be careful and check under what
-  assumptions the estimation is done).
-  5. ```size``` evolves as a Brownian motion and ```range``` as an
-  Ornstein-Uhlenbeck process adapting to it (use ```slouch``` or ```mvSLOUCH```
-  and be careful about column order).
-- Compare the five models and say which one seems to fit better to the data.
-- Summarize (in your own words, NOT just provide the printout, as it can be very
-long) the output under each model. If for some reason the running time will be
-prohibitive (more than 12 hours) report how long you ran the code and skip the
-model. Report on any problems you experienced in your study.
+- It does not seem like `size` and `range` are correlated or non-linearly related.
+- There is one upper-side outlier w.r.t. geographic range: Puma_concolour.
+- There are two upper-side outliers w.r.t. body size: Ursus_arctos and Tremarctos_ornatus.
 
-**WARNING:** It is possible to have very long running times for correlated OUOU
-and OUBM models (the last two), especially on slow computers. Give yourself
-plenty of reserve time. If you do not manage to complete the last two models in
-time for submission, submit without them,reporting (with e.g. screenshots) how
-much time the estimation procedures were running for. Then, you will complete
-this part on a later mutually agreed on date.
+*Density Plot*
 
+- Both quantitative variables, `size` and `range` are highly skewed to the right.
+- `size` is much more skewed to the right than `range`.
+
+*Heatmap*
+
+- Two clusters can be identified. The species not belonging to these clusters are 
+described as here.
+    - Cluster 1: from Chrysocyon_brachyurus to Conepatus_semistriatus
+    - Cluster 2: everything below Conepatus_semistriatus
+    - Outliers: everything above Chrysocyon_brachyurus
+- The clusters are mainly based on the `range` since both clusters have similar 
+values w.r.t. `size`.
+- The clusters found in the heatmap are visualized in a scatterplot again (using
+the color aesthetic). We can see, that they are also cluster in the scatterplot.
+
+**Exploratory Analysis: Main Findings [Tree]**
+
+*Dendogram*
+
+- The clusters identified in the heatmap do not (!) actually correspond to 
+different branches in the dendogram.
+- We can conlude that different species can have very similar traits w.r.t. `size` 
+and `range` but still be different species.
+
+```{r fig.height=10, fig.width=9}
+
+# Tree Visualization -----------------------------------------------------------
+
+# For reference: 
+# https://cran.r-project.org/web/packages/phylogram/vignettes/phylogram-vignette.html
+# http://www.sthda.com/english/wiki/beautiful-dendrogram-visualizations-in-r-5-must-known-methods-unsupervised-machine-learning
+
+# converting tree to dendrogram (required for all alternatives below)
+dnd = phylogram::read.dendrogram(text = tree) 
+
+# # ALTERNATIVE 1: Ugly
+# plot(dnd, yaxt = "n") 
+
+# # ALTERNATIVE 2: Okay
+# dnd %>% dendextend::set("labels_cex", 0.5) %>% plot 
+
+# ALTERNATIVE 3: Nice
+# ggdendrogram(dnd, rotate = TRUE, theme_dendro = FALSE) 
+
+# ALTERNATIVE 4: Nice + Cluster Colors Specified
+dnd_data = ggdendro::dendro_data(dnd) # converting dendrogram to data.frame
+df_cluster$species = gsub("_", ".", df_cluster$species) # replace "_" by "."
+dnd_data$labels %<>% left_join(df_cluster, by = c("label" = "species")) # join
+
+ggdendrogram(dnd, rotate = TRUE, theme_dendro = FALSE, labels = FALSE) + 
+  geom_text(data = dnd_data$labels, aes(x, y, label = label, color = cluster),
+            hjust = 1, angle = 0, size = 3) + labs(x = "", y = "", 
+       title = "Dendogram (Colored by Clusters identified from Heatmap)") +
+  theme(plot.title = element_text(hjust = 0.5)) + theme_minimal() +
+  scale_y_continuous(limits = c(-20, 65)) 
+
+```
+
+## Task 2.2
+
+Here, we analyze the two quantitative traits (size and range) with a number of 
+different phylogenetic comparative models. The following models are used:
+
+1. Both traits evolve as independent Brownian motions.
+2. The traits evolve as a correlated Brownian motion.
+3. Both traits evolve as independent Ornstein–Uhlenbeck processes.
+4. The traits evolve as a bivariate Ornstein–Uhlenbeck process (use mvMORPH or mvSLOUCH but be careful and check under what assumptions the estimation is done).
+5. size evolves as a Brownian motion and range as an Ornstein–Uhlenbeck process adapting to it (use slouch or mvSLOUCH and be careful about column order).
 
 ```{r}
+
 # ------------------------------------------------------------------------------
 # Question 2.2
 # ------------------------------------------------------------------------------
+
+
 
 ```
 
