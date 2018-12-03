@@ -17,9 +17,14 @@ knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE,
 library(ape)
 library(knitr)
 library(lattice)
-# The easiest way to get this package is via
+
+# The easiest way to get "phyloch" package is via
 # install_github("fmichonneau/phyloch") more information can be found at
 # http://www.christophheibl.de/Rpackages.html
+# if you got the error saying incomplete final line blah blah
+# open the file .Rprofile and put the curser at the very end and type enter, 
+# save the file and try installing them again.
+
 library(phyloch)
 
 # Use this if BiocManager is not installed
@@ -353,9 +358,19 @@ rates and their standard errors..
 # ------------------------------------------------------------------------------
 # Question 1.2
 # ------------------------------------------------------------------------------
+library(ape)
+
+ace(DF$geo.range,nj.est,type="discrete",model="ER")
+ace(DF$geo.range,nj.est,type="discrete",model="ARD")
+ace(DF$geo.range,nj.est,type="discrete",model="SYM")
 
 ```
+Function ```ape::ace```  Ancestral Character Estimation, estimates ancestral character states, and the associated uncertainty, for continuous or discrete characters. For this question, we are analyzing the discrete geographical range variable, there are 3 available model for type=discrete : "ER", "ARD", "SYM".
+ - "ER" is an equal-rates model 
+ - "ARD" is an all-rates-different model 
+ - "SYM" is a symmetrical model 
 
+  
 # Assignment 2
 
 Install the ```ade4``` R package. Included with it you will find the carnivores dataset, ```data(carni70)```.
