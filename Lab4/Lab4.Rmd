@@ -93,13 +93,24 @@ write.table(phenodata, "data/phenodata.txt", quote = F, sep = "\t",
             row.names = F)
 # Now the data is read again and a boxplot is created
 celfiles <- read.affy(covdesc = "phenodata.txt", path = "data")
+# Creates a boxplot for the log base 2 intensities including pm (perfect) and 
+# mm (mismatch)
 boxplot(celfiles)
 
+# Create "nice looking" color palettes. So this array actually has hex-color
+# values inside.
 cols = brewer.pal(8, "Set1")
+# Help page: exprs,AffyBatch-method
+# The columns are the different .CEL files and hold the data. It's a class re-
+# presentation for the probe level data. The main component are the intensities
+# from multiple arrays of the save CDF type.
 eset <- exprs(celfiles)
 samples <- celfiles$Targets
 colnames(eset)
+# The colnames are set to our targets
 colnames(eset) <- samples
+# The .CEL files and their content is being plotted. It's basically the same
+# plot as before but this time with fancy colors
 boxplot(celfiles, col = cols, las = 2)
 distance <- dist(t(eset), method = "maximum")
 clusters <- hclust(distance)
