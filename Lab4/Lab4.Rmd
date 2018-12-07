@@ -3,9 +3,9 @@ title: "Lab 4 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: true
 ---
 
@@ -24,7 +24,7 @@ knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE,
 # Description of Cell Data:
 # https://www.ncbi.nlm.nih.gov/geo/query/acc. cgi?acc=GSE20986
 # Additional
-#  https://www.bioconductor.org/help/course-materials/ 2015/Uruguay2015/day5-data_analysis.html
+# https://www.bioconductor.org/help/course-materials/ 2015/Uruguay2015/day5-data_analysis.html
 # Explanations Graphic
 # https://www.bioconductor.org/help/course-materials/2015/Uruguay2015/V6-RNASeq.html
 
@@ -53,9 +53,20 @@ library(annotate)
 
 ```
 
+# Assignment 1
+
+**Task:**
+
+- Run all the R code and reproduce the graphics.
+- Go carefully through the R code and explain in your words what each step does.
+
 Provided source code we have to explain.
 
 ```{r, include = TRUE, echo = TRUE}
+
+# ------------------------------------------------------------------------------
+# Question 1
+# ------------------------------------------------------------------------------
 
 # Get the Data
 x = getGEOSuppFiles("GSE20986")
@@ -187,29 +198,8 @@ a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
 results[rownames(a), "threshold"] <- "2"
 b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
 results[rownames(b), "threshold"] <- "3"
-table(results$threshold)
-
-
-
-#print(volcano)
 
 ```
-
-
-# Assignment 1
-
-**Task:**
-
-- Run all the R code and reproduce the graphics.
-- Go carefully through the R code and explain in your words what each step does.
-
-```{r, echo = FALSE}
-# ------------------------------------------------------------------------------
-# Question 1
-# ------------------------------------------------------------------------------
-
-```
-
 
 ## Assignment 2
 
@@ -233,7 +223,9 @@ table(results$threshold)
 - Indicate significantly differentially expressed genes.
 - Explain how they are found.
 
-## Volcano Plots for the Other Pairs
+## Volcano Plots
+
+### Huvec - Choroid
 
 ```{r, echo = FALSE}
 # ------------------------------------------------------------------------------
@@ -242,12 +234,14 @@ table(results$threshold)
 
 significant_genes = c()
 
-# ---
-# Huvec - choroid
-# ---
+# ------------------------------------------------------------------------------
+# Huvec - Choroid
+# ------------------------------------------------------------------------------
 
 current_genes = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5)
 significant_genes = c(significant_genes, as.vector(current_genes$getsymbols))
+
+table(results$threshold)
 
 # Make a volcano plot
 volcano <- ggplot(data = results, 
@@ -262,8 +256,13 @@ volcano <- volcano +
 volcano + 
   geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5),
             aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
-                label = getsymbols)  )
+                label = getsymbols))
 
+```
+
+### Huvec - Retina
+
+```{r, echo = FALSE}
 # These are the other combinatin where we need volcano plots for
 # huvec_retina
 # huvec_iris
@@ -302,9 +301,9 @@ volcano2 +
             aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
                 label = getsymbols))
 
-#print(volcano2)
-
 ```
+
+### Huvec - Iris
 
 ```{r, echo = FALSE}
 
@@ -342,8 +341,6 @@ volcano2 +
             aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
                 label = getsymbols))
 
-#print(volcano2)
-
 ```
 
 ## Significantly Differentially Expressed Genes
@@ -358,9 +355,13 @@ print(significant_genes)
 
 ```
 
-## Explanation how they are Found
+## Explanation How They Are Found
 
+A volcano plot prints significance against fold-change. A fold-change is a measurement between two variables and is used as a measurement between how much they changed during measurements. So if we put on those values on the y- and x-axis we will get a view of the statistical signifiance and the magnitude of the a change. This enables the viewers to quickly recognize not only significant, but also "strong influencing" genes.
 
+Therefore we have the ```log2``` of the fold-change on the x-axis and the ```-log10``` of the p-value on the y-axis. Thus interesting data points are those which are far to the top (p-value) and far to the left or right (significant change in the fold-change). In this one we can observe another feature of the data expressed in color. Here it is the regulation of the data.
+
+The datapoints (genes) we obtained are those which are far to the right and in the upper part of the volcano plot. We used the provided code filtering those and adding the names to them as the seperator. All obtained genes are genes which are upregulated.
 
 ## Assignment 4
 
