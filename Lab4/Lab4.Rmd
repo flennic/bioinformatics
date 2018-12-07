@@ -157,7 +157,7 @@ design
 contrast.matrix = makeContrasts(
               huvec_choroid = huvec - choroid, 
               huvec_retina = huvec - retina, 
-              huvec_iris <- huvec - iris, 
+              huvec_iris = huvec - iris, 
               levels = design)
 
 # Fits a linear model for each gene given a series of arrays
