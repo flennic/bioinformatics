@@ -3,9 +3,9 @@ title: "Lab 4 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 link-citations: true
 ---
 
@@ -68,10 +68,14 @@ cels = list.files("data/", pattern = "[gz]")
 sapply(paste("data", cels, sep = "/"), gunzip)
 
 # Creating phenodata
-phenodata = matrix(rep(list.files("data"), 2), ncol =2)
+# It's a matrix with two columns. Each row has the same entries in their cells,
+# which is the filename. The first column is called 'Name' and the second one
+# is called 'FileName'.
+phenodata = matrix(rep(list.files("data", pattern = "[CEL]"), 2), ncol =2)
 class(phenodata)
 phenodata <- as.data.frame(phenodata)
 colnames(phenodata) <- c("Name", "FileName")
+# Adding a new column with the target
 phenodata$Targets <- c("iris", 
                        "retina", 
                        "retina", 
@@ -84,16 +88,29 @@ phenodata$Targets <- c("iris",
                        "huvec", 
                        "huvec", 
                        "huvec")
+# Writes the dataframe to a .txt file
 write.table(phenodata, "data/phenodata.txt", quote = F, sep = "\t",
             row.names = F)
+# Now the data is read again and a boxplot is created
 celfiles <- read.affy(covdesc = "phenodata.txt", path = "data")
+# Creates a boxplot for the log base 2 intensities including pm (perfect) and 
+# mm (mismatch)
 boxplot(celfiles)
 
+# Create "nice looking" color palettes. So this array actually has hex-color
+# values inside.
 cols = brewer.pal(8, "Set1")
+# Help page: exprs,AffyBatch-method
+# The columns are the different .CEL files and hold the data. It's a class re-
+# presentation for the probe level data. The main component are the intensities
+# from multiple arrays of the save CDF type.
 eset <- exprs(celfiles)
 samples <- celfiles$Targets
 colnames(eset)
+# The colnames are set to our targets
 colnames(eset) <- samples
+# The .CEL files and their content is being plotted. It's basically the same
+# plot as before but this time with fancy colors
 boxplot(celfiles, col = cols, las = 2)
 distance <- dist(t(eset), method = "maximum")
 clusters <- hclust(distance)
