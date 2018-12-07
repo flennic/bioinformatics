@@ -389,14 +389,17 @@ variable, there are 3 available model for type=discrete : "ER", "ARD", "SYM".
  - "ER" is an equal-rates model 
 ```{r, eval=FALSE}
 ace(DF$geo.range,nj.est,type="discrete",model="ER")
+#check R console
 ```
  - "ARD" is an all-rates-different model 
 ```{r, eval=FALSE}
 ace(DF$geo.range,nj.est,type="discrete",model="ARD")
+#check R console
 ```
  - "SYM" is a symmetrical model 
 ```{r, eval=FALSE}
 ace(DF$geo.range,nj.est,type="discrete",model="SYM")
+#check R console
 ```
   
 # Assignment 2
