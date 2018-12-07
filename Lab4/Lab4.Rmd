@@ -117,7 +117,7 @@ which correspond to strongly expressed genes. The intensity values in the
 inter-quartile range (the rectangle boxes in the plots) may correspond to 
 genes that are only expressed to a small extent or even not at all.
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, eval = FALSE}
 # ------------------------------------------------------------------------------
 # Question 1
 # ------------------------------------------------------------------------------
@@ -125,14 +125,18 @@ genes that are only expressed to a small extent or even not at all.
 # Data import ------------------------------------------------------------------
 
 # Get the Data
-# x = getGEOSuppFiles("GSE20986")
-# x
+x = getGEOSuppFiles("GSE20986")
+x
 
 # Untar and Unzip
 # DONT ADD THE FILE TO GIT IT'S 60MB!
-# untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
-# cels = list.files("data/", pattern = "[gz]")
-# sapply(paste("data", cels, sep = "/"), gunzip)
+untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
+cels = list.files("data/", pattern = "[gz]")
+sapply(paste("data", cels, sep = "/"), gunzip)
+
+```
+
+```{r fig.height=3.75}
 
 # Creating phenodata -----------------------------------------------------------
 
@@ -158,6 +162,7 @@ phenodata$Targets <- c("iris",
                        "huvec", 
                        "huvec", 
                        "huvec")
+
 # Writes the dataframe to a .txt file
 write.table(phenodata, "data/phenodata.txt", quote = F, sep = "\t",
             row.names = F)
@@ -182,7 +187,7 @@ specific tissue. Instead, there are 8 color values which are used from left to
 right. After all 8 values have been used, the 1st color is used, then the 2nd 
 color etc.
 
-```{r}
+```{r fig.height=4}
 
 # Improved box plot ------------------------------------------------------------
 
@@ -203,11 +208,12 @@ colnames(eset) <- samples
 
 # The .CEL files and their content is being plotted. It's basically the same
 # plot as before but this time with fancy colors
+par(mar=c(8,2,2,2)) # bottom, left, top and right margins
 BiocGenerics::boxplot(celfiles, col = cols, las = 2)
 
 ```
 
-**Cluster analysis (by tissue)**
+**Cluster analysis (not normalized, tissue as labels)**
 
 We have extracted the expression matrix (1354896 rows, 12 columns) from the 
 `celfiles` object. Each row corresponds to a light intensity that tells us to 
@@ -229,7 +235,6 @@ Also e.g. the 5th and 6th leaf nodes from the left (choroid and choroid) had a
 quite small dissimilarity. After all, we can conclude similarities between 
 .CEL files of the same tissue are recognized. However, it is also clear that
 similarities between different tissues are recognized (such as iris and choroid).
-
 
 References: 
 
@@ -256,7 +261,24 @@ plot(clusters)
 
 **Box Plots with vs. without normalization**
 
-```{r message = FALSE}
+The previous box plots (using the `celfiles`, an `AffyBatch` object as input)
+were not based on normalized features. Here, we use the `gcrma()` function with 
+`celfiles` as input to extract the `ExpressionSet` object `celfiles.gcrma`. 
+When applying the `gcrma()` function, the default parameter `normalize` is set
+to true. Therefore, we obtain normalized data.
+
+Comparison: After normalizing, we can observe the following.
+
+- Subtle differences in the inter-quartile ranges across samples get reduced. 
+Almost all inter-quartile ranges look very similar in the `Post-Normalization` 
+plot whereas they noticeably differ in the `Pre-Normalization` plot. 
+- The medians decrease from values of around 6 to values of near 2.
+- The upper quartile is much more spread out than the lower quartile in 
+`Post-Normalization`. Likely, the lower quartiles correspond to genes that are
+not expressed whereas the upper quartiles correspond to genes that are expressed.
+
+
+```{r fig.height = 4.5, message = FALSE}
 
 # Box Plots with vs. without normalization -------------------------------------
 
@@ -265,19 +287,29 @@ plot(clusters)
 # expression measure with the help of probe sequence
 celfiles.gcrma = gcrma::gcrma(celfiles) # Biobase / ExpressionSet
 
-# These are two Boxplots showing the different .CELS before and after normali-
-# zation
-par(mfrow=c(1,2))
-boxplot(celfiles.gcrma, col = cols, las = 2, main = "Post-Normalization");
-boxplot(celfiles, col = cols, las = 2, main = "Pre-Normalization")
+# Two Boxplots showing different .CELS before and after normalization
+par(mfrow=c(1,2), 
+    mar=c(10,2,2,2)) # bottom, left, top and right margins
+boxplot(celfiles.gcrma, col = cols, las = 2.5, cex.axis = 0.7, main = "Post-Normalization");
+boxplot(celfiles, col = cols, las = 2.5, cex.axis = 0.7, main = "Pre-Normalization")
 
 ```
 
-**Cluster analysis (by .CEL file)**
+**Cluster analysis (normalized, .CEL names as labels)**
 
-```{r message=FALSE}
+Here, we perform another cluster analyzis. This time, however, we use the 
+normalized data, which we created for the box plot comparison above. We 
+use the same distance metric for hierarchical clustering as before.
+
+Again, we have 12 leaf nodes. However, the labels are now the names of the .CEL 
+files (instead of their corresponding tissues). Still, we can see that the 
+displayed dendogram differs from the dendogram that we received without 
+normalization. This illustrates that normalization is indeed relevant here since 
+it leads to different conclusions.
+
+```{r}
 # Turns of the "devices"
-dev.off()
+# dev.off()
 
 # Create a distance matrix
 distance <- dist(t(exprs(celfiles.gcrma)), method = "maximum")
@@ -293,43 +325,68 @@ knitr::kable(phenodata, caption = "Phenodata")
 
 **Linear Regression using Contrast Matrix**
 
-Blablabla.
+First, we create a model matrix. It has four columns, one for each tissue, 
+and twelve rows, one for each sample (i.e. .CEL files). Every row only has a
+single 1 indicating which tissue the sample belongs to.
+
+Second, we create a contrast matrix (using the model matrix as input to provide
+the tissue names). This  contrast matrix has 4 rows, one for each tissue, and 3 
+columns, one for each contrast. The three contrasts are `huvec - choroid`, 
+`huvec - retina` and `huvec - iris`. Basically, the `huvec` row contains
+a value of 1 for all columns (since it is a minuend). The `choroid`, `retina` 
+and `iris` rows have a value of -1 in their corresponding contrast column 
+(since they are subtrahends in the contrasts).
+
+Third, we use the `lmFit()` function from the `limma` package. It takes
+the normalized data in form of the `ExpressionSet` object `celfiles.gcrma` and
+it takes the model matrix `design` which specifies the contrasts that are 
+supposed to be analyzed. The function fits a linear model to the expression 
+data for each sample. According to the documentation, the coefficients of the 
+fitted models describe the differences between the RNA sources hybridized to the 
+arrays.
+
+Fourth, we compute estimated coefficients and standard errors for a given set of 
+contrasts, using the fitted model from the previous step. We also compute 
+various statistics for these coefficients and standard errors such as
+t-statistics, F-statistics and logodds. 
+
+Finally, we print a summary of the results.
 
 ```{r}
 
-samples <- as.factor(samples)
-# Creates a design/model matrix by expanding factors.
-design <- model.matrix(~0+samples)
-# "sampleschoroid" "sampleshuvec"   "samplesiris"    "samplesretina"
-colnames(design)
+# Create a model matrix
+samples <- as.factor(samples) # Factor of length 12 with tissue names
+design <- model.matrix(~0+samples) # Creates model matrix by expanding factors
+colnames(design) # "sampleschoroid" "sampleshuvec"   "samplesiris"    "samplesretina"
+colnames(design) <- c("choroid", "huvec", "iris", "retina") # change colnames
+knitr::kable(design, caption = "Design Matrix") # Print design matrix
 
-# Rename from "sample" to this
-colnames(design) <- c("choroid", "huvec", "iris", "retina")
-knitr::kable(design, caption = "Design Matrix")
-
-# "Construct the contrast matrix corresponding to specified contrasts of a se
-# of parameters."
-contrast.matrix = makeContrasts(
-              huvec_choroid = huvec - choroid, 
-              huvec_retina = huvec - retina, 
-              huvec_iris = huvec - iris, 
-              levels = design)
+# Create a contrast matrix from the model matrix
+contrast.matrix = makeContrasts(huvec_choroid = huvec - choroid, 
+                                huvec_retina = huvec - retina, 
+                                huvec_iris = huvec - iris, 
+                                levels = design)
 
 # Fits a linear model for each gene given a series of arrays
 # Results from the RMA and the contrast.matrix
-fit = lmFit(celfiles.gcrma, design)
+fit = limma::lmFit(celfiles.gcrma, design)
+
 # Use the model to fit microdata data (coefficients, errors)
 huvec_fit <- contrasts.fit(fit, contrast.matrix)
+
 # Calculates t-statistics, F-statistics and logodds for the fitted data
 huvec_ebay <- eBayes(huvec_fit)
 
-# Creates a list of probe name for 100000 entries. topTable tkaes the top-ranked
+# Creates a list of probe name for 100000 entries. topTable takes the top-ranked
 # genes from a linear fit
 probenames.list <- rownames(topTable(huvec_ebay, number = 100000))
+
 # Get symbols
 getsymbols <- getSYMBOL(probenames.list, "hgu133plus2")
+
 # And get the 100000 by the coefficient huvec_choroid
 results <- topTable(huvec_ebay, number = 100000, coef = "huvec_choroid")
+
 # Add the symbols to this
 results <- cbind(results, getsymbols)
 
