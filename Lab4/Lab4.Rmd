@@ -58,14 +58,14 @@ Provided source code we have to explain.
 ```{r, echo = FALSE}
 
 # Get the Data
-#x = getGEOSuppFiles("GSE20986")
-#x
+x = getGEOSuppFiles("GSE20986")
+x
 
 # Untar and Unzip
 # DONT ADD THE FILE TO GIT IT'S 60MB!
-#untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
-#cels = list.files("data/", pattern = "[gz]")
-#sapply(paste("data", cels, sep = "/"), gunzip)
+untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
+cels = list.files("data/", pattern = "[gz]")
+sapply(paste("data", cels, sep = "/"), gunzip)
 
 # Creating phenodata
 # It's a matrix with two columns. Each row has the same entries in their cells,
@@ -206,6 +206,8 @@ volcano +
             aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
                 label = getsymbols)  )
 
+print(volcano)
+
 ```
 
 
@@ -247,12 +249,57 @@ volcano +
 - Indicate significantly differentially expressed genes.
 - Explain how they are found.
 
+## Volcana Plots for the Other Pairs
+
 ```{r}
 # ------------------------------------------------------------------------------
 # Question 3
 # ------------------------------------------------------------------------------
 
+# These are the other combinatin where we need volcano plots for
+# huvec_retina
+# huvec_iris
+
+## Huvec - Retina
+results <- topTable(huvec_ebay, number = 100000, coef = "huvec_retina")
+results <- cbind(results, getsymbols)
+
+results$threshold <- "1"
+a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
+results[rownames(a), "threshold"] <- "2"
+b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
+results[rownames(b), "threshold"] <- "3"
+table(results$threshold)
+
+# Make a volcano plot
+volcano2 <- ggplot(data = results, 
+                  aes(x = logFC, y = -1*log10(adj.P.Val), 
+                      colour = threshold, 
+                      label = getsymbols))
+
+volcano2 <- volcano2 + 
+  geom_point() + 
+  scale_color_manual(values = c("black", "red", "green"), 
+                 labels = c("Not Significant", "Upregulated", "Downregulated"), 
+                 name = "Key/Legend")
+
+volcano2 + 
+  geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5),
+            aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
+                label = getsymbols))
+
+print(volcano2)
+
+## Huvec - Iris
+
+
 ```
+
+## Significantly Differentially Expressed Genes
+
+## Explanation how they are Found
+
+
 
 ## Assignment 4
 
