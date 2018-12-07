@@ -133,7 +133,7 @@ boxplot(celfiles, col = cols, las = 2, main = "Pre-Normalization")
 # Turns of the "devices"
 dev.off()
 
-#Create a distance matrix
+# Create a distance matrix
 distance <- dist(t(exprs(celfiles.gcrma)), method = "maximum")
 # Performs a hierachical cluster analysis.
 clusters <- hclust(distance)
@@ -157,7 +157,7 @@ design
 contrast.matrix = makeContrasts(
               huvec_choroid = huvec - choroid, 
               huvec_retina = huvec - retina, 
-              huvec_iris <- huvec - iris, 
+              huvec_iris = huvec - iris, 
               levels = design)
 
 # Fits a linear model for each gene given a series of arrays
@@ -206,7 +206,7 @@ volcano +
             aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
                 label = getsymbols)  )
 
-print(volcano)
+#print(volcano)
 
 ```
 
@@ -249,9 +249,9 @@ print(volcano)
 - Indicate significantly differentially expressed genes.
 - Explain how they are found.
 
-## Volcana Plots for the Other Pairs
+## Volcano Plots for the Other Pairs
 
-```{r}
+```{r, echo = FALSE}
 # ------------------------------------------------------------------------------
 # Question 3
 # ------------------------------------------------------------------------------
@@ -260,7 +260,10 @@ print(volcano)
 # huvec_retina
 # huvec_iris
 
-## Huvec - Retina
+# ------------------------------------------------------------------------------
+# Huvec - Retina
+# ------------------------------------------------------------------------------
+
 results <- topTable(huvec_ebay, number = 100000, coef = "huvec_retina")
 results <- cbind(results, getsymbols)
 
@@ -288,14 +291,54 @@ volcano2 +
             aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
                 label = getsymbols))
 
-print(volcano2)
+#print(volcano2)
 
-## Huvec - Iris
+```
 
+```{r, echo = FALSE}
+
+# ------------------------------------------------------------------------------
+# Huvec - Iris
+# ------------------------------------------------------------------------------
+
+results <- topTable(huvec_ebay, number = 100000, coef = "huvec_iris")
+results <- cbind(results, getsymbols)
+
+results$threshold <- "1"
+a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
+results[rownames(a), "threshold"] <- "2"
+b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
+results[rownames(b), "threshold"] <- "3"
+table(results$threshold)
+
+# Make a volcano plot
+volcano2 <- ggplot(data = results, 
+                  aes(x = logFC, y = -1*log10(adj.P.Val), 
+                      colour = threshold, 
+                      label = getsymbols))
+
+volcano2 <- volcano2 + 
+  geom_point() + 
+  scale_color_manual(values = c("black", "red", "green"), 
+                 labels = c("Not Significant", "Upregulated", "Downregulated"), 
+                 name = "Key/Legend")
+
+volcano2 + 
+  geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5),
+            aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
+                label = getsymbols))
+
+#print(volcano2)
 
 ```
 
 ## Significantly Differentially Expressed Genes
+
+We observe the following differentially expresses genes:
+
+- a
+- b
+- c
 
 ## Explanation how they are Found
 
