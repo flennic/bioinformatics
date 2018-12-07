@@ -576,21 +576,710 @@ ggdendrogram(dnd, rotate = TRUE, theme_dendro = FALSE, labels = FALSE) +
 
 ```
 
+\newpage  
+
 ## Task 2.2
 
-Here, we analyze the two quantitative traits (size and range) with a number of 
-different phylogenetic comparative models. The following models are used:
+Here, we analyze the two quantitative traits (`size` and `range`) with five
+different phylogenetic comparative models. 
 
-1. Both traits evolve as independent Brownian motions.
-2. The traits evolve as a correlated Brownian motion.
-3. Both traits evolve as independent Ornstein–Uhlenbeck processes.
-4. The traits evolve as a bivariate Ornstein–Uhlenbeck process (use mvMORPH or mvSLOUCH but be careful and check under what assumptions the estimation is done).
-5. size evolves as a Brownian motion and range as an Ornstein–Uhlenbeck process adapting to it (use slouch or mvSLOUCH and be careful about column order).
+**Comparison Strategy:**
+
+Different packages and functions needed to be used. All of them provided the 
+metrics AIC, AICc and log likelihood. Therefore, we choose these metrics to 
+compare the five models. 
+
+AIC is supposed to be minimized and the log likelihood is supposed to be maximized.
+Note that AICc is a modified version AIC that corrects for a small sample size.
+AICc may be more accurate for small sample sizes and we may consider 70 species
+a small sample.
+
+**Best Model:**
+
+Overall, we see that the smallest AIC and AICc as well as largest log likelihood
+is issued by the 4th model (traits evolve as a bivariate Ornstein–Uhlenbeck process).
+
+This model estimated an asymptotic mean $\theta_{size} = 37.55482$ and 
+$\theta_{range} = 11.42832$
+
+The estimated alpha values can be found below. Note that in OU, alpha indicates
+how strongly the system reacts to movements ("perturbations") away from the 
+asymptotic mean. 
+
+$$\mathbf{}\left[\begin{array}
+{rrrr}
+  & size & range \\
+size & 0.0000701675 & -0.003902526 \\
+range & -0.0039025258 & 0.235597609 
+\end{array}\right]$$
+
+The estimated sigma values can be found below. They indicate the variation of 
+the noise.
+
+$$\mathbf{}\left[\begin{array}
+{rrrr}
+  & size & range \\
+size & 73.691771 & 5.944651 \\
+range & 5.944651 & 38.594288 
+\end{array}\right]$$
+
+**1. Both traits evolve as independent Brownian motions.**
+
+Results after Successful Convergence:
+
+AIC: 1186.475 
+AICc: 1186.771 
+Log-Likelihood: -589.2373 
+
+**2. The traits evolve as a correlated Brownian motion.**
+
+Results after Successful Convergence:
+
+AIC: 1187.571 
+AICc: 1188.018 
+Log-Likelihood: -588.7853 
+
+**3. Both traits evolve as independent Ornstein–Uhlenbeck processes.**
+
+Results after Successful Convergence:
+
+AIC: 1225.225
+AICc: 1225.857
+Log-Likelihood: -606.6126
+
+**4. The traits evolve as a bivariate Ornstein–Uhlenbeck process**
+
+Results after Successful Convergence:
+
+AIC : 1161.211 
+AICc: 1162.311 
+Log-Likelihood: -572.6057 
+
+**5. Size evolves as Brownian motion, range as Ornstein–Uhlenbeck process adapting to it**
+
+Results after Successful Convergence:
+
+AIC : 1313
+AICc: 1296
+Log-Likelihood: -643
+
+**Problems we encountered:**
+
+We found it quite difficult to find the correct functions with the correct
+parameters for the five models Mainly this was based on lack of examples and 
+explanation in the documentations of the packages online. Maybe it would be 
+possible to provide sample codes to the students when the course is offered 
+next time so that they can focus on interpretation and understanding (instead
+of debugging and getting the functions to work).
+
+```{r eval = FALSE}
+
+# ------------------------------------------------------------------------------
+# Question 2, Task 2
+# ------------------------------------------------------------------------------
+
+# Data import ------------------------------------------------------------------
+
+data("carni70")
+df = carni70
+rm(carni70)
+
+# For reference: 
+# mvSLOUCH: https://cran.r-project.org/web/packages/mvSLOUCH/mvSLOUCH.pdf
+# mvMORPH: https://cran.r-project.org/web/packages/mvMORPH/mvMORPH.pdf
+# https://cran.r-project.org/web/packages/mvMORPH/vignettes/tutorial_mvMORPH.pdf
+# ouch: https://cran.r-project.org/web/packages/ouch/ouch.pdf
+# slouch: https://cran.r-project.org/web/packages/slouch/slouch.pdf
+
+# ------------------------------------------------------------------------------
+# 1. Both traits evolve as independent Brownian motions. -----------------------
+tree = ape::read.tree(text = df$tre)
+BM_independent = mvMORPH::mvBM(tree, df$tab, model="BM1",
+                                     param=list(constraint="diagonal"))
+summary(BM_independent)
+
+# ------------------------------------------------------------------------------
+# 2. The traits evolve as a correlated Brownian motion. ------------------------
+tree = ape::read.tree(text = df$tre)
+BM_correlated = mvMORPH::mvBM(tree, df$tab, model="BM1",
+                                     param=list(constraint="correlation"))
+summary(BM_correlated)
+
+# ------------------------------------------------------------------------------
+# 3. Both traits evolve as independent Ornstein–Uhlenbeck proc. ----------------
+
+## Kryzstof: ouchModel and specify Atype = "Diagonal", Syytype = "Diagonal"
+tree = ape::read.tree(text = df$tre)
+tre_ouch = ouch::ape2ouch(tree = tree)
+
+# TAKES TIME
+OU_indep = mvSLOUCH::ouchModel(tre_ouch, as.matrix(df$tab),
+                               Atype = "Diagonal", Syytype = "Diagonal")
+OU_indep
+
+# ------------------------------------------------------------------------------
+# 4. The traits evolve as a bivariate Ornstein–Uhlenbeck process ---------------
+
+# For reference, see page 5 from here:
+# https://cran.r-project.org/web/packages/mvMORPH/vignettes/tutorial_mvMORPH.pdf
+tree = ape::read.tree(text = df$tre)
+OU_bivariate = mvMORPH::mvOU(tree, df$tab, model="OU1")
+summary(OU_bivariate)
+
+# ------------------------------------------------------------------------------
+# 5. Size evolves as a Brownian motion and range as an Ornstein–Uhlenbeck process 
+# adapting to it ---------------------------------------------------------------
+tree = ape::read.tree(text = df$tre)
+phyltree = ouch::ape2ouch(tree = tree)
+
+# TAKES TIME
+BM_OU = mvSLOUCH::mvslouchModel(phyltree, as.matrix(df$tab[, c(2, 1)]), kY = 1)
+BM_OU
+
+```
 
 ```{r}
 
+# 2.2.3 Output -----------------------------------------------------------------
+
+# > OU_indep
+# $FinalFound
+# $FinalFound$HeuristicSearchPointFinalFind
+#      Astart        Aend    Syystart      Syyend      LogLik 
+#    3.753733    2.279597    5.938614    3.704447 -606.612614 
+# 
+# $FinalFound$ParamsInModel
+# $FinalFound$ParamsInModel$A
+#          size    range
+# size  42.6801 0.000000
+# range  0.0000 9.772741
+# 
+# $FinalFound$ParamsInModel$mPsi
+#          reg.1
+# size  14.51679
+# range 11.11718
+# 
+# $FinalFound$ParamsInModel$mPsi0
+#       [,1]
+# size     0
+# range    0
+# 
+# $FinalFound$ParamsInModel$vY0
+#           [,1]
+# size  14.51679
+# range 11.11718
+# 
+# $FinalFound$ParamsInModel$Syy
+#           size    range
+# size  379.4088  0.00000
+# range   0.0000 40.62757
+# 
+# 
+# $FinalFound$ParamSummary
+# $FinalFound$ParamSummary$phyl.halflife
+# $FinalFound$ParamSummary$phyl.halflife$directions
+#      [,1] [,2]
+# [1,]   -1    0
+# [2,]    0   -1
+# 
+# $FinalFound$ParamSummary$phyl.halflife$halflives
+#                    [,1]       [,2]
+# eigenvalues 42.68009601 9.77274147
+# halflife     0.01624053 0.07092659
+# %treeheight  1.62405253 7.09265852
+# 
+# $FinalFound$ParamSummary$phyl.halflife$halflifeLowerbounds
+# [1] 0.01321467
+# 
+# 
+# $FinalFound$ParamSummary$expmtA
+#       size        range
+# size     0 0.000000e+00
+# range    0 5.698392e-05
+# 
+# $FinalFound$ParamSummary$mPsi.rotated
+#          reg.1
+# size  14.51679
+# range 11.11654
+# 
+# $FinalFound$ParamSummary$mPsi0.rotated
+#       [,1]
+# size     0
+# range    0
+# 
+# $FinalFound$ParamSummary$cov.matrix
+#           size    range
+# size  1686.395  0.00000
+# range    0.000 84.44917
+# 
+# $FinalFound$ParamSummary$corr.matrix
+#       size range
+# size     1     0
+# range    0     1
+# 
+# $FinalFound$ParamSummary$stationary.cov.matrix
+#           size    range
+# size  1686.395  0.00000
+# range    0.000 84.44917
+# 
+# $FinalFound$ParamSummary$stationary.corr.matrix
+#       size range
+# size     1     0
+# range    0     1
+# 
+# $FinalFound$ParamSummary$StS
+#         size  range
+# size  143951    0.0
+# range      0 1650.6
+# 
+# $FinalFound$ParamSummary$LogLik
+# [1] -606.6126
+# 
+# $FinalFound$ParamSummary$dof
+# [1] 6
+# 
+# $FinalFound$ParamSummary$m2loglik
+# [1] 1213.225
+# 
+# $FinalFound$ParamSummary$aic
+# [1] 1225.225
+# 
+# $FinalFound$ParamSummary$aic.c
+# [1] 1225.857
+# 
+# $FinalFound$ParamSummary$sic
+# [1] 1242.875
+# 
+# $FinalFound$ParamSummary$bic
+# [1] 1242.875
+# 
+# $FinalFound$ParamSummary$RSS
+# $FinalFound$ParamSummary$RSS$RSS
+#          [,1]
+# [1,] 140.0022
+# 
+# $FinalFound$ParamSummary$RSS$R2
+#               [,1]
+# [1,] -4.440892e-16
+# 
+# 
+# $FinalFound$ParamSummary$trait.regression
+# $FinalFound$ParamSummary$trait.regression[[1]]
+#      range
+# size     0
+# 
+# $FinalFound$ParamSummary$trait.regression[[2]]
+#       size
+# range    0
+# 
+# 
+# $FinalFound$ParamSummary$confidence.interval
+# $FinalFound$ParamSummary$confidence.interval$regression.summary
+# $FinalFound$ParamSummary$confidence.interval$regression.summary$mPsi.regression.confidence.interval
+#       Lower.end Estimated.Point Upper.end
+# size   4.468074        14.51679  24.56551
+# range  8.338613        11.11718  13.89574
+# 
+# 
+# 
+# $FinalFound$ParamSummary$limiting.trait.regression
+# $FinalFound$ParamSummary$limiting.trait.regression[[1]]
+#      range
+# size     0
+# 
+# $FinalFound$ParamSummary$limiting.trait.regression[[2]]
+#       size
+# range    0
+# 
+# 
+# 
+# $FinalFound$LogLik
+# [1] -606.6126
+# 
+# 
+# $MaxLikFound
+# [1] "Same as final found"
+
+
+```
+
+
+```{r}
+
+# 2.2.5 Output -----------------------------------------------------------------
+
+# $FinalFound
+# $FinalFound$HeuristicSearchPointFinalFind
+#       A     Syy  LogLik 
+#    2.34    3.71 -641.80 
+# 
+# $FinalFound$ParamsInModel
+# $FinalFound$ParamsInModel$A
+#       range
+# range  10.4
+# 
+# $FinalFound$ParamsInModel$B
+#         size
+# range -0.689
+# 
+# $FinalFound$ParamsInModel$mPsi
+#       reg.1
+# range  10.2
+# 
+# $FinalFound$ParamsInModel$mPsi0
+#       [,1]
+# range    0
+# 
+# $FinalFound$ParamsInModel$vY0
+#       [,1]
+# range 10.7
+# 
+# $FinalFound$ParamsInModel$vX0
+#      [,1]
+# size 8.43
+# 
+# $FinalFound$ParamsInModel$Syy
+#       range
+# range    41
+# 
+# $FinalFound$ParamsInModel$Syx
+#       size
+# range    0
+# 
+# $FinalFound$ParamsInModel$Sxy
+#      range
+# size     0
+# 
+# $FinalFound$ParamsInModel$Sxx
+#      size
+# size  171
+# 
+# 
+# $FinalFound$ParamSummary
+# $FinalFound$ParamSummary$phyl.halflife
+# $FinalFound$ParamSummary$phyl.halflife$directions
+#      [,1]
+# [1,]    1
+# 
+# $FinalFound$ParamSummary$phyl.halflife$halflives
+#                [,1]
+# eigenvalues 10.3893
+# halflife     0.0667
+# %treeheight  6.6717
+# 
+# $FinalFound$ParamSummary$phyl.halflife$halflifeLowerbounds
+# [1] 0.0667
+# 
+# 
+# $FinalFound$ParamSummary$expmtA
+#           range
+# range 0.0000308
+# 
+# $FinalFound$ParamSummary$optimal.regression
+#         size
+# range 0.0663
+# 
+# $FinalFound$ParamSummary$mPsi.rotated
+#       reg.1
+# range  10.2
+# 
+# $FinalFound$ParamSummary$mPsi0.rotated
+#       [,1]
+# range    0
+# 
+# $FinalFound$ParamSummary$cov.matrix
+#       range  size
+# range   191  1761
+# size   1761 29383
+# 
+# $FinalFound$ParamSummary$corr.matrix
+#       range  size
+# range 1.000 0.743
+# size  0.743 1.000
+# 
+# $FinalFound$ParamSummary$conditional.cov.matrix
+#       range
+# range  85.9
+# 
+# $FinalFound$ParamSummary$conditional.corr.matrix
+#       range
+# range     1
+# 
+# $FinalFound$ParamSummary$stationary.cov.matrix
+#       range
+# range  87.1
+# 
+# $FinalFound$ParamSummary$stationary.corr.matrix
+#       range
+# range     1
+# 
+# $FinalFound$ParamSummary$optima.cov.matrix
+#       range
+# range   129
+# 
+# $FinalFound$ParamSummary$optima.corr.matrix
+#       range
+# range     1
+# 
+# $FinalFound$ParamSummary$cov.with.optima
+#       range
+# range   117
+# 
+# $FinalFound$ParamSummary$corr.with.optima
+#       range
+# range 0.743
+# 
+# $FinalFound$ParamSummary$evolutionary.regression
+#         size
+# range 0.0599
+# 
+# $FinalFound$ParamSummary$StS
+#       range  size
+# range  1681     0
+# size      0 29383
+# 
+# $FinalFound$ParamSummary$LogLik
+# [1] -642
+# 
+# $FinalFound$ParamSummary$dof
+# [1] 6
+# 
+# $FinalFound$ParamSummary$m2loglik
+# [1] 1284
+# 
+# $FinalFound$ParamSummary$aic
+# [1] 1296
+# 
+# $FinalFound$ParamSummary$aic.c
+# [1] 1296
+# 
+# $FinalFound$ParamSummary$sic
+# [1] 1313
+# 
+# $FinalFound$ParamSummary$bic
+# [1] 1313
+# 
+# $FinalFound$ParamSummary$RSS
+# $FinalFound$ParamSummary$RSS$RSS
+#      [,1]
+# [1,]  140
+# 
+# $FinalFound$ParamSummary$RSS$R2
+#        [,1]
+# [1,] 0.0178
+# 
+# 
+# $FinalFound$ParamSummary$trait.regression
+# $FinalFound$ParamSummary$trait.regression[[1]]
+#         size
+# range 0.0599
+# 
+# 
+# $FinalFound$ParamSummary$confidence.interval
+# $FinalFound$ParamSummary$confidence.interval$regression.summary
+# $FinalFound$ParamSummary$confidence.interval$regression.summary$B.regression.confidence.interval
+#       Lower.end Estimated.Point Upper.end
+# range     -1.89          -0.689     0.512
+# 
+# $FinalFound$ParamSummary$confidence.interval$regression.summary$mPsi.regression.confidence.interval
+#       Lower.end Estimated.Point Upper.end
+# range      6.95            10.2      13.4
+# 
+# 
+# 
+# 
+# $FinalFound$LogLik
+# [1] -642
+# 
+# 
+# $MaxLikFound
+# $MaxLikFound$HeuristicSearchPointMaxLik
+#       A     Syy  LogLik 
+#    2.33    3.71 -641.80 
+# 
+# $MaxLikFound$ParamsInModel
+# $MaxLikFound$ParamsInModel$A
+#       range
+# range  10.3
+# 
+# $MaxLikFound$ParamsInModel$B
+#         size
+# range -0.658
+# 
+# $MaxLikFound$ParamsInModel$mPsi
+#       reg.1
+# range  10.1
+# 
+# $MaxLikFound$ParamsInModel$mPsi0
+#       [,1]
+# range    0
+# 
+# $MaxLikFound$ParamsInModel$vY0
+#       [,1]
+# range 10.7
+# 
+# $MaxLikFound$ParamsInModel$vX0
+#      [,1]
+# size 8.43
+# 
+# $MaxLikFound$ParamsInModel$Syy
+#       range
+# range  40.8
+# 
+# $MaxLikFound$ParamsInModel$Syx
+#       size
+# range    0
+# 
+# $MaxLikFound$ParamsInModel$Sxy
+#      range
+# size     0
+# 
+# $MaxLikFound$ParamsInModel$Sxx
+#      size
+# size  171
+# 
+# 
+# $MaxLikFound$ParamSummary
+# $MaxLikFound$ParamSummary$phyl.halflife
+# $MaxLikFound$ParamSummary$phyl.halflife$directions
+#      [,1]
+# [1,]    1
+# 
+# $MaxLikFound$ParamSummary$phyl.halflife$halflives
+#                [,1]
+# eigenvalues 10.2826
+# halflife     0.0674
+# %treeheight  6.7410
+# 
+# $MaxLikFound$ParamSummary$phyl.halflife$halflifeLowerbounds
+# [1] 0.0674
+# 
+# 
+# $MaxLikFound$ParamSummary$expmtA
+#           range
+# range 0.0000342
+# 
+# $MaxLikFound$ParamSummary$optimal.regression
+#        size
+# range 0.064
+# 
+# $MaxLikFound$ParamSummary$mPsi.rotated
+#       reg.1
+# range  10.1
+# 
+# $MaxLikFound$ParamSummary$mPsi0.rotated
+#       [,1]
+# range    0
+# 
+# $MaxLikFound$ParamSummary$cov.matrix
+#       range  size
+# range   184  1697
+# size   1697 29383
+# 
+# $MaxLikFound$ParamSummary$corr.matrix
+#       range size
+# range  1.00 0.73
+# size   0.73 1.00
+# 
+# $MaxLikFound$ParamSummary$conditional.cov.matrix
+#       range
+# range  85.8
+# 
+# $MaxLikFound$ParamSummary$conditional.corr.matrix
+#       range
+# range     1
+# 
+# $MaxLikFound$ParamSummary$stationary.cov.matrix
+#       range
+# range  86.9
+# 
+# $MaxLikFound$ParamSummary$stationary.corr.matrix
+#       range
+# range     1
+# 
+# $MaxLikFound$ParamSummary$optima.cov.matrix
+#       range
+# range   120
+# 
+# $MaxLikFound$ParamSummary$optima.corr.matrix
+#       range
+# range     1
+# 
+# $MaxLikFound$ParamSummary$cov.with.optima
+#       range
+# range   109
+# 
+# $MaxLikFound$ParamSummary$corr.with.optima
+#       range
+# range  0.73
+# 
+# $MaxLikFound$ParamSummary$evolutionary.regression
+#         size
+# range 0.0578
+# 
+# $MaxLikFound$ParamSummary$StS
+#       range  size
+# range  1667     0
+# size      0 29383
+# 
+# $MaxLikFound$ParamSummary$LogLik
+# [1] -642
+# 
+# $MaxLikFound$ParamSummary$dof
+# [1] 6
+# 
+# $MaxLikFound$ParamSummary$m2loglik
+# [1] 1284
+# 
+# $MaxLikFound$ParamSummary$aic
+# [1] 1296
+# 
+# $MaxLikFound$ParamSummary$aic.c
+# [1] 1296
+# 
+# $MaxLikFound$ParamSummary$sic
+# [1] 1313
+# 
+# $MaxLikFound$ParamSummary$bic
+# [1] 1313
+# 
+# $MaxLikFound$ParamSummary$RSS
+# $MaxLikFound$ParamSummary$RSS$RSS
+#      [,1]
+# [1,]  140
+# 
+# $MaxLikFound$ParamSummary$RSS$R2
+#        [,1]
+# [1,] 0.0177
+# 
+# 
+# $MaxLikFound$ParamSummary$trait.regression
+# $MaxLikFound$ParamSummary$trait.regression[[1]]
+#         size
+# range 0.0578
+# 
+# 
+# $MaxLikFound$ParamSummary$confidence.interval
+# $MaxLikFound$ParamSummary$confidence.interval$regression.summary
+# $MaxLikFound$ParamSummary$confidence.interval$regression.summary$B.regression.confidence.interval
+#       Lower.end Estimated.Point Upper.end
+# range     -1.82          -0.658     0.505
+# 
+# $MaxLikFound$ParamSummary$confidence.interval$regression.summary$mPsi.regression.confidence.interval
+#       Lower.end Estimated.Point Upper.end
+# range      6.72            10.1      13.5
+# 
+# $MaxLikFound$LogLik
+# [1] -642
+
+
+```
+
+
+```{r eval = FALSE}
+
 # ------------------------------------------------------------------------------
-# Question 2.2
+# Question 2.2 (STEFANO)
 # ------------------------------------------------------------------------------
 
 # 2.2.1
