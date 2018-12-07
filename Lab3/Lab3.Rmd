@@ -666,7 +666,7 @@ Log-Likelihood: -643
 **Problems we encountered:**
 
 We found it quite difficult to find the correct functions with the correct
-parameters for the five models Mainly this was based on lack of examples and 
+parameters for the five models. Mainly this was based on lack of examples and 
 explanation in the documentations of the packages online. Maybe it would be 
 possible to provide sample codes to the students when the course is offered 
 next time so that they can focus on interpretation and understanding (instead
