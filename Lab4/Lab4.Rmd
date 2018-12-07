@@ -58,14 +58,14 @@ Provided source code we have to explain.
 ```{r, echo = FALSE}
 
 # Get the Data
-x = getGEOSuppFiles("GSE20986")
-x
+#x = getGEOSuppFiles("GSE20986")
+#x
 
 # Untar and Unzip
 # DONT ADD THE FILE TO GIT IT'S 60MB!
-untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
-cels = list.files("data/", pattern = "[gz]")
-sapply(paste("data", cels, sep = "/"), gunzip)
+#untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
+#cels = list.files("data/", pattern = "[gz]")
+#sapply(paste("data", cels, sep = "/"), gunzip)
 
 # Creating phenodata
 # It's a matrix with two columns. Each row has the same entries in their cells,
@@ -112,47 +112,76 @@ colnames(eset) <- samples
 # The .CEL files and their content is being plotted. It's basically the same
 # plot as before but this time with fancy colors
 boxplot(celfiles, col = cols, las = 2)
+# Creating a distance matrix
 distance <- dist(t(eset), method = "maximum")
+# "Hierarchical cluster analysis on a set of dissimilarities and methods for analyzing it."
 clusters <- hclust(distance)
+# Plot the clusters in a tree diagram
+# (https://en.wikipedia.org/wiki/Dendrogram)
 plot(clusters)
-celfiles.gcrma = gcrma(celfiles)
+# "Robust Multi-Array expression measure using sequence infornmation"
+# Converts an AffyBatch into an ExpressionSet by using RMA (robust multi-array)
+# expression measure with the help of probe sequence
+celfiles.gcrma = gcrma(celfiles) # Biobase / ExpressionSet
 
+# These are two Boxplots showing the different .CELS before and after normali-
+# zation
 par(mfrow=c(1,2))
 boxplot(celfiles.gcrma, col = cols, las = 2, main = "Post-Normalization");
 boxplot(celfiles, col = cols, las = 2, main = "Pre-Normalization")
 
+# Turns of the "devices"
 dev.off()
 
+#Create a distance matrix
 distance <- dist(t(exprs(celfiles.gcrma)), method = "maximum")
+# Performs a hierachical cluster analysis.
 clusters <- hclust(distance)
+# Plots the clusters, which is a Dendogram again
 plot(clusters)
 
 phenodata
 
 samples <- as.factor(samples)
+# Creates a design/model matrix by expanding factors.
 design <- model.matrix(~0+samples)
+# "sampleschoroid" "sampleshuvec"   "samplesiris"    "samplesretina"
 colnames(design)
 
+# Rename from "sample" to this
 colnames(design) <- c("choroid", "huvec", "iris", "retina")
 design
 
+# "Construct the contrast matrix corresponding to specified contrasts of a se
+# of parameters."
 contrast.matrix = makeContrasts(
               huvec_choroid = huvec - choroid, 
               huvec_retina = huvec - retina, 
               huvec_iris <- huvec - iris, 
               levels = design)
 
+# Fits a linear model for each gene given a series of arrays
+# Results from the RMA and the contrast.matrix
 fit = lmFit(celfiles.gcrma, design)
+# Use the model to fit microdata data (coefficients, errors)
 huvec_fit <- contrasts.fit(fit, contrast.matrix)
+# Calculates t-statistics, F-statistics and logodds for the fitted data
 huvec_ebay <- eBayes(huvec_fit)
 
+# Creates a list of probe name for 100000 entries. topTable tkaes the top-ranked
+# genes from a linear fit
 probenames.list <- rownames(topTable(huvec_ebay, number = 100000))
+# Get symbols
 getsymbols <- getSYMBOL(probenames.list, "hgu133plus2")
+# And get the 100000 by the coefficient huvec_choroid
 results <- topTable(huvec_ebay, number = 100000, coef = "huvec_choroid")
+# Add the symbols to this
 results <- cbind(results, getsymbols)
 
+# Prints the summary of our results
 summary(results)
 
+# "Extract Data" depending on the p value and logFC
 results$threshold <- "1"
 a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
 results[rownames(a), "threshold"] <- "2"
@@ -160,6 +189,7 @@ b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
 results[rownames(b), "threshold"] <- "3"
 table(results$threshold)
 
+# Make a volcano plot
 volcano <- ggplot(data = results, 
                   aes(x = logFC, y = -1*log10(adj.P.Val), 
                       colour = threshold, 
