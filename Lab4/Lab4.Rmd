@@ -55,7 +55,7 @@ library(annotate)
 
 Provided source code we have to explain.
 
-```{r, echo = FALSE}
+```{r, include = TRUE, echo = TRUE}
 
 # Get the Data
 x = getGEOSuppFiles("GSE20986")
@@ -72,7 +72,7 @@ sapply(paste("data", cels, sep = "/"), gunzip)
 # which is the filename. The first column is called 'Name' and the second one
 # is called 'FileName'.
 phenodata = matrix(rep(list.files("data", pattern = "[CEL]"), 2), ncol =2)
-class(phenodata)
+#class(phenodata)
 phenodata <- as.data.frame(phenodata)
 colnames(phenodata) <- c("Name", "FileName")
 # Adding a new column with the target
@@ -189,27 +189,11 @@ b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
 results[rownames(b), "threshold"] <- "3"
 table(results$threshold)
 
-# Make a volcano plot
-volcano <- ggplot(data = results, 
-                  aes(x = logFC, y = -1*log10(adj.P.Val), 
-                      colour = threshold, 
-                      label = getsymbols))
 
-volcano <- volcano + 
-  geom_point() + 
-  scale_color_manual(values = c("black", "red", "green"), 
-                 labels = c("Not Significant", "Upregulated", "Downregulated"), 
-                 name = "Key/Legend")
-
-volcano + 
-  geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5),
-            aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
-                label = getsymbols)  )
 
 #print(volcano)
 
 ```
-
 
 
 # Assignment 1
@@ -256,6 +240,30 @@ volcano +
 # Question 3
 # ------------------------------------------------------------------------------
 
+significant_genes = c()
+
+# ---
+# Huvec - choroid
+# ---
+
+current_genes = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5)
+significant_genes = c(significant_genes, as.vector(current_genes$getsymbols))
+
+# Make a volcano plot
+volcano <- ggplot(data = results, 
+                  aes(x = logFC, y = -1*log10(adj.P.Val), 
+                      colour = threshold, 
+                      label = getsymbols))
+volcano <- volcano + 
+  geom_point() + 
+  scale_color_manual(values = c("black", "red", "green"), 
+                 labels = c("Not Significant", "Upregulated", "Downregulated"), 
+                 name = "Key/Legend")
+volcano + 
+  geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5),
+            aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold,
+                label = getsymbols)  )
+
 # These are the other combinatin where we need volcano plots for
 # huvec_retina
 # huvec_iris
@@ -266,6 +274,9 @@ volcano +
 
 results <- topTable(huvec_ebay, number = 100000, coef = "huvec_retina")
 results <- cbind(results, getsymbols)
+
+current_genes = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5)
+significant_genes = c(significant_genes, as.vector(current_genes$getsymbols))
 
 results$threshold <- "1"
 a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
@@ -304,6 +315,9 @@ volcano2 +
 results <- topTable(huvec_ebay, number = 100000, coef = "huvec_iris")
 results <- cbind(results, getsymbols)
 
+current_genes = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5)
+significant_genes = c(significant_genes, as.vector(current_genes$getsymbols))
+
 results$threshold <- "1"
 a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
 results[rownames(a), "threshold"] <- "2"
@@ -336,9 +350,13 @@ volcano2 +
 
 We observe the following differentially expresses genes:
 
-- a
-- b
-- c
+```{r, echo = FALSE}
+
+significant_genes = unique(significant_genes)
+significant_genes = significant_genes[!is.na(significant_genes)]
+print(significant_genes)
+
+```
 
 ## Explanation how they are Found
 
