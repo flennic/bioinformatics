@@ -11,7 +11,7 @@ link-citations: true
 
 ```{r setup, include=FALSE}
 
-knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+knitr::opts_chunk$set(fig.width = 7, fig.height = 5, echo = FALSE, 
                       warning = FALSE, message = FALSE) 
 
 # All privided Links:
@@ -57,33 +57,92 @@ library(annotate)
 
 **Task:**
 
-- Run all the R code and reproduce the graphics.
+- Run all the R code and reproduce the graphics (https://www.bioconductor.org/help/course-materials/2015/Uruguay2015/day3-gene.expression.html)
 - Go carefully through the R code and explain in your words what each step does.
 
-Provided source code we have to explain.
+**Data import**
 
-```{r, include = TRUE, echo = TRUE}
+First, we import the data corresponding to the GEO accession number GSE20986 
+using the `getGEOSuppFiles()` function. We obtain a .tar file ("GSE20986_RAW.tar").
+After extracting its contents, we obtain 12 .CEL.gz files. Consequently, these 
+12 files are unzipped and the results are put into the `data` directory. The 
+resulting 12 files are .CEL files (cell intensity files).
 
+These files contain microarray data created by Affymetrix DNA microarray image 
+analysis software. Recall that each set of microarray data contains light intensity
+values, where high intensity corresponds to expressed genes and small intensity
+to genes that were not expressed.
+
+All the data comes from humans (Homo sapiens), from four different tissues:
+iris, retina, choroid and human umbilical vein. There are three .CEL files per
+tissue. 
+
+References: 
+
+- https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE20986
+- https://www.ncbi.nlm.nih.gov/geo/geo2r/?acc=GSE20986
+- https://fileinfo.com/extension/cel
+- https://www.affymetrix.com/support/developer/powertools/changelog/gcos-agcc/cel.html
+- https://bioconductor.org/help/course-materials/2009/SeattleApr09/AffyAtoZ/AffymetrixAtoZSlides.pdf
+
+**Creating phenodata**
+
+Before we are able to read in the data from all 12 files, we create a list with
+threee objects: The `Name` (for use in the resulting R object), the `FileName`
+(for finding the corresponding .CEL file) and `Targets` which seems to be some
+required meta data like the number of files. This list is then written as a .txt 
+file. Finally, the function `read.affy()` from the `simpleaffy` package is called.
+to actually create the data to be used in R. This function takes phenodata.txt
+as input to be able to find the .CEL files. The resulting object `celfiles` is
+of class `AffyBatch` and contains the microarray data.
+
+**Simple boxplot**
+
+Now, we create a visualization of 12 boxplots, one for every .CEL file, using
+`celfiles` as input. For this, we use the `boxplot` function from the 
+`BiocGenerics` package. Unfortunately, the x-axis labels are not readable. 
+Therefore, we don't know which boxplots belong to which .CEL file. Therefore, 
+we create an improved boxplot visualization in the next step.
+
+Note: Although light intensity values do have a unit, it does not really matter
+for the interpretation. All we can do with the values is make relative comparisons
+within one experiment. Higher values correspond to expressed genes. It is not 
+possible whatsoever, to make comparisons across experiments because the scale
+can differ. Furthermore, the scale is usually transformed (e.g. with logs), so
+that absolute interpretations make even less sense.
+
+Interpretation: As we can see, the majority of the light intensity values are 
+between 5 and 7. However, there are also some very large light intensity values
+which correspond to strongly expressed genes. The intensity values in the 
+inter-quartile range (the rectangle boxes in the plots) may correspond to 
+genes that are only expressed to a small extent or even not at all.
+
+```{r, echo = FALSE}
 # ------------------------------------------------------------------------------
 # Question 1
 # ------------------------------------------------------------------------------
 
+# Data import ------------------------------------------------------------------
+
 # Get the Data
-x = getGEOSuppFiles("GSE20986")
-x
+# x = getGEOSuppFiles("GSE20986")
+# x
 
 # Untar and Unzip
 # DONT ADD THE FILE TO GIT IT'S 60MB!
-untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
-cels = list.files("data/", pattern = "[gz]")
-sapply(paste("data", cels, sep = "/"), gunzip)
+# untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
+# cels = list.files("data/", pattern = "[gz]")
+# sapply(paste("data", cels, sep = "/"), gunzip)
 
-# Creating phenodata
+# Creating phenodata -----------------------------------------------------------
+
 # It's a matrix with two columns. Each row has the same entries in their cells,
 # which is the filename. The first column is called 'Name' and the second one
 # is called 'FileName'.
 phenodata = matrix(rep(list.files("data", pattern = "[CEL]"), 2), ncol =2)
-#class(phenodata)
+
+# class(phenodata) # "matrix"
+
 phenodata <- as.data.frame(phenodata)
 colnames(phenodata) <- c("Name", "FileName")
 # Adding a new column with the target
@@ -102,38 +161,109 @@ phenodata$Targets <- c("iris",
 # Writes the dataframe to a .txt file
 write.table(phenodata, "data/phenodata.txt", quote = F, sep = "\t",
             row.names = F)
+
 # Now the data is read again and a boxplot is created
-celfiles <- read.affy(covdesc = "phenodata.txt", path = "data")
+celfiles <- simpleaffy::read.affy(covdesc = "phenodata.txt", path = "data")
+
+# Simple box plot --------------------------------------------------------------
+
 # Creates a boxplot for the log base 2 intensities including pm (perfect) and 
 # mm (mismatch)
-boxplot(celfiles)
+BiocGenerics::boxplot(celfiles)
+
+```
+
+**Improved boxplot**
+
+We now create an improved box plot, in which the x-axis labels are readable.
+
+Note: The colors do not have a special meaning. They do not e.g. correspond to a 
+specific tissue. Instead, there are 8 color values which are used from left to 
+right. After all 8 values have been used, the 1st color is used, then the 2nd 
+color etc.
+
+```{r}
+
+# Improved box plot ------------------------------------------------------------
 
 # Create "nice looking" color palettes. So this array actually has hex-color
 # values inside.
 cols = brewer.pal(8, "Set1")
-# Help page: exprs,AffyBatch-method
+
+# Help page: exprs, AffyBatch-method
 # The columns are the different .CEL files and hold the data. It's a class re-
 # presentation for the probe level data. The main component are the intensities
 # from multiple arrays of the save CDF type.
-eset <- exprs(celfiles)
+eset <- affy::exprs(celfiles)
 samples <- celfiles$Targets
-colnames(eset)
+# colnames(eset) # Print colnames
+
 # The colnames are set to our targets
 colnames(eset) <- samples
+
 # The .CEL files and their content is being plotted. It's basically the same
 # plot as before but this time with fancy colors
-boxplot(celfiles, col = cols, las = 2)
+BiocGenerics::boxplot(celfiles, col = cols, las = 2)
+
+```
+
+**Cluster analysis (by tissue)**
+
+We have extracted the expression matrix (1354896 rows, 12 columns) from the 
+`celfiles` object. Each row corresponds to a light intensity that tells us to 
+what extend a gene is expressed (?). There are 12 columns for cell intensity file.
+
+Now, we compute a distance matrix for these 12 columns, using the 
+`Chebyshev distance` as a metric. The `Chebyshev distance` gives us the maximum
+difference between any pair of points in two vectors.
+
+Subsequently, we conduct a hierarchical cluster analysis on this distance matrix
+and plot the results in a cluster dendogram. Note that there are 12 leaf nodes
+in the plotted dendogram, each node corresponding to one .CEL file. The labels
+tell us which tissue the .CEL file belonged to. 
+
+Note that HCA is done by a stepwise procedure. At each step, the two columns with
+the smallest dissimilarity are merged. We can therefore e.g. say that the 
+bottom right leaf nodes (retina and retina) had a quite small dissimilarity. 
+Also e.g. the 5th and 6th leaf nodes from the left (choroid and choroid) had a
+quite small dissimilarity. After all, we can conclude similarities between 
+.CEL files of the same tissue are recognized. However, it is also clear that
+similarities between different tissues are recognized (such as iris and choroid).
+
+
+References: 
+
+- https://bioconductor.org/help/course-materials/2009/SeattleApr09/AffyAtoZ/AffymetrixAtoZSlides.pdf
+- https://stats.stackexchange.com/questions/209606/what-is-maximum-and-its-computation-in-the-function-dist-stats-in-r
+- https://en.wikipedia.org/wiki/Chebyshev_distance
+- https://stats.stackexchange.com/questions/82326/how-to-interpret-the-dendrogram-of-a-hierarchical-cluster-analysis
+- http://www.econ.upf.edu/~michael/stanford/maeb7.pdf
+
+
+```{r message = FALSE}
+
 # Creating a distance matrix
-distance <- dist(t(eset), method = "maximum")
+distance <- stats::dist(t(eset), method = "maximum")
+
 # "Hierarchical cluster analysis on a set of dissimilarities and methods for analyzing it."
-clusters <- hclust(distance)
+clusters <- stats::hclust(distance)
+
 # Plot the clusters in a tree diagram
 # (https://en.wikipedia.org/wiki/Dendrogram)
 plot(clusters)
+
+```
+
+**Box Plots with vs. without normalization**
+
+```{r message = FALSE}
+
+# Box Plots with vs. without normalization -------------------------------------
+
 # "Robust Multi-Array expression measure using sequence infornmation"
 # Converts an AffyBatch into an ExpressionSet by using RMA (robust multi-array)
 # expression measure with the help of probe sequence
-celfiles.gcrma = gcrma(celfiles) # Biobase / ExpressionSet
+celfiles.gcrma = gcrma::gcrma(celfiles) # Biobase / ExpressionSet
 
 # These are two Boxplots showing the different .CELS before and after normali-
 # zation
@@ -141,17 +271,31 @@ par(mfrow=c(1,2))
 boxplot(celfiles.gcrma, col = cols, las = 2, main = "Post-Normalization");
 boxplot(celfiles, col = cols, las = 2, main = "Pre-Normalization")
 
+```
+
+**Cluster analysis (by .CEL file)**
+
+```{r message=FALSE}
 # Turns of the "devices"
 dev.off()
 
 # Create a distance matrix
 distance <- dist(t(exprs(celfiles.gcrma)), method = "maximum")
+
 # Performs a hierachical cluster analysis.
 clusters <- hclust(distance)
+
 # Plots the clusters, which is a Dendogram again
 plot(clusters)
+knitr::kable(phenodata, caption = "Phenodata")
 
-phenodata
+```
+
+**Linear Regression using Contrast Matrix**
+
+Blablabla.
+
+```{r}
 
 samples <- as.factor(samples)
 # Creates a design/model matrix by expanding factors.
@@ -161,7 +305,7 @@ colnames(design)
 
 # Rename from "sample" to this
 colnames(design) <- c("choroid", "huvec", "iris", "retina")
-design
+knitr::kable(design, caption = "Design Matrix")
 
 # "Construct the contrast matrix corresponding to specified contrasts of a se
 # of parameters."
