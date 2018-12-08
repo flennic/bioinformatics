@@ -623,6 +623,13 @@ size & 73.691771 & 5.944651 \\
 range & 5.944651 & 38.594288 
 \end{array}\right]$$
 
+It's important to notice, however, that using a different function, specifically
+`ouchModel` from the package `mvSLOUCH`, leads to different results, where 
+the asymptotic mean $\theta_{size} = 14.28806$ differs substantially from the
+model found through `mvOU` of the library `mvMORPH`. Moreover the AICc would then
+be equal to 1233.058, making the independent Brownian motions model the best one.
+The results appear to be confusing. 
+
 **1. Both traits evolve as independent Brownian motions.**
 
 Results after Successful Convergence:
@@ -722,9 +729,12 @@ OU_indep
 
 # For reference, see page 5 from here:
 # https://cran.r-project.org/web/packages/mvMORPH/vignettes/tutorial_mvMORPH.pdf
+set.seed(12345)
 tree = ape::read.tree(text = df$tre)
 OU_bivariate = mvMORPH::mvOU(tree, df$tab, model="OU1")
 summary(OU_bivariate)
+# Alternative solution (different result)
+# multiOU = ouchModel(tree_ouch, data_matrix)
 
 # ------------------------------------------------------------------------------
 # 5. Size evolves as a Brownian motion and range as an Ornstein–Uhlenbeck process 
@@ -1271,51 +1281,6 @@ BM_OU
 # 
 # $MaxLikFound$LogLik
 # [1] -642
-
-
-```
-
-
-```{r eval = FALSE}
-
-# ------------------------------------------------------------------------------
-# Question 2.2 (STEFANO)
-# ------------------------------------------------------------------------------
-
-# 2.2.1
-data("carni70")
-tree = ape::read.tree(text = carni70$tre)  # Render the character a tree object
-data_df = carni70$tab    # Extract the data keeping the data frame format
-data_matrix = as.matrix(carni70$tab)   # Make it as matrix
-tree_phylo = as.phylo(tree)   # Make it in the phylo format (probably not needed)
-brownian_independent = mvBM(tree_phylo, data, model = "BM1", 
-                            param = list(constraint = "diagonal"))
-# With "BM1" we will have unique rate of evolution per trait
-# with 'param = list(constraint = "diagonal")' we are forcing the independence 
-# of the output (corr matrix with elements outside diagonal equal to zero)
-
-# 2.2.2
-tree_ouch =  ape2ouch(tree = tree)  # Function requires tree to be in the ouch format
-# The default parameters will lead to correlated brownian automatically
-brownian_correlated = BrownianMotionModel(tree_ouch, data_matrix)
-
-# 2.2.3
-# Asked to Krzysztof himself: you need to run separate algorithms in order to get
-# independent univariate OU; apparently there is no other way
-univariateOU_size = mvOU(tree_phylo, data_df$size, model = "OU1")
-univariateOU_range = mvOU(tree_phylo, data_df$range, model = "OU1")
-
-# 2.2.4
-# NOTE: takes time!
-multiOU = ouchModel(tree_ouch, data_matrix)
-
-# 2.2.5
-# The function consider the first kY columns of the data as Y (Ornstein–Uhlenbeck
-# traits), while the remaining are considered to be the Xs (Brownian).
-# In order to have "size" as Brownian and "range" as OU it is necessary to reorder
-# the columns of the datarame before giving it to the fucntion.
-reord_df = data_df[,c(2,1)]
-multiOUBM = mvslouchModel(tree_ouch, reord_df, 1)
 
 ```
 
