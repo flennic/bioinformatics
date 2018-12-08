@@ -406,7 +406,7 @@ results[rownames(b), "threshold"] <- "3"
 
 **Task:**
 
-- Present the variables versus each other original, logcaled and MA-plot for each considered pair both before and after normalization.
+- Present the variables versus each other original, log-scaled and MA-plot for each considered pair both before and after normalization.
 - A cluster analysis is performed on the page but not report. Present plots and also draw heatmaps.
 
 ```{r}
