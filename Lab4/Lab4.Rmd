@@ -406,7 +406,7 @@ results[rownames(b), "threshold"] <- "3"
 
 **Task:**
 
-- Present the variables versus each other original, log–scaled and MA–plot for each considered pair both before and after normalization.
+- Present the variables versus each other original, logcaled and MA-plot for each considered pair both before and after normalization.
 - A cluster analysis is performed on the page but not report. Present plots and also draw heatmaps.
 
 ```{r}
@@ -564,7 +564,9 @@ Therefore we have the ```log2``` of the fold-change on the x-axis and the ```-lo
 
 The datapoints (genes) we obtained are those which are far to the right and in the upper part of the volcano plot. We used the provided code filtering those and adding the names to them as the seperator. All obtained genes are genes which are upregulated.
 
-## Assignment 4
+\newpage
+
+# Assignment 4
 
 **Task:**
 
@@ -574,6 +576,231 @@ The datapoints (genes) we obtained are those which are far to the right and in t
   - If so do the common GO terms seem to be related to anything particular?
 - Try to present GO analysis in an informative manner, if possible visualize.
 
+## More Information About The Genes
+
+**Comment:** Most information is taken from GeneCards and Wikipedia, the figures
+are all taken from Wikipedia. We tried to describe the genes in our own words,
+but some descriptions are so bio heavy in their expression that we just quoted
+them as we are not sure how to deliver the same and correct amounf of 
+information in our own words.
+
+### HOXB7
+The full name of this gene is *Homeobox protein Hox-B7* and is a member of the
+Antp homeobox family. The homebox family is a cluster of genes which are used
+during the early embryological development. This family is interesting to
+inspect due to the fact that their sequences are conserved and widely used by
+living taxa. The whole homobox family is part of the human genome.
+
+This gene is member of the homobox B cluster and found on chromosome 17.
+
+> The encoded nuclear protein functions as a sequence-specific transcription
+> factor that is involved in cell proliferation and differentiation. Increased
+> expression of this gene is associated with some cases of melanoma and ovarian
+> carcinoma.
+
+From: <https://www.ncbi.nlm.nih.gov/gene?Db=gene&Cmd=ShowDetailView&TermToSearch=3217>
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=HOXB7>
+
+![HOXB7](figures/HOXB7.png){width=250px}
+
+### IL1RL1
+The full name if this gene is *Interleukin 1 receptor-like 1* and is a member of
+the Toll-like receptor which are a part of the innate immune system. It is found
+on chromosome 2 and is 40,536 bases long and encodes a protein of 556 amino 
+acids. It seems to be important for T helper cells type 2.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=IL1RL1>
+
+
+### HOXA5
+*Homeobox protein Hox-A5* is part of the A cluster on chromosome 7 and
+"encodes a DNA-binding transcription factor which may regulate gene expression,
+morphogenesis, and differentiation." (from: <https://www.ncbi.nlm.nih.gov/gene/3202>).
+It's possible that this gene plays a role in tumorigenesis. It upregulates the
+tumor suppressor p53 which is also used as en example in the Book "Concepts in 
+Bioinformatics and Genomics."
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=HOXA5>
+
+![HOXA5](figures/HOXA5.png){width=250px}
+
+### HOXB6
+*Homeobox protein Hox-B6* is found in a cluster of the homobox B genes also on
+chromosome 17. It's involved in the development of long, skin and has been
+localized in nucleus as well as in cytoplasm.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=HOXB6>
+
+![HOXB6](figures/HOXB6.png){width=250px}
+
+### GABBR2
+*Gamma-aminobutyric acid (GABA) B receptor, 2 (GABAB2)* is a G-Protein, also
+called GPCR which is a family of proteins. They're also called "seven-transmembrane
+receptors" as they pass through the cell membrane seven times.
+
+GABBR2 build some kind of messenger system for B-type receptors which inhibit
+neural activity. These messenger systems regulate the release of neurotransmitters
+and the activity of ion channels.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=GABBR2>
+
+![G-Protein](figures/G-Protein.png){width=250px}
+
+### SOCS2
+*Suppressor of cytokine signaling 2* is found on chromosome 12 and if part of the
+SOCS family of proteins which are a port of the feedback system that regulates
+signal transduction. It seems to be a negative regulator.
+
+Diseases associated with SOCS2 are Essential Thrombocythemia and Vertebral Artery Occlusion.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=SOCS2>
+
+![SOCS2](figures/SOCS2.png){width=250px}
+
+### CCNK
+*Cyclin-K* is found on chromosome 14 and is a member of the transcription cyclin family.
+
+> These cyclins may regulate transcription through their association with and
+> activation of cyclin-dependent kinases (CDK) that phosphorylate the C-terminal
+> domain (CTD) of the large subunit of RNA polymerase II. This gene product may
+> play a dual role in regulating CDK and RNA polymerase II activities.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=CCNK>
+
+![CCNK](figures/CCNK.png){width=250px}
+
+### SERPIND1
+*Heparin cofactor II (HCII)* is found on chromosome 22 and belongs to the serpin
+gene superfamily. They play a role in processes like inflammation, blood clotting, 
+and cancer metastasis. SERPIND1 is a Protein Coding gene.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=SERPIND1>
+
+![SERPIND1](figures/SERPIND1.png){width=250px}
+
+### DHH
+*Desert hedgehog homolog* is a member of the hedgehog family which encodes signaling
+molecules that regulate morphogenesis. It is located on chromosome 12 and may
+be involved in gonadal differentiation and perineurial development.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=DHH>
+
+![DHH](figures/DHH.png){width=250px}
+
+### GBGT1
+*Globoside alpha-1,3-N-acetylgalactosaminyltransferase 1* is located on chromosome
+9 and encodes for a member of the histo-blood group ABO gene family.
+
+> expression of this protein may determine host tropism to microorganisms.
+> Alternative splicing results in multiple transcript variants
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=GBGT1>
+
+![ABO](figures/ABO.png){width=250px}
+
+### RASGRF2
+*Ras-specific guanine nucleotide-releasing factor 2* is located on chromosome 5
+and variations of it seem to be related to propensity to binge drink by teenagers.
+
+> Functions as a calcium-regulated nucleotide exchange factor activating both Ras
+> and RAC1 through the exchange of bound GDP for GTP.
+
+<https://www.genecards.org/cgi-bin/carddisp.pl?gene=RASGRF2>
+
+
+## Gene Ontology Terms
+
+Order of information: GO ID 	Qualified GO term 	Evidence 	PubMed IDs
+
+### HOXB7
+
+- GO:0000978 	RNA polymerase II proximal promoter sequence-specific DNA binding 	IDA 	8756643
+- GO:0000981 	RNA polymerase II transcription factor activity, sequence-specific DNA binding 	ISA 	
+- GO:0001077 	transcriptional activator activity, RNA polymerase II proximal promoter sequence-specific DNA binding 	IDA 	8756643
+- GO:0003677 	DNA binding 	IEA 	
+- GO:0003700 	DNA binding transcription factor activity 	NAS 	1678287
+
+### IL1RL1
+
+- GO:0002113 	interleukin-33 binding 	IEA 	
+- GO:0002114 	interleukin-33 receptor activity 	IEA 	
+- GO:0004896 	cytokine receptor activity 	TAS 	10191101
+- GO:0004908 	interleukin-1 receptor activity 	IEA 	
+- GO:0005057 	obsolete signal transducer activity, downstream of receptor 	TAS 	
+
+### HOXA5
+
+- GO:0000978 	RNA polymerase II proximal promoter sequence-specific DNA binding 	IDA 	10879542
+- GO:0000981 	RNA polymerase II transcription factor activity, sequence-specific DNA binding 	NAS 	19274049
+- GO:0001077 	transcriptional activator activity, RNA polymerase II proximal promoter sequence-specific DNA binding 	IDA 	10879542
+- GO:0003677 	DNA binding 	IDA 	8657138
+- GO:0003700 	DNA binding transcription factor activity 	IDA 	10879542
+
+### HOXB6
+
+- GO:0000981 	RNA polymerase II transcription factor activity, sequence-specific DNA binding 	NAS 	19274049
+- GO:0003677 	DNA binding 	IEA 	
+- GO:0003700 	DNA binding transcription factor activity 	IEA 	
+- GO:0003723 	RNA binding 	HDA 	22681889
+- GO:0005515 	protein binding 	IPI 	25416956
+
+### GABBR2
+
+- GO:0005737 	cytoplasm 	IEA 	
+- GO:0005886 	plasma membrane 	TAS 	
+- GO:0005887 	integral component of plasma membrane 	IDA,TAS 	9872316
+- GO:0016020 	membrane 	IEA 	
+- GO:0016021 	integral component of membrane 	IEA 	
+
+### SOCS2
+
+- GO:0004860 	protein kinase inhibitor activity 	IBA 	
+- GO:0005070 	SH3/SH2 adaptor activity 	TAS 	9344848
+- GO:0005131 	growth hormone receptor binding 	NAS 	12135564
+- GO:0005159 	insulin-like growth factor receptor binding 	IPI 	9727029
+- GO:0005515 	protein binding 	IPI 	11781573
+
+#### CCNK
+
+- GO:0004674 	protein serine/threonine kinase activity 	TAS 	
+- GO:0004693 	cyclin-dependent protein serine/threonine kinase activity 	IDA 	9632813
+- GO:0005515 	protein binding 	IPI 	16189514
+- GO:0008353 	RNA polymerase II carboxy-terminal domain kinase activity 	IDA 	9632813
+- GO:0016538 	cyclin-dependent protein serine/threonine kinase regulator activity 	IBA
+
+### SERPIND1
+
+- GO:0004866 	endopeptidase inhibitor activity 	TAS 	2647747
+- GO:0004867 	serine-type endopeptidase inhibitor activity 	IBA 	
+- GO:0008201 	heparin binding 	IEA 	
+- GO:0030414 	peptidase inhibitor activity 	IEA
+
+### DHH
+
+- GO:0005113 	patched binding 	IEA 	
+- GO:0005509 	calcium ion binding 	IDA 	19561611
+- GO:0005515 	protein binding 	IPI 	19561611
+- GO:0008233 	peptidase activity 	IEA 	
+- GO:0008270 	zinc ion binding 	IDA 	19561611
+
+### GBGT1
+
+- GO:0016740 	transferase activity 	IEA 	
+- GO:0016757 	transferase activity, transferring glycosyl groups 	IBA,IEA 	
+- GO:0016758 	transferase activity, transferring hexosyl groups 	IEA 	
+- GO:0046872 	metal ion binding 	IEA 	
+- GO:0047277 	globoside alpha-N-acetylgalactosaminyltransferase activity 	IBA 	
+
+### RASGRF2
+
+- GO:0005085 	guanyl-nucleotide exchange factor activity 	TAS,IEA 	
+- GO:0005088 	Ras guanyl-nucleotide exchange factor activity 	TAS,IMP 	
+- GO:0005089 	Rho guanyl-nucleotide exchange factor activity 	IEA,TAS 	
+- GO:0005515 	protein binding 	IEA 	
+- GO:0005516 	calmodulin binding 	IEA 	
+
+### Gene Ontology Analysis
 
 ```{r}
 # ------------------------------------------------------------------------------
