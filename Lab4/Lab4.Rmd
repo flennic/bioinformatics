@@ -853,7 +853,7 @@ Order of information: GO ID 	Qualified GO term 	Evidence 	PubMed IDs
 
 ### Gene Ontology Analysis
 #####Are any of the GO terms common between genes?, If so do the common GO terms seem to be related to anything particular?
-From Homeo Box protein group, _HOXB7_ and _HOXA5_ share the exact same GO terms, and both shares GO:0000981, GO:0003677, GO:0003700 with _HOXB6_. According to the explanation about the homebox family above, we can relate its GO class - RNA plymerase II transcription(GO:0000981), DNA binding(GO:0003677), and DNA binding transcription(GO:0003700) to its function during the early embryological development, especially that their sequences are conserved and widely used by living taxa. Also _SOCS2_, _CCNK_ and _RASGRF2_ share GO:0005515, which is related to protein binding.
+From Homeo Box protein group, _HOXB7_ and _HOXA5_ share the exact same GO terms, and both shares GO:0000981, GO:0003677, GO:0003700 with _HOXB6_. According to the explanation about the homebox family above, we can relate its GO term - RNA plymerase II transcription(GO:0000981), DNA binding(GO:0003677), and DNA binding transcription(GO:0003700) to its function during the early embryological development, especially that their sequences are conserved and widely used by living taxa. Also _SOCS2_, _CCNK_ and _RASGRF2_ share GO:0005515, which is related to protein binding. GO term protein binding means interacting selectively and non-covalently with any protein or protein complex (a complex of two or more proteins that may include other nonprotein molecules). <http://www.informatics.jax.org/vocab/gene_ontology/GO:0005515>
 
 
 
