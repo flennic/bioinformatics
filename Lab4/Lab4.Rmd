@@ -88,10 +88,10 @@ References:
 **Creating phenodata**
 
 Before we are able to read in the data from all 12 files, we create a list with
-threee objects: The `Name` (for use in the resulting R object), the `FileName`
+three objects: The `Name` (for use in the resulting R object), the `FileName`
 (for finding the corresponding .CEL file) and `Targets` which seems to be some
 required meta data like the number of files. This list is then written as a .txt 
-file. Finally, the function `read.affy()` from the `simpleaffy` package is called.
+file. Finally, the function `read.affy()` from the `simpleaffy` package is called
 to actually create the data to be used in R. This function takes phenodata.txt
 as input to be able to find the .CEL files. The resulting object `celfiles` is
 of class `AffyBatch` and contains the microarray data.
@@ -115,7 +115,7 @@ Interpretation: As we can see, the majority of the light intensity values are
 between 5 and 7. However, there are also some very large light intensity values
 which correspond to strongly expressed genes. The intensity values in the 
 inter-quartile range (the rectangle boxes in the plots) may correspond to 
-genes that are only expressed to a small extent or even not at all.
+genes that are only expressed to a small extent (or maybe not even not at all).
 
 ```{r, echo = FALSE, eval = FALSE}
 # ------------------------------------------------------------------------------
@@ -125,18 +125,18 @@ genes that are only expressed to a small extent or even not at all.
 # Data import ------------------------------------------------------------------
 
 # Get the Data
-x = getGEOSuppFiles("GSE20986")
-x
+# x = getGEOSuppFiles("GSE20986")
+# x
 
 # Untar and Unzip
 # DONT ADD THE FILE TO GIT IT'S 60MB!
-untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
-cels = list.files("data/", pattern = "[gz]")
-sapply(paste("data", cels, sep = "/"), gunzip)
+# untar("GSE20986/GSE20986_RAW.tar", exdir = "data")
+# cels = list.files("data/", pattern = "[gz]")
+# sapply(paste("data", cels, sep = "/"), gunzip)
 
 ```
 
-```{r fig.height=3.75}
+```{r fig.height=3.5}
 
 # Creating phenodata -----------------------------------------------------------
 
@@ -147,10 +147,10 @@ phenodata = matrix(rep(list.files("data", pattern = "[CEL]"), 2), ncol =2)
 
 # class(phenodata) # "matrix"
 
-phenodata <- as.data.frame(phenodata)
-colnames(phenodata) <- c("Name", "FileName")
+phenodata = as.data.frame(phenodata)
+colnames(phenodata) = c("Name", "FileName")
 # Adding a new column with the target
-phenodata$Targets <- c("iris", 
+phenodata$Targets = c("iris", 
                        "retina", 
                        "retina", 
                        "iris", 
@@ -168,7 +168,7 @@ write.table(phenodata, "data/phenodata.txt", quote = F, sep = "\t",
             row.names = F)
 
 # Now the data is read again and a boxplot is created
-celfiles <- simpleaffy::read.affy(covdesc = "phenodata.txt", path = "data")
+celfiles = simpleaffy::read.affy(covdesc = "phenodata.txt", path = "data")
 
 # Simple box plot --------------------------------------------------------------
 
@@ -184,8 +184,8 @@ We now create an improved box plot, in which the x-axis labels are readable.
 
 Note: The colors do not have a special meaning. They do not e.g. correspond to a 
 specific tissue. Instead, there are 8 color values which are used from left to 
-right. After all 8 values have been used, the 1st color is used, then the 2nd 
-color etc.
+right. After all 8 values have been used, the 1st color is used again, then the 
+2nd color etc.
 
 ```{r fig.height=4}
 
@@ -199,12 +199,12 @@ cols = brewer.pal(8, "Set1")
 # The columns are the different .CEL files and hold the data. It's a class re-
 # presentation for the probe level data. The main component are the intensities
 # from multiple arrays of the save CDF type.
-eset <- affy::exprs(celfiles)
-samples <- celfiles$Targets
+eset = affy::exprs(celfiles)
+samples = celfiles$Targets
 # colnames(eset) # Print colnames
 
 # The colnames are set to our targets
-colnames(eset) <- samples
+colnames(eset) = samples
 
 # The .CEL files and their content is being plotted. It's basically the same
 # plot as before but this time with fancy colors
@@ -215,26 +215,29 @@ BiocGenerics::boxplot(celfiles, col = cols, las = 2)
 
 **Cluster analysis (not normalized, tissue as labels)**
 
-We have extracted the expression matrix (1354896 rows, 12 columns) from the 
-`celfiles` object. Each row corresponds to a light intensity that tells us to 
-what extend a gene is expressed (?). There are 12 columns for cell intensity file.
+In the previous step, we have extracted the expression matrix (1354896 rows, 
+12 columns) from the `celfiles` object which carries the data of all 12 .CEL 
+files. Each row corresponds to a light intensity that tells us to what extend a 
+gene is expressed (?). There are 12 columns, namely one for each cell intensity 
+file.
 
 Now, we compute a distance matrix for these 12 columns, using the 
 `Chebyshev distance` as a metric. The `Chebyshev distance` gives us the maximum
-difference between any pair of points in two vectors.
+difference between any pair of points in two vectors. Here, one vector 
+corresponds to one of the 12 columns.
 
-Subsequently, we conduct a hierarchical cluster analysis on this distance matrix
-and plot the results in a cluster dendogram. Note that there are 12 leaf nodes
-in the plotted dendogram, each node corresponding to one .CEL file. The labels
-tell us which tissue the .CEL file belonged to. 
+Subsequently, we conduct a hierarchical cluster analysis (HCA) on this distance 
+matrix and plot the results in a cluster dendogram. Note that there are 12 leaf 
+nodes in the plotted dendogram, each node corresponding to one .CEL file. The
+labels tell us which tissue the .CEL file belonged to. 
 
 Note that HCA is done by a stepwise procedure. At each step, the two columns with
 the smallest dissimilarity are merged. We can therefore e.g. say that the 
 bottom right leaf nodes (retina and retina) had a quite small dissimilarity. 
 Also e.g. the 5th and 6th leaf nodes from the left (choroid and choroid) had a
-quite small dissimilarity. After all, we can conclude similarities between 
-.CEL files of the same tissue are recognized. However, it is also clear that
-similarities between different tissues are recognized (such as iris and choroid).
+quite small dissimilarity. After all, we can conclude that similarities between 
+.CEL files of the same tissue were recognized. However, it is also clear that
+similarities between different tissues were recognized (such as iris and choroid).
 
 References: 
 
@@ -248,10 +251,10 @@ References:
 ```{r message = FALSE}
 
 # Creating a distance matrix
-distance <- stats::dist(t(eset), method = "maximum")
+distance = stats::dist(t(eset), method = "maximum")
 
 # "Hierarchical cluster analysis on a set of dissimilarities and methods for analyzing it."
-clusters <- stats::hclust(distance)
+clusters = stats::hclust(distance)
 
 # Plot the clusters in a tree diagram
 # (https://en.wikipedia.org/wiki/Dendrogram)
@@ -261,17 +264,18 @@ plot(clusters)
 
 **Box Plots with vs. without normalization**
 
-The previous box plots (using the `celfiles`, an `AffyBatch` object as input)
+The previous box plots (using the `celfiles` object of class `AffyBatch` as input)
 were not based on normalized features. Here, we use the `gcrma()` function with 
-`celfiles` as input to extract the `ExpressionSet` object `celfiles.gcrma`. 
+`celfiles` as input to extract the object `celfiles.gcrma` of class `ExpressionSet`. 
 When applying the `gcrma()` function, the default parameter `normalize` is set
 to true. Therefore, we obtain normalized data.
 
 Comparison: After normalizing, we can observe the following.
 
-- Subtle differences in the inter-quartile ranges across samples get reduced. 
-Almost all inter-quartile ranges look very similar in the `Post-Normalization` 
-plot whereas they noticeably differ in the `Pre-Normalization` plot. 
+- Subtle differences in the inter-quartile ranges across samples (i.e. .CEL files)
+get reduced. Almost all inter-quartile ranges look very similar in the 
+`Post-Normalization` plot whereas they noticeably differ in the 
+`Pre-Normalization` plot. 
 - The medians decrease from values of around 6 to values of near 2.
 - The upper quartile is much more spread out than the lower quartile in 
 `Post-Normalization`. Likely, the lower quartiles correspond to genes that are
@@ -312,10 +316,10 @@ it leads to different conclusions.
 # dev.off()
 
 # Create a distance matrix
-distance <- dist(t(exprs(celfiles.gcrma)), method = "maximum")
+distance = dist(t(exprs(celfiles.gcrma)), method = "maximum")
 
 # Performs a hierachical cluster analysis.
-clusters <- hclust(distance)
+clusters = hclust(distance)
 
 # Plots the clusters, which is a Dendogram again
 plot(clusters)
@@ -326,24 +330,25 @@ knitr::kable(phenodata, caption = "Phenodata")
 **Linear Regression using Contrast Matrix**
 
 First, we create a model matrix. It has four columns, one for each tissue, 
-and twelve rows, one for each sample (i.e. .CEL files). Every row only has a
-single 1 indicating which tissue the sample belongs to.
+and twelve rows, one for each sample (i.e. .CEL file). Every row only has a
+single `1` indicating which tissue the sample belongs to. The remaining columns
+of every row are `0` since each .CEL file corresponds to only one tissue type.
 
 Second, we create a contrast matrix (using the model matrix as input to provide
 the tissue names). This  contrast matrix has 4 rows, one for each tissue, and 3 
 columns, one for each contrast. The three contrasts are `huvec - choroid`, 
 `huvec - retina` and `huvec - iris`. Basically, the `huvec` row contains
-a value of 1 for all columns (since it is a minuend). The `choroid`, `retina` 
-and `iris` rows have a value of -1 in their corresponding contrast column 
+a value of `1` for all columns (since it is a minuend). The `choroid`, `retina` 
+and `iris` rows have a value of `-1` in their corresponding contrast column 
 (since they are subtrahends in the contrasts).
 
 Third, we use the `lmFit()` function from the `limma` package. It takes
-the normalized data in form of the `ExpressionSet` object `celfiles.gcrma` and
-it takes the model matrix `design` which specifies the contrasts that are 
-supposed to be analyzed. The function fits a linear model to the expression 
-data for each sample. According to the documentation, the coefficients of the 
-fitted models describe the differences between the RNA sources hybridized to the 
-arrays.
+the normalized data in form of the `celfiles.gcrma` object of class 
+`ExpressionSet` and it takes the model matrix `design` which specifies the 
+contrasts that are supposed to be analyzed. The function fits a linear model to 
+the expression data for each sample. According to the documentation, the 
+coefficients of the fitted models describe the differences between the RNA 
+sources hybridized to the arrays.
 
 Fourth, we compute estimated coefficients and standard errors for a given set of 
 contrasts, using the fitted model from the previous step. We also compute 
@@ -355,10 +360,10 @@ Finally, we print a summary of the results.
 ```{r}
 
 # Create a model matrix
-samples <- as.factor(samples) # Factor of length 12 with tissue names
-design <- model.matrix(~0+samples) # Creates model matrix by expanding factors
+samples = as.factor(samples) # Factor of length 12 with tissue names
+design = model.matrix(~0+samples) # Creates model matrix by expanding factors
 colnames(design) # "sampleschoroid" "sampleshuvec"   "samplesiris"    "samplesretina"
-colnames(design) <- c("choroid", "huvec", "iris", "retina") # change colnames
+colnames(design) = c("choroid", "huvec", "iris", "retina") # change colnames
 knitr::kable(design, caption = "Design Matrix") # Print design matrix
 
 # Create a contrast matrix from the model matrix
@@ -372,35 +377,39 @@ contrast.matrix = makeContrasts(huvec_choroid = huvec - choroid,
 fit = limma::lmFit(celfiles.gcrma, design)
 
 # Use the model to fit microdata data (coefficients, errors)
-huvec_fit <- contrasts.fit(fit, contrast.matrix)
+huvec_fit = contrasts.fit(fit, contrast.matrix)
 
 # Calculates t-statistics, F-statistics and logodds for the fitted data
-huvec_ebay <- eBayes(huvec_fit)
+huvec_ebay = eBayes(huvec_fit)
 
 # Creates a list of probe name for 100000 entries. topTable takes the top-ranked
 # genes from a linear fit
-probenames.list <- rownames(topTable(huvec_ebay, number = 100000))
+probenames.list = rownames(topTable(huvec_ebay, number = 100000))
 
 # Get symbols
-getsymbols <- getSYMBOL(probenames.list, "hgu133plus2")
+getsymbols = getSYMBOL(probenames.list, "hgu133plus2")
 
 # And get the 100000 by the coefficient huvec_choroid
-results <- topTable(huvec_ebay, number = 100000, coef = "huvec_choroid")
+results = topTable(huvec_ebay, number = 100000, coef = "huvec_choroid")
 
 # Add the symbols to this
-results <- cbind(results, getsymbols)
+results = cbind(results, getsymbols)
 
 # Prints the summary of our results
 summary(results)
 
 # "Extract Data" depending on the p value and logFC
-results$threshold <- "1"
-a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
-results[rownames(a), "threshold"] <- "2"
-b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
-results[rownames(b), "threshold"] <- "3"
+results$threshold = "1"
+a = subset(results, adj.P.Val < 0.05 & logFC > 5)
+results[rownames(a), "threshold"] = "2"
+b = subset(results, adj.P.Val < 0.05 & logFC < -5)
+results[rownames(b), "threshold"] = "3"
 
 ```
+
+**Volcano plots**
+
+https://en.wikipedia.org/wiki/Volcano_plot_(statistics)
 
 ## Assignment 2
 
@@ -445,11 +454,11 @@ significant_genes = c(significant_genes, as.vector(current_genes$getsymbols))
 table(results$threshold)
 
 # Make a volcano plot
-volcano <- ggplot(data = results, 
+volcano = ggplot(data = results, 
                   aes(x = logFC, y = -1*log10(adj.P.Val), 
                       colour = threshold, 
                       label = getsymbols))
-volcano <- volcano + 
+volcano = volcano + 
   geom_point() + 
   scale_color_manual(values = c("black", "red", "green"), 
                  labels = c("Not Significant", "Upregulated", "Downregulated"), 
@@ -472,26 +481,26 @@ volcano +
 # Huvec - Retina
 # ------------------------------------------------------------------------------
 
-results <- topTable(huvec_ebay, number = 100000, coef = "huvec_retina")
-results <- cbind(results, getsymbols)
+results = topTable(huvec_ebay, number = 100000, coef = "huvec_retina")
+results = cbind(results, getsymbols)
 
 current_genes = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5)
 significant_genes = c(significant_genes, as.vector(current_genes$getsymbols))
 
-results$threshold <- "1"
-a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
-results[rownames(a), "threshold"] <- "2"
-b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
-results[rownames(b), "threshold"] <- "3"
+results$threshold = "1"
+a = subset(results, adj.P.Val < 0.05 & logFC > 5)
+results[rownames(a), "threshold"] = "2"
+b = subset(results, adj.P.Val < 0.05 & logFC < -5)
+results[rownames(b), "threshold"] = "3"
 table(results$threshold)
 
 # Make a volcano plot
-volcano2 <- ggplot(data = results, 
+volcano2 = ggplot(data = results, 
                   aes(x = logFC, y = -1*log10(adj.P.Val), 
                       colour = threshold, 
                       label = getsymbols))
 
-volcano2 <- volcano2 + 
+volcano2 = volcano2 + 
   geom_point() + 
   scale_color_manual(values = c("black", "red", "green"), 
                  labels = c("Not Significant", "Upregulated", "Downregulated"), 
@@ -512,26 +521,26 @@ volcano2 +
 # Huvec - Iris
 # ------------------------------------------------------------------------------
 
-results <- topTable(huvec_ebay, number = 100000, coef = "huvec_iris")
-results <- cbind(results, getsymbols)
+results = topTable(huvec_ebay, number = 100000, coef = "huvec_iris")
+results = cbind(results, getsymbols)
 
 current_genes = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5)
 significant_genes = c(significant_genes, as.vector(current_genes$getsymbols))
 
-results$threshold <- "1"
-a <- subset(results, adj.P.Val < 0.05 & logFC > 5)
-results[rownames(a), "threshold"] <- "2"
-b <- subset(results, adj.P.Val < 0.05 & logFC < -5)
-results[rownames(b), "threshold"] <- "3"
+results$threshold = "1"
+a = subset(results, adj.P.Val < 0.05 & logFC > 5)
+results[rownames(a), "threshold"] = "2"
+b = subset(results, adj.P.Val < 0.05 & logFC < -5)
+results[rownames(b), "threshold"] = "3"
 table(results$threshold)
 
 # Make a volcano plot
-volcano2 <- ggplot(data = results, 
+volcano2 = ggplot(data = results, 
                   aes(x = logFC, y = -1*log10(adj.P.Val), 
                       colour = threshold, 
                       label = getsymbols))
 
-volcano2 <- volcano2 + 
+volcano2 = volcano2 + 
   geom_point() + 
   scale_color_manual(values = c("black", "red", "green"), 
                  labels = c("Not Significant", "Upregulated", "Downregulated"), 
