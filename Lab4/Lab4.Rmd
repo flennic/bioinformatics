@@ -576,7 +576,7 @@ The datapoints (genes) we obtained are those which are far to the right and in t
   - If so do the common GO terms seem to be related to anything particular?
 - Try to present GO analysis in an informative manner, if possible visualize.
 
-## More Information About The Genes
+## More Information About The Genes(in organism Homo sapiens)
 
 **Comment:** Most information is taken from GeneCards and Wikipedia, the figures
 are all taken from Wikipedia. We tried to describe the genes in our own words,
@@ -801,13 +801,9 @@ Order of information: GO ID 	Qualified GO term 	Evidence 	PubMed IDs
 - GO:0005516 	calmodulin binding 	IEA 	
 
 ### Gene Ontology Analysis
+#####Are any of the GO terms common between genes?, If so do the common GO terms seem to be related to anything particular?
+From Homeo Box protein group, _HOXB7_ and _HOXA5_ share the exact same GO terms, and both shares GO:0000981, GO:0003677, GO:0003700 with _HOXB6_. According to the explanation about the homebox family above, we can relate its GO class - RNA plymerase II transcription(GO:0000981), DNA binding(GO:0003677), and DNA binding transcription(GO:0003700) to its function during the early embryological development, especially that their sequences are conserved and widely used by living taxa. Also _SOCS2_, _CCNK_ and _RASGRF2_ share GO:0005515, which is related to protein binding.
 
-```{r}
-# ------------------------------------------------------------------------------
-# Question 4
-# ------------------------------------------------------------------------------
-
-```
 
 
 # Appendix
