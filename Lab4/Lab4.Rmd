@@ -350,12 +350,15 @@ the expression data for each sample. According to the documentation, the
 coefficients of the fitted models describe the differences between the RNA 
 sources hybridized to the arrays.
 
-Fourth, we compute estimated coefficients and standard errors for a given set of 
-contrasts, using the fitted model from the previous step. We also compute 
-various statistics for these coefficients and standard errors such as
-t-statistics, F-statistics and logodds. 
+Fourth, we compute estimated coefficients and standard errors for the given set of 
+contrasts (see `contrast.matrix`), using the fitted model from the previous step
+as input. We also compute various statistics for these coefficients and standard 
+errors such as t-statistics, F-statistics and logodds. 
 
-Finally, we print a summary of the results.
+Finally, we print a summary of the results. Note that the results contain 54675
+rows, one for each gene. Its columns contain logFC, a measure indicating to
+what extent two measurements (of the 2 tissues in the contrasts?) differ, 
+p-values, t-statistics and more.
 
 ```{r}
 
@@ -382,14 +385,18 @@ huvec_fit = contrasts.fit(fit, contrast.matrix)
 # Calculates t-statistics, F-statistics and logodds for the fitted data
 huvec_ebay = eBayes(huvec_fit)
 
-# Creates a list of probe name for 100000 entries. topTable takes the top-ranked
-# genes from a linear fit
+# Creates a list of probe name for 54675 entries. 
+# topTable() takes the top-ranked genes from a linear fit.
+# Note: 100000 is the maximum value. Since celfiles.gcrma only contained 
+# 54675 rows (genes), results also only contains 54675 rows.
 probenames.list = rownames(topTable(huvec_ebay, number = 100000))
 
-# Get symbols
+# Get symbols, the symbols corresponding to the genes (?)
 getsymbols = getSYMBOL(probenames.list, "hgu133plus2")
 
-# And get the 100000 by the coefficient huvec_choroid
+# Extract a table of the top-ranked ganes from a linear model fit
+# Note: 100000 is the maximum value. Since celfiles.gcrma only contained 
+# 54675 rows (genes), results also only contains 54675 rows.
 results = topTable(huvec_ebay, number = 100000, coef = "huvec_choroid")
 
 # Add the symbols to this
@@ -398,18 +405,53 @@ results = cbind(results, getsymbols)
 # Prints the summary of our results
 summary(results)
 
-# "Extract Data" depending on the p value and logFC
+```
+
+**Volcano plots**
+
+Finally, we create a volcano plot of the results. Note that both, red and green
+points, correspond to significant genes with a fold change smaller than -5 (green)
+or larger than 5 (red). Fold change describes how much a quantity changes between
+an original and a subsequent measurement (here, in the contrasts between different
+samples of specific tissues (?)). We care most about the red and the green points
+because they differ at least 5-fold (across samples of specific tissues (?)) and
+are significant.
+
+References: 
+
+- https://en.wikipedia.org/wiki/Volcano_plot_(statistics)
+- https://en.wikipedia.org/wiki/Fold_change
+
+```{r}
+
+# Split the data into three categories (for the subsequent volcano plot) 
+# depending on the p value and logFC. Category 2 and 3 represent both significant 
+# genes (based on the adj.P.Val) and differ noticeably across samples.
 results$threshold = "1"
 a = subset(results, adj.P.Val < 0.05 & logFC > 5)
 results[rownames(a), "threshold"] = "2"
 b = subset(results, adj.P.Val < 0.05 & logFC < -5)
 results[rownames(b), "threshold"] = "3"
 
+# Create volcano plots
+volcano = ggplot(data = results, 
+                  aes(x = logFC, y = -1*log10(adj.P.Val), 
+                      colour = threshold, 
+                      label = getsymbols))
+
+volcano = volcano + 
+  geom_point() + 
+  scale_color_manual(values = c("black", "red", "green"), 
+                     labels = c("Not Significant", "Upregulated", "Downregulated"), 
+                     name = "Key/Legend")
+
+volcano + 
+  geom_text(data = subset(results, logFC > 5 & -1*log10(adj.P.Val) > 5), 
+            aes(x = logFC, y = -1*log10(adj.P.Val), colour = threshold, 
+                label = getsymbols)  )
+
 ```
 
-**Volcano plots**
-
-https://en.wikipedia.org/wiki/Volcano_plot_(statistics)
 
 ## Assignment 2
 
