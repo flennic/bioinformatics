@@ -120,9 +120,13 @@ and $\beta$ errors made.
 
 ```{r, echo = FALSE}
 
-cat("We got", nrow(autconDefault$rules), "rules.")
-top_three = rule_table[order(rule_table$PVAL),]
+cat("We got", nrow(rule_table), "rules.")
+knitr::kable(head(rule_table[order(rule_table$PVAL),], 3), 
+             caption = "Top 3 Significant Rules")
 #kable(autconDefault$rules[1:3])
+
+rule_table_sub = rule_table[which(rule_table$PVAL < 0.05), ]
+table(rule_table_sub$DECISION)
 
 ```
 
@@ -134,7 +138,7 @@ top_three = rule_table[order(rule_table$PVAL),]
 
 ```{r, echo = FALSE}
 
-saveLineByLine(autconDefault)
+saveLineByLine(autconDefault$main, "outFile.txt")
 
 ```
 
