@@ -35,39 +35,22 @@ library(plyr)
 - Inspect the dataset and describe it.
 - What is the number of features? What is the number of objects in each class?
 
-The number of features is (-1 as the )
+**Description:**
+
+- The number of features is 35  (excluding `decision`, the target variable, which
+is not a feature). All of them are numeric and represent genes.
+- The number of rows is 146. Each row represents one male children with autism 
+and healthy ones. There are 82 autistic boys and 64 control observations. This 
+seems like a good enough balance of observations from both classes.
 
 ```{r, echo = FASLE}
 
-print(ncol(autcon)-1)
+cat("Number of features:  ", ncol(autcon)-1, "\n")
+cat("Number of observations:  ", nrow(autcon), "\n")
+cat("Number of obs. by class:  \n")
+table(autcon$decision)
 
 ```
-
-
-```{r, echo = FALSE}
-
-# What do they mean by class?!
-count(rownames(autcon))
-
-```
-
-
-- Do you think the distribution of objects is balanced?
-
-```{r}
-
-# This question is so unspcific....
-plot(autcon)
-
-# Maybe use the hints?
-
-```
-
-
-**Hints:**
-
-- You can use the ```View()``` function to display the data: ```View(autcon)```
-- Function ```table()``` can be useful to sum up the decision.
 
 ```{r, echo = FALSE}
 # ------------------------------------------------------------------------------
