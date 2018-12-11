@@ -3,9 +3,9 @@ title: "Lab 4 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
-  pdf_document: default
   html_document:
     df_print: paged
+  pdf_document: default
 link-citations: true
 ---
 
@@ -632,7 +632,7 @@ The datapoints (genes) we obtained are those which are far to the right and in t
 **Comment:** Most information is taken from GeneCards and Wikipedia, the figures
 are all taken from Wikipedia. We tried to describe the genes in our own words,
 but some descriptions are so bio heavy in their expression that we just quoted
-them as we are not sure how to deliver the same and correct amounf of 
+them as we are not sure how to deliver the same and correct amount of 
 information in our own words.
 
 ### HOXB7
@@ -855,7 +855,7 @@ Order of information: GO ID 	Qualified GO term 	Evidence 	PubMed IDs
 #####Are any of the GO terms common between genes?, If so do the common GO terms seem to be related to anything particular?
 From Homeo Box protein group, _HOXB7_ and _HOXA5_ share the exact same GO terms, and both shares GO:0000981, GO:0003677, GO:0003700 with _HOXB6_. According to the explanation about the homebox family above, we can relate its GO term - RNA polymerase II transcription(GO:0000981), DNA binding(GO:0003677), and DNA binding transcription(GO:0003700) to its function during the early embryological development, especially that their sequences are conserved and widely used by living taxa. 
   
-- RNA polymerase II transcription : A protein or a member of a complex that interacts selectively and non-covalently with a specific DNA sequence (sometimes referred to as a motif) within the regulatory region(include promoters) of a RNA polymerase II-transcribed gene to modulate transcription.
+- RNA polymerase II transcription: A protein or a member of a complex that interacts selectively and non-covalently with a specific DNA sequence (sometimes referred to as a motif) within the regulatory region(include promoters) of a RNA polymerase II-transcribed gene to modulate transcription.
 <http://www.informatics.jax.org/vocab/gene_ontology/GO:0000981>
 - DNA binding : Any molecular function by which a gene product interacts selectively and non-covalently with DNA <http://www.informatics.jax.org/vocab/gene_ontology/GO:0003677>
 - DNA binding transcription : A protein or a member of a complex that interacts selectively and non-covalently with a specific DNA sequence (sometimes referred to as a motif) within the regulatory region of a gene to modulate transcription.
@@ -863,7 +863,8 @@ From Homeo Box protein group, _HOXB7_ and _HOXA5_ share the exact same GO terms,
   
 
 Also _SOCS2_, _CCNK_ and _RASGRF2_ share GO:0005515, which is related to protein binding. 
-- protein binding : Interacting selectively and non-covalently with any protein or protein complex (a complex of two or more proteins that may include other nonprotein molecules). <http://www.informatics.jax.org/vocab/gene_ontology/GO:0005515>
+
+- protein binding: Interacting selectively and non-covalently with any protein or protein complex (a complex of two or more proteins that may include other nonprotein molecules). <http://www.informatics.jax.org/vocab/gene_ontology/GO:0005515>
 
 
 
