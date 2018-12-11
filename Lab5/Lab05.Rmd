@@ -1,0 +1,109 @@
+---
+title: "Lab 5 - Gr. 14 - Bioinformatics (732A93)"
+author: Julius Kittler (julki092), Stefano Toffol (steto820),
+        Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+link-citations: true
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
+                      warning = FALSE, message = FALSE) 
+
+#install.packages("devtools")
+library(devtools)
+install_github("mategarb/R.ROSETTA")
+library(R.ROSETTA)
+
+```
+
+# Task 1
+
+**Task:**
+
+- Install Packages
+
+# Task 2
+
+**Task:** The sample data is stored in the workspace as autcon.
+
+- Inspect the dataset and describe it.
+- What is the number of features? What is the number of objects in each class?
+- Do you think the distribution of objects is balanced?
+
+**Hints:**
+
+- You can use the ```View()``` function to display the data: ```View(autcon)```
+- Function ```table()``` can be useful to sum up the decision.
+
+```{r}
+# ------------------------------------------------------------------------------
+# Task 2
+# ------------------------------------------------------------------------------
+
+```
+
+# Task 3
+
+**Task:** Run ```rosetta()``` on the default parameters: ```autconDefault = rosetta(autcon)```
+
+Use ```autconDefault$main``` to retrieve the rule table information, assign the result to a
+separate table. Use ```autconDefault$quality``` and display the quality statistics of the
+model:
+
+  a. Define what is cross-validation. How many cross-validations are performed in
+  ```rosetta``` by default?
+  b. What is the default reduction method? What is it used for?
+  c. What is the default method of discretization? Describe it shortly. How many
+  discretization bins are calculated?
+  d. What is the accuracy of the model?
+  e. How many rules do you obtain? Print the top three most significant rules. Which
+  class get more significant rules? You can assume the rule to be significant if the
+  p-value (PVAL) is lower than 0.05.
+
+# Task 4
+
+**Task:** Export the rules to a text file using the ```saveLineByLine()``` function.
+
+# Task 5
+
+**Task:** Choose further options: Use the VisuNet tool at <http://bioinf.icm.uu.se/~visunet/.> Upload your rules.
+
+> File format Choose: "Line by line"
+> Minimum Accuracy Default is 0.7, which means that rules with at least 70% accuracy will
+> be used for displaying a network.
+> Minimum Support Default is 1, which means all rules will be included in the network.
+> You can toggle that and see the effects on the network.
+> Threshold (%) Keep it 100
+> Show top n nodes Leave it blank
+> Color of nodes Choose: "Level of the gene expression"
+> Is this gene data? Yes. Use the autism_annot.txt file
+
+Submit the file to generate a rule-based network. On the left side, there is "Information Bar" where you can select the decision. By clicking on a node, you will be able to see:
+
+  a. In the bottom panel: the rules that have the node as one of its conditions.
+  b. On the right-hand side in the "Selected Node/Edge Info": the name of the node,
+  the number of edges it has, the mean accuracy value and the mean support value.
+  Furthermore, there is information about KEGG Pathways and GO annotations
+  related with the node.
+
+# Task 6
+
+Export the networks for the autism and control decisions. Investigate connections
+present on the networks. Find the strongest connections and the most significant nodes
+for each decision. Try to interpret these in the context of autism related genes.
+Hints: Calcium homeostasis is altered in autism disorders (Palmieri et al., 2010). The
+autism dataset includes a group of genes related to a calcium ion binding (GO:0005509).
+Take a closer look at SCIN, NCS1 and CAPS2.
+You may also use the SFARI GENE database containing information about
+autism-related genes: <https://gene.sfari.org/>
+
+# Appendix
+
+```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
+
+```
