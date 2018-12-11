@@ -44,7 +44,7 @@ is not a feature). All of them are numeric and represent genes.
 and healthy ones. There are 82 autistic boys and 64 control observations. This 
 seems like a good enough balance of observations from both classes.
 
-```{r, echo = FASLE}
+```{r, echo = FALSE}
 
 cat("Number of features:  ", ncol(autcon)-1, "\n")
 cat("Number of observations:  ", nrow(autcon), "\n")
@@ -164,6 +164,10 @@ Submit the file to generate a rule-based network. On the left side, there is "In
   the number of edges it has, the mean accuracy value and the mean support value.
   Furthermore, there is information about KEGG Pathways and GO annotations
   related with the node.
+  
+![VisuNet - Control](figures/control_visu_net.png)
+
+![VisuNet - Autism](figures/autism_visu_net.png)
 
 # Task 6
 
