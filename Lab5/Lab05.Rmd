@@ -3,9 +3,9 @@ title: "Lab 5 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: true
 ---
 
@@ -113,7 +113,7 @@ The accuracy can be taken from the confusion matrix which shows the four classif
 
 The accuracy is calculated by: (TP+TN)/(TP+TN+FP+FN).
 
-It basically tells us the misclassification rate of our model and the $\alhpa$
+It basically tells us the misclassification rate of our model and the $\alpha$
 and $\beta$ errors made.
 
 ## e)
