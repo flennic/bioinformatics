@@ -52,16 +52,19 @@ table(autcon$decision)
 
 ```
 
+# Task 3
+
 ```{r, echo = FALSE}
 # ------------------------------------------------------------------------------
-# Task 2
+# Task 3
 # ------------------------------------------------------------------------------
 
 autconDefault = rosetta(autcon)
+rule_table = autconDefault$main
+quality_statistics = autconDefault$quality
+
 
 ```
-
-# Task 3
 
 **Task:** Run ```rosetta()``` on the default parameters: ```autconDefault = rosetta(autcon)```
 
@@ -78,6 +81,29 @@ model:
   e. How many rules do you obtain? Print the top three most significant rules. Which
   class get more significant rules? You can assume the rule to be significant if the
   p-value (PVAL) is lower than 0.05.
+  
+## a)
+
+## b)
+The default reduction method is Johnson. Different reducer methods are: 
+Johnson, Genetic, Holte1R or Manual.
+
+This describes the preparation, not the actual method.
+> The reduction method is used for finding the minimal subsets which preserves indiscernibility
+> between the samples. It is basically finding dependencies in the data.
+> So we're not looking for every combination of features but only at the combinations
+> that we actually find in the data.
+
+## c)
+The default is `EqualFrequency`. It is used to transform continuous functions or data
+into discrete parts, also called bins. `EqualFrequency` divides the data into
+groups where each group has roughly the same size in terms of data-points/samples
+per bin. A method for finding the best number of bins is creating a histogram and
+using this the guess a good number.
+
+For more information <http://www.uta.fi/sis/tie/tl/index/Datamining6.pdf>.
+
+## d) 
 
 # Task 4
 
