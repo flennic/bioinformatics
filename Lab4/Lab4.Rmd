@@ -322,6 +322,7 @@ distance = dist(t(exprs(celfiles.gcrma)), method = "maximum")
 clusters = hclust(distance)
 
 # Plots the clusters, which is a Dendogram again
+par(mfrow = c(1,1))
 plot(clusters)
 knitr::kable(phenodata, caption = "Phenodata")
 
@@ -464,6 +465,55 @@ volcano +
 # ------------------------------------------------------------------------------
 # Question 2
 # ------------------------------------------------------------------------------
+
+# Asked questions to Krzysztof about the meaning of this specific question: 
+# he wants us to plot just ONE of all the possible 144 pairs, possibly one
+# that will lead us to "interesting results". 
+# Problem is: 144 are obviously to much and plotting every single point 
+# of the observed one will take ages to render
+# --> To detect the "most interesting" pair I sampled 10k points from each 
+# dataset and "quickly" plot them using GGally::ggpairs()
+
+# Help for GGally package:
+# http://ggobi.github.io/ggally/#matrix_sections
+# https://tgmstat.wordpress.com/2013/11/13/plot-matrix-with-the-r-package-ggally/
+
+# We sample from the sequence of indexes of the normalized dataset
+# becuase it has much less rows than the raw data
+normalized_data = as.data.frame(exprs(celfiles.gcrma))
+
+# We will sample the same portion of the data from all of the available samples.
+# we therefore use the same indexes.
+set.seed(12345)
+n = nrow(normalized_data)
+numb = 10000          # Approx 20% of normalized, 7% of raw data
+id = sample(1:n, numb, replace = F)
+
+# Sample the desired data from the samples and change colnames 
+# in order for the ggpairs(·) function to work.  
+raw_data = as.data.frame( eset[id, ] )
+numbers = ave(colnames(raw_data), colnames(raw_data), FUN=seq_along)
+colnames(raw_data) = paste(colnames(raw_data), numbers, sep = "_")
+raw_log_data = log(raw_data)
+colnames(normalized_data) = colnames(raw_data)
+normalized_log_data = log(normalized_data)
+
+# Save the plots as PNG because they are heavy
+plot_function <- function(df) {
+  
+  # Create path+name of the file on the fly, using the one of the input data frame.
+  filename = paste0(paste("figures/ggpairs", substitute(df), sep = "_"), ".png")
+  ggpairs(df) +
+    theme_light()
+  ggsave(filename = filename, width = 20, height = 12.95)
+  
+}
+
+# Takes time, DON'T RUN!
+# plot_function(raw_data)
+# plot_function(raw_log_data)
+# plot_function(normalized_data)
+# plot_function(normalized_log_data)
 
 ```
 
