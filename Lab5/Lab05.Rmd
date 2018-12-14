@@ -240,6 +240,8 @@ table <- data.frame(From = c("NCS1","NCS1","SCIN")
 table
 ```
 
+GO:0005509, with the GO term "calcium ion binding" follows the definition - Interacting selectively and non-covalently with calciumions (Ca2+)<http://amigo.geneontology.org/amigo/term/GO:0005509>. From SFARI GENE database, we were able to figure out that some genes related to Ca2+-dependent activator protein (with calcium-binding activity) to be associated with autism<https://gene.sfari.org/database/human-gene/CADPS2>. SCIN, NCS1, and CAPS2 are all annotated to calcium ion binding. The tables above indicate that genes related to a calcium ion binding(SCIN, NCS1 and CAPS2) could be interpreted as autism related gene. 
+  
 # Appendix
 
 ```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
