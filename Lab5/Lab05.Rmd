@@ -179,11 +179,66 @@ autism dataset includes a group of genes related to a calcium ion binding (GO:00
 Take a closer look at SCIN, NCS1 and CAPS2.
 You may also use the SFARI GENE database containing information about
 autism-related genes: <https://gene.sfari.org/>
-
+  
+- Node size : mean support value
+- Node color : expression value - green(low), grey(medium), red(high)
+- Node border : number of rules
+  
 ###For control
+######The most significant node : MAP7
+- Name : MAP7=3
+- Edges: 16
+- Connection: 224.4915
+- Mean accuracy: 0.931
+- Mean support: 14.875
+  
+######The strongest connection : MAP7=3 - NCKAP5L=1 (conn: 38.3052)
+
+######The most significant node and SCIN, NCS1 and CAPS2
+```{r}
+table <- data.frame(From = c("MAP7","MAP7","MAP7")
+                    ,To = c("SCIN","NCS1","CAPS2")
+                    ,Support = c(16,"-","-")
+                    ,Accuracy =c(0.94689,"-","-") )
+table
+```
+  
+#######Between SCIN, NCS1 and CAPS2
+```{r}
+table <- data.frame(From = c("NCS1","NCS1","SCIN")
+                    ,To = c("CAPS2","SCIN","CAPS2")
+                    ,Support = c("-","-","-")
+                    ,Accuracy =c("-","-","-") )
+table
+```
 
 ###For autism
-
+######The most significant node : COX2
+- Name: COX2=3
+- Edges: 19
+- Connection: 318.58136
+- Mean accuracy: 0.994
+- Mean support: 16.15
+  
+######The strongest connection : PSMG4=3 - RHPN1=3 (conn: 40.09068)
+COX2=3 - NCS1=2 (conn: 40)
+  
+######The most significant node and SCIN, NCS1 and CAPS2
+```{r}
+table <- data.frame(From = c("COX2","COX2","COX2")
+                    ,To = c("SCIN","NCS1","CAPS2")
+                    ,Support = c(8,20,"-")
+                    ,Accuracy =c(1,1,"-"))
+table
+```
+#######Between SCIN, NCS1 and CAPS2
+```{r}
+table <- data.frame(From = c("NCS1","NCS1","SCIN")
+                    ,To = c("CAPS2","SCIN","CAPS2")
+                    ,Support = c(14,13,14)
+                    ,Accuracy =c(1,1,1))
+table
+```
 
 # Appendix
 
