@@ -180,6 +180,11 @@ Take a closer look at SCIN, NCS1 and CAPS2.
 You may also use the SFARI GENE database containing information about
 autism-related genes: <https://gene.sfari.org/>
 
+###For control
+
+###For autism
+
+
 # Appendix
 
 ```{r, ref.label = knitr::all_labels(), echo = TRUE, eval = FALSE}
