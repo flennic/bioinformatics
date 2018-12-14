@@ -3,9 +3,9 @@ title: "Lab 4 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: true
 ---
 
@@ -50,6 +50,11 @@ library(affyPLM)
 library(limma)
 library(hgu133plus2.db)
 library(annotate)
+library(png)
+library(plyr)
+library(grid)
+library(gridExtra)
+library(seriation)
 
 ```
 
@@ -410,11 +415,11 @@ summary(results)
 
 **Volcano plots**
 
-Finally, we create a volcano plot of the results. Note that both, red and green
-points, correspond to significant genes with a fold change smaller than -5 (green)
-or larger than 5 (red). Fold change describes how much a quantity changes between
+Finally, we create a volcano plot of the results. Note that both, brown and blue
+points, correspond to significant genes with a fold change smaller than -5 (brown)
+or larger than 5 (blue). Fold change describes how much a quantity changes between
 an original and a subsequent measurement (here, in the contrasts between different
-samples of specific tissues (?)). We care most about the red and the green points
+samples of specific tissues (?)). We care most about the brown and the blue points
 because they differ at least 5-fold (across samples of specific tissues (?)) and
 are significant.
 
@@ -442,7 +447,7 @@ volcano = ggplot(data = results,
 
 volcano = volcano + 
   geom_point() + 
-  scale_color_manual(values = c("black", "red", "green"), 
+  scale_color_manual(values = c("#333333", "#287C8EFF", "#9e5400"), 
                      labels = c("Not Significant", "Upregulated", "Downregulated"), 
                      name = "Key/Legend")
 
@@ -454,25 +459,23 @@ volcano +
 ```
 
 
-## Assignment 2
+# Assignment 2
 
 **Task:**
 
 - Present the variables versus each other original, log-scaled and MA-plot for each considered pair both before and after normalization.
 - A cluster analysis is performed on the page but not report. Present plots and also draw heatmaps.
 
-```{r}
+**Exploratory analysis**
+
+In order to find the most interesting pairs of variables we decided to plot all possible 144 plots for all the considered transformations of the features. However, having such an high number of observations (`r nrow(eset)` for the raw data, `r nrow(exprs(celfiles.gcrma))` for the normalized one) made the plotting process extremely time consuming and computationally demanding even for a single plot. We therefore decided to randomly sample $10000$ observations from the original dataset and, using the function `ggpairs` from the package `GGally`, plotting all the possible combinations of the variables.  
+The results are diplayed in the four figures below. Unfortunately almost all the scatterplots shown look similar. Only a few of them reveal the presence of some outliers, in particular when the normalized and the log of the normalized data are observed. After studying the graphs, we have decided to further investigate the relationships between the following pairs: (*iris_2*, *huveic_3*), (*retina_2*, *huveic_3*) and (*choroid_1*, *huveic_3*).
+
+```{r out.width="100%"}
+
 # ------------------------------------------------------------------------------
 # Question 2
 # ------------------------------------------------------------------------------
-
-# Asked questions to Krzysztof about the meaning of this specific question: 
-# he wants us to plot just ONE of all the possible 144 pairs, possibly one
-# that will lead us to "interesting results". 
-# Problem is: 144 are obviously to much and plotting every single point 
-# of the observed one will take ages to render
-# --> To detect the "most interesting" pair I sampled 10k points from each 
-# dataset and "quickly" plot them using GGally::ggpairs()
 
 # Help for GGally package:
 # http://ggobi.github.io/ggally/#matrix_sections
@@ -491,7 +494,7 @@ id = sample(1:n, numb, replace = F)
 
 # Sample the desired data from the samples and change colnames 
 # in order for the ggpairs(·) function to work.  
-raw_data = as.data.frame( eset[id, ] )
+raw_data = as.data.frame( eset )
 numbers = ave(colnames(raw_data), colnames(raw_data), FUN=seq_along)
 colnames(raw_data) = paste(colnames(raw_data), numbers, sep = "_")
 raw_log_data = log(raw_data)
@@ -499,13 +502,13 @@ colnames(normalized_data) = colnames(raw_data)
 normalized_log_data = log(normalized_data)
 
 # Save the plots as PNG because they are heavy
-plot_function <- function(df) {
+plot_function = function(df, id = id) {
   
   # Create path+name of the file on the fly, using the one of the input data frame.
   filename = paste0(paste("figures/ggpairs", substitute(df), sep = "_"), ".png")
-  ggpairs(df) +
+  GGally::ggpairs(df[id,]) +
     theme_light()
-  ggsave(filename = filename, width = 20, height = 12.95)
+  ggsave(filename = filename, width = 20, height = 12.95, units = "in")
   
 }
 
@@ -515,7 +518,193 @@ plot_function <- function(df) {
 # plot_function(normalized_data)
 # plot_function(normalized_log_data)
 
+# Load 
+img1 = rasterGrob(as.raster(readPNG("figures/ggpairs_raw_data.png")), 
+                  interpolate = F)
+img2 = rasterGrob(as.raster(readPNG("figures/ggpairs_raw_log_data.png")), 
+                  interpolate = F)
+img3 = rasterGrob(as.raster(readPNG("figures/ggpairs_normalized_data.png")), 
+                  interpolate = F)
+img4 = rasterGrob(as.raster(readPNG("figures/ggpairs_normalized_log_data.png")), 
+                  interpolate = F)
+grid.arrange(img1, img2, img3, img4, ncol = 2, nrow = 2)
+
 ```
+
+**Scatterplots and MA-plots**
+
+The scatterplots with all the datapoints for the three pairs of selected variables show the same behaviour. Regarding the raw data in the original scale apparently no clusters can be found: almost all the data is spread out along the bisector of the plane. Several outliers emerge on the bottom-right corner of the graph, characterized by a value of light intensity for the huvec tissue much lower than the predictors. In case *Retina* is considered though, only one outlier appers. Some other anomalous point (just three) lay on the top of the plot, characterized by extrimely high values for the *Huvec* variable.  
+Taking the log of the raw data all the outliers disappear and the data is spread out along the hole plane, leaving only the right and top border empty. The data points are much more concentrated in the bottom-left corner of the plot and of increased variability for the values of *Huvec* with the growing of the _X_ variable.  
+When the data is normalized, various data points separate from the main mass of the points. In blue and brown are colored the significant genes with a fold change smaller than -5 (brown) or larger than 5 (blue). It is almost impossible to distinguish these points from the rest. When also the logarithm scale is applied on the normalized data no remarkable changes emerge from it.  
+The MA-plots do not reveal any trend in the data, however they all show, both in the original and normalized data, consistent peaks, both positive and negative, in the M (log ratio) dimension for middle values of the A (mean average) dimension. In other words when the mean averages are around 2.5 (for the normalized data) is likely to find genes that have really different level of expressions between the samples. The values of M rapidly get back to zero when the average mean increases. It's interesting to note though how the statistically significant genes that emerged from the volcano plots show absolute M values not grater than 1 and do not emerge in any way from the mass of all the other data points.
+
+```{r eval=F}
+
+# Add indexes of significant genes
+normalized_data$threshold = results$threshold
+normalized_log_data$threshold = results$threshold  
+
+# Real raw data
+raw_data = as.data.frame( eset )
+colnames(raw_data) = colnames(normalized_data)[-13]
+raw_log_data = log(raw_data)
+
+# Function for the MA plot
+MA_plot  = function(df, name1, name2, col = NULL) {
+  
+  # Can be found in slide 26 of the sixth lecture
+  y = log(df[[name1]], base = 2) - log(df[[name2]], base = 2)
+  x = (log(df[[name1]], base = 2) + log(df[[name2]], base = 2)) / 2
+  
+  # Regular volcano plot 
+  if(is.null(col)) {
+    
+    temp = data.frame(x = x, y = y)
+    ggplot(aes(x = x, y = y), data = temp) +
+      geom_point(col = "#333333") +
+      geom_smooth(col = "#FDE725FF") +
+      labs(x = "", y = "") +
+      theme_light()
+    
+  }
+  
+  # If we also want to display the significant points from the volcano
+  else {
+    
+    temp = data.frame(x = x, y = y, threshold = results$threshold)
+    ggplot(aes(x = x, y = y), data = temp) +
+    geom_point(aes(col = threshold)) +
+    geom_point(aes(col = threshold), data = subset(temp, threshold=="2")) +
+    geom_point(aes(col = threshold), data = subset(temp, threshold=="3")) +
+    geom_smooth(col = "#FDE725FF") +
+    scale_color_manual(values = c("#333333", "#287C8EFF", "#9e5400")) +
+    labs(x = "", y = "") +
+    theme_light() +
+    theme(legend.position = "none")
+    
+  }
+    
+}
+
+# 2x3 grid of the six scatterplots required.
+# On the rows the type of data (original and normalized)
+# On the columns the type of scale/plot used (original, logarithm and MA plot)
+scatter_function = function(name1, name2) {
+  
+  p1 = ggplot(aes_string(x = name1, y = name2), data = raw_data) +
+    geom_point(col = "#333333") +
+    labs(x = "", y = "") +
+    theme_light()
+  
+  p2 = ggplot(aes_string(x = name1, y = name2), data = raw_log_data) +
+    geom_point(col = "#333333") +
+    labs(x = "", y = "") +
+    theme_light()
+  
+  p3 = MA_plot(raw_data, name1, name2)
+  
+  p4 = ggplot(aes_string(x = name1, y = name2, col = "threshold"), 
+              data = normalized_data) +
+    geom_point() +
+    geom_point(data = subset(normalized_data, threshold=="2")) +
+    geom_point(data = subset(normalized_data, threshold=="3")) +
+    scale_color_manual(values = c("#333333", "#287C8EFF", "#9e5400")) +
+    labs(x = "", y = "") +
+    theme_light() +
+    theme(legend.position = "none")
+
+  p5 = ggplot(aes_string(x = name1, y = name2, col = "threshold"), 
+              data = normalized_log_data) +
+    geom_point(aes(col = threshold)) +
+    geom_point(data = subset(normalized_log_data, threshold=="2")) +
+    geom_point(data = subset(normalized_log_data, threshold=="3")) +
+    scale_color_manual(values = c("#333333", "#287C8EFF", "#9e5400")) +
+    labs(x = "", y = "") +
+    theme_light() +
+    theme(legend.position = "none")
+  
+  p6 = MA_plot(normalized_data, name1, name2, col = T)
+  
+  grid.arrange(arrangeGrob(p1, top = "Original scale", left = "Raw data"),
+               arrangeGrob(p2, top = "Log scale"),
+               arrangeGrob(p3, top = "MA-plots"),
+               arrangeGrob(p4, left = "Normalized data"),
+               arrangeGrob(p5), arrangeGrob(p6), ncol = 3, nrow = 2,
+               bottom = name1, right = name2)
+  
+}
+
+scatter_function("iris_2", "huvec_3")
+
+scatter_function("retina_2", "huvec_3")
+
+scatter_function("choroid_1", "huvec_3")
+
+```
+
+![Huvec3 - Iris2](figures/huvec-iris.png)
+
+![Huvec3 - Retina2](figures/huvec-retina.png)
+
+![Huvec3 - Choroid1](figures/huvec-choroid.png)
+
+**Cluster analysis**
+
+The clustering of the cells is carried out through Hierarchical clustering, using the supreme norm to compute the distances. As already pointed out in the previous question, it seems impossible to define clear clusters in the raw data, since almost all the splits in the dendrogram happens at approximately the same distance.  
+The situation change substantially when the data is normalized: 4 clusters can be quite easily defined when the tree is cut around height 8.5. One evident cluster is constituted by the *huvec* cells, that appear close to each other and extremely distant to the rest of the cells. The other clusters are instead formed by a mixture of the other types of cells from all the three samples, suggesting that *iris*, *retina* and *choroid* present stronger similarities whithin the sample rather than between type of cells.
+
+```{r}
+
+# Create a distance matrix
+colnames(eset) = colnames(normalized_data)[-13]
+distance_raw = dist(t(scale(eset)), method = "maximum")
+distance_norm = dist(t(normalized_data[,-13]), method = "maximum")
+
+# Performs a hierachical cluster analysis.
+clusters_raw = hclust(distance_raw)
+clusters_norm = hclust(distance_norm)
+
+# Get clusters
+mycl_raw = cutree(clusters_raw, h=max(clusters_raw$height[8]))
+mycl_norm = cutree(clusters_norm, h=clusters_norm$height[8])
+
+clusterCols_raw <- viridis::cividis(length(unique(mycl_raw)))
+clusterCols_norm <- viridis::viridis(length(unique(mycl_norm)))
+
+# Color of bars under dendrogram
+SideBar_raw <- clusterCols_raw[mycl_raw]
+SideBar_norm <- clusterCols_norm[mycl_norm]
+
+# Colors for the heatmap
+myheatcol = viridis::plasma(40)
+
+```
+
+
+```{r out.width="80%"}
+
+distance_raw = as.matrix(distance_raw)
+colnames(distance_raw) = colnames(normalized_data)[-13]
+
+gplots::heatmap.2(distance_raw, 
+                  main="Hierarchical Cluster \nRaw data", 
+                  Rowv = as.dendrogram(clusters_raw), dendrogram = "row",
+                  Colv = F, scale="none", col=myheatcol, 
+                  density.info="none", trace="none", RowSideColors= SideBar_raw)
+
+```
+
+
+```{r out.width="80%"}
+
+gplots::heatmap.2(as.matrix(distance_norm), 
+                  main="Hierarchical Cluster \nNormalized data", 
+                  Rowv = as.dendrogram(clusters_norm), dendrogram = "row",
+                  Colv = F, scale="none", col=myheatcol, 
+                  density.info="none", trace="none", RowSideColors= SideBar_norm)
+
+```
+
 
 # Assignment 3
 
