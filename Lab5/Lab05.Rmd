@@ -48,10 +48,17 @@ seems like a good enough balance of observations from both classes.
 
 cat("Number of features:  ", ncol(autcon)-1, "\n")
 cat("Number of observations:  ", nrow(autcon), "\n")
-cat("Number of obs. by class:  \n")
+
+```
+
+Number of obs. by class:
+
+```{r, echo = FALSE}
+
 table(autcon$decision)
 
 ```
+
 
 # Task 3
 
@@ -133,8 +140,6 @@ rule_table_sub = rule_table[which(rule_table$PVAL < 0.05), ]
 table(rule_table_sub$DECISION)
 
 ```
-
-
 
 # Task 4
 
@@ -219,7 +224,7 @@ table <- data.frame(From = c("NCS1","NCS1","SCIN")
 table
 ```
 
-### For autism
+#### For autism
 
 ### The most significant node: COX2
 
