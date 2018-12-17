@@ -3,22 +3,28 @@ title: "Lab 5 - Gr. 14 - Bioinformatics (732A93)"
 author: Julius Kittler (julki092), Stefano Toffol (steto820),
         Saewon Jun (saeju204), Maximilian Pfundstein (maxpf364)
 output:
+  pdf_document: default
   html_document:
     df_print: paged
-  pdf_document: default
 link-citations: true
 ---
 
 ```{r setup, include=FALSE}
 
+# ------------------------------------------------------------------------------
+# Setup
+# ------------------------------------------------------------------------------
+
 knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
                       warning = FALSE, message = FALSE) 
 
-#install.packages("devtools")
+# install.packages("devtools")
+# install_github("mategarb/R.ROSETTA")
+
 library(devtools)
-install_github("mategarb/R.ROSETTA")
 library(R.ROSETTA)
 library(plyr)
+library(dplyr)
 library(knitr)
 
 ```
@@ -27,7 +33,7 @@ library(knitr)
 
 **Task:**
 
-- Install Packages
+- Install Packages :)
 
 # Task 2
 
@@ -46,16 +52,21 @@ seems like a good enough balance of observations from both classes.
 
 ```{r, echo = FALSE}
 
+# ------------------------------------------------------------------------------
+# Task 2
+# ------------------------------------------------------------------------------
+
 cat("Number of features:  ", ncol(autcon)-1, "\n")
-cat("Number of observations:  ", nrow(autcon), "\n")
+# cat("Number of observations:  ", nrow(autcon), "\n")
 
 ```
 
-Number of obs. by class:
-
 ```{r, echo = FALSE}
 
-table(autcon$decision)
+obs_by_class = as.numeric(table(autcon$decision))
+df_table = data.frame(Class = c("Autism", "Control", "Total"), 
+                      Observations = c(obs_by_class, nrow(autcon)))
+knitr::kable(df_table, caption = "Number of observations by class")
 
 ```
 
@@ -70,7 +81,6 @@ table(autcon$decision)
 autconDefault = rosetta(autcon)
 rule_table = autconDefault$main
 quality_statistics = autconDefault$quality
-
 
 ```
 
@@ -91,32 +101,79 @@ model:
   p-value (PVAL) is lower than 0.05.
   
 ## a)
-Cross-Validation is used to estimate the prediction fitness of a model. To ensure that the estimate is not biased and accurate, the supplied data-set is divided into k-folds. The cross-validation iterates `k` times, where each time the `1, 2, ..., k` part is used for validation and all the others parts are used for training.
+Cross-Validation is used to estimate the error of a model under certain conditions
+(e.g. parameter choices). The supplied data-set is divided randomly (!) into k-folds. The cross-validation iterates `k` times, where each time the `1, 2, ..., k` part is used for validation and all the others parts are used for training.
 
 If we say that `k = 3` then for the first iteration the first fold is used for validation and fold two and three are used for training. In the second iteration the second fold is used for validation and the first and third fold are used for training. So in the last part fold one and two are used for training an fold three is used for validation.
 
 The Rosetta packge is using `10` folds by default.
 
 ## b)
-The default reduction method is Johnson. Different reducer methods are: 
+
+*Default reduction method:*
+
+The default reduction method is Johnson. Different reduction methods are: 
 Johnson, Genetic, Holte1R or Manual.
 
-The reduction method is used for finding the minimal subsets which preserves indiscernibility
-between the samples. It is basically finding dependencies in the data.
-So we're not looking for every combination of features but only at the combinations
-that we actually find in the data.
+*Goal of reduction method:*
+
+Reduction methods are used to "reduce" the number of attributes (features). The
+remaining features must be most informative regarding the target variable. 
+Note that the dimensionality reduction (our main goal) comes at the expense 
+of information loss since variables are removed. (Further note that reduction
+methods require categorical variables, see next task.)
+
+*With terminology from the lecture:*
+
+- The reduction method is used for finding a minimal subset which preserves 
+indiscernibility (similarity) between the samples. 
+- It is basically a way of finding dependencies in the data.
+
+*Definition of indiscernibility:*
+
+- "Two objects are considered to be indiscernible or equivalent if and only if 
+they have the same values for all attributes in the set. In other words, in 
+terms of the given set of attributes, it is impossible to differentiate the 
+two objects." (http://www2.cs.uregina.ca/~yanzhao/is_complementary.pdf)
 
 ## c)
-The default is `EqualFrequency`. It is used to transform continuous functions or data
-into discrete parts, also called bins. `EqualFrequency` divides the data into
-groups where each group has roughly the same size in terms of data-points/samples
-per bin. A method for finding the best number of bins is creating a histogram and
-using this the guess a good number.
+
+*Default discretiziation method:*
+
+The default is `EqualFrequency`. 
+
+*Description:*
+
+Discretiziation methods are used to transform continuous variables into 
+discrete variables that have a certain number of categories (called bins). 
+Note that reduction methods such as the Johnson method require 
+categorical variables. Since all our features are numerical, they need to be 
+discretized, i.e. transformed to categories (where one category represents a
+specific range of numerical values).
+
+`EqualFrequency` divides the data into groups where each group has roughly the 
+same size in terms of data-points/samples per bin. A method for finding the best 
+number of bins is creating a histogram and using this the guess a good number.
+
+It seems like the default number of bins is 3 since the default is 
+$discreteParam=3$ according to the documentation (see `?rosetta`).
 
 For more information <http://www.uta.fi/sis/tie/tl/index/Datamining6.pdf>.
 
 ## d)
+
+The accuracy of the model is 82.18%. In other words, 82.18% of the observations
+in the training data are classified correctly by the fitted model. 
+
+```{r}
+cat("Accuracy: ",  autconDefault$quality$Accuracy.Mean)
+
+```
+
+*Definition of accuracy:*
+
 The accuracy can be taken from the confusion matrix which shows the four classifications:
+
 - control as control (TP)
 - control as autism (FP)
 - autism as control (FN)
@@ -131,13 +188,19 @@ and $\beta$ errors made.
 
 ```{r, echo = FALSE}
 
-cat("We got", nrow(rule_table), "rules.")
-knitr::kable(head(rule_table[order(rule_table$PVAL),], 3), 
-             caption = "Top 3 Significant Rules")
-#kable(autconDefault$rules[1:3])
-
+# Number of rules --------------------------------------------------------------
 rule_table_sub = rule_table[which(rule_table$PVAL < 0.05), ]
-table(rule_table_sub$DECISION)
+rules_by_class = as.numeric(table(rule_table_sub$DECISION))
+df_table = data.frame(Class = c("Autism", "Control", "Total"), 
+                      Rules = c(rules_by_class, nrow(rule_table)))
+knitr::kable(df_table, caption = "Number of rules by class")
+
+# Print the top 3 significant rules --------------------------------------------
+top3 = head(rule_table[order(rule_table$PVAL),], 3)
+top3 = top3 %>% dplyr::select(FEATURES, DECISION, PVAL, CUTS_COND, 
+                              CUT_1, CUT_2, CUT_3)
+
+knitr::kable(top3, caption = "Top 3 Significant Rules", longtable = TRUE)
 
 ```
 
@@ -147,6 +210,11 @@ table(rule_table_sub$DECISION)
 
 ```{r, echo = FALSE}
 
+# ------------------------------------------------------------------------------
+# Task 4
+# ------------------------------------------------------------------------------
+
+# Export the rules to a text file using the saveLineByLine() function.
 saveLineByLine(autconDefault$main, "outFile.txt")
 
 ```
@@ -191,10 +259,11 @@ autism-related genes: <https://gene.sfari.org/>
   
 - Node size: mean support value
 - Node color: expression value - green (low), grey (medium), red (high)
-- Node borde : number of rules
+- Node borde: number of rules
   
-#For control
-### The most significant node: MAP7
+**For control**
+
+*The most significant node: MAP7*
 
 - Name: MAP7=3
 - Edges: 16
@@ -202,12 +271,18 @@ autism-related genes: <https://gene.sfari.org/>
 - Mean accuracy: 0.931
 - Mean support: 14.875
   
-### The strongest connection:
+*The strongest connection:*
 
 MAP7=3 - NCKAP5L=1 (conn: 38.3052)
 
-### The most significant node and SCIN, NCS1 and CAPS2
+*The most significant node and SCIN, NCS1 and CAPS2*
+
 ```{r}
+
+# ------------------------------------------------------------------------------
+# Task 6
+# ------------------------------------------------------------------------------
+
 table <- data.frame(From = c("MAP7","MAP7","MAP7")
                     ,To = c("SCIN","NCS1","CAPS2")
                     ,Support = c(16,"-","-")
@@ -224,9 +299,9 @@ table <- data.frame(From = c("NCS1","NCS1","SCIN")
 table
 ```
 
-#### For autism
+**For autism**
 
-### The most significant node: COX2
+*The most significant node: COX2*
 
 - Name: COX2=3
 - Edges: 19
@@ -234,12 +309,12 @@ table
 - Mean accuracy: 0.994
 - Mean support: 16.15
   
-### The strongest connection:
+*The strongest connection:*
 
 PSMG4=3 - RHPN1=3 (conn: 40.09068)
 COX2=3 - NCS1=2 (conn: 40)
   
-### The most significant node and SCIN, NCS1 and CAPS2
+*The most significant node and SCIN, NCS1 and CAPS2*
 
 ```{r}
 table <- data.frame(From = c("COX2","COX2","COX2")
@@ -249,7 +324,7 @@ table <- data.frame(From = c("COX2","COX2","COX2")
 table
 ```
 
-#### Between SCIN, NCS1 and CAPS2
+*Between SCIN, NCS1 and CAPS2*
 
 ```{r}
 table <- data.frame(From = c("NCS1","NCS1","SCIN")

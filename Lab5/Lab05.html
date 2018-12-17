@@ -150,7 +150,7 @@ $(document).ready(function () {
 </ul>
 <pre><code>## Number of features:   35</code></pre>
 <pre><code>## Number of observations:   146</code></pre>
-<pre><code>## Number of obs. by class:</code></pre>
+<p>Number of obs. by class:</p>
 <pre><code>## 
 ##  autism control 
 ##      82      64</code></pre>
@@ -168,11 +168,14 @@ $(document).ready(function () {
 </ol>
 <div id="a" class="section level2">
 <h2>a)</h2>
+<p>Cross-Validation is used to estimate the prediction fitness of a model. To ensure that the estimate is not biased and accurate, the supplied data-set is divided into k-folds. The cross-validation iterates <code>k</code> times, where each time the <code>1, 2, ..., k</code> part is used for validation and all the others parts are used for training.</p>
+<p>If we say that <code>k = 3</code> then for the first iteration the first fold is used for validation and fold two and three are used for training. In the second iteration the second fold is used for validation and the first and third fold are used for training. So in the last part fold one and two are used for training an fold three is used for validation.</p>
+<p>The Rosetta packge is using <code>10</code> folds by default.</p>
 </div>
 <div id="b" class="section level2">
 <h2>b)</h2>
 <p>The default reduction method is Johnson. Different reducer methods are: Johnson, Genetic, Holte1R or Manual.</p>
-<p>This describes the preparation, not the actual method. &gt; The reduction method is used for finding the minimal subsets which preserves indiscernibility &gt; between the samples. It is basically finding dependencies in the data. &gt; So we’re not looking for every combination of features but only at the combinations &gt; that we actually find in the data.</p>
+<p>The reduction method is used for finding the minimal subsets which preserves indiscernibility between the samples. It is basically finding dependencies in the data. So we’re not looking for every combination of features but only at the combinations that we actually find in the data.</p>
 </div>
 <div id="c" class="section level2">
 <h2>c)</h2>
@@ -183,7 +186,7 @@ $(document).ready(function () {
 <h2>d)</h2>
 <p>The accuracy can be taken from the confusion matrix which shows the four classifications: - control as control (TP) - control as autism (FP) - autism as control (FN) - autism as autism (TN)</p>
 <p>The accuracy is calculated by: (TP+TN)/(TP+TN+FP+FN).</p>
-<p>It basically tells us the misclassification rate of our model and the <span class="math inline">\(\alhpa\)</span> and <span class="math inline">\(\beta\)</span> errors made.</p>
+<p>It basically tells us the misclassification rate of our model and the <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\beta\)</span> errors made.</p>
 </div>
 <div id="e" class="section level2">
 <h2>e)</h2>
@@ -311,15 +314,90 @@ $(document).ready(function () {
 <div id="task-6" class="section level1">
 <h1>Task 6</h1>
 <p>Export the networks for the autism and control decisions. Investigate connections present on the networks. Find the strongest connections and the most significant nodes for each decision. Try to interpret these in the context of autism related genes. Hints: Calcium homeostasis is altered in autism disorders (Palmieri et al., 2010). The autism dataset includes a group of genes related to a calcium ion binding (<a href="GO:0005509" class="uri">GO:0005509</a>). Take a closer look at SCIN, NCS1 and CAPS2. You may also use the SFARI GENE database containing information about autism-related genes: <a href="https://gene.sfari.org/" class="uri">https://gene.sfari.org/</a></p>
+<ul>
+<li>Node size: mean support value</li>
+<li>Node color: expression value - green (low), grey (medium), red (high)</li>
+<li>Node borde : number of rules</li>
+</ul>
+</div>
+<div id="for-control" class="section level1">
+<h1>For control</h1>
+<div id="the-most-significant-node-map7" class="section level3">
+<h3>The most significant node: MAP7</h3>
+<ul>
+<li>Name: MAP7=3</li>
+<li>Edges: 16</li>
+<li>Connection: 224.4915</li>
+<li>Mean accuracy: 0.931</li>
+<li>Mean support: 14.875</li>
+</ul>
+</div>
+<div id="the-strongest-connection" class="section level3">
+<h3>The strongest connection:</h3>
+<p>MAP7=3 - NCKAP5L=1 (conn: 38.3052)</p>
+</div>
+<div id="the-most-significant-node-and-scin-ncs1-and-caps2" class="section level3">
+<h3>The most significant node and SCIN, NCS1 and CAPS2</h3>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["From"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["To"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["Support"],"name":[3],"type":["fctr"],"align":["left"]},{"label":["Accuracy"],"name":[4],"type":["fctr"],"align":["left"]}],"data":[{"1":"MAP7","2":"SCIN","3":"16","4":"0.94689"},{"1":"MAP7","2":"NCS1","3":"-","4":"-"},{"1":"MAP7","2":"CAPS2","3":"-","4":"-"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+<div id="between-scin-ncs1-and-caps2" class="section level3">
+<h3>Between SCIN, NCS1 and CAPS2</h3>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["From"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["To"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["Support"],"name":[3],"type":["fctr"],"align":["left"]},{"label":["Accuracy"],"name":[4],"type":["fctr"],"align":["left"]}],"data":[{"1":"NCS1","2":"CAPS2","3":"-","4":"-"},{"1":"NCS1","2":"SCIN","3":"-","4":"-"},{"1":"SCIN","2":"CAPS2","3":"-","4":"-"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div id="for-autism" class="section level4">
+<h4>For autism</h4>
+</div>
+</div>
+<div id="the-most-significant-node-cox2" class="section level3">
+<h3>The most significant node: COX2</h3>
+<ul>
+<li>Name: COX2=3</li>
+<li>Edges: 19</li>
+<li>Connection: 318.58136</li>
+<li>Mean accuracy: 0.994</li>
+<li>Mean support: 16.15</li>
+</ul>
+</div>
+<div id="the-strongest-connection-1" class="section level3">
+<h3>The strongest connection:</h3>
+<p>PSMG4=3 - RHPN1=3 (conn: 40.09068) COX2=3 - NCS1=2 (conn: 40)</p>
+</div>
+<div id="the-most-significant-node-and-scin-ncs1-and-caps2-1" class="section level3">
+<h3>The most significant node and SCIN, NCS1 and CAPS2</h3>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["From"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["To"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["Support"],"name":[3],"type":["fctr"],"align":["left"]},{"label":["Accuracy"],"name":[4],"type":["fctr"],"align":["left"]}],"data":[{"1":"COX2","2":"SCIN","3":"8","4":"1"},{"1":"COX2","2":"NCS1","3":"20","4":"1"},{"1":"COX2","2":"CAPS2","3":"-","4":"-"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<div id="between-scin-ncs1-and-caps2-1" class="section level4">
+<h4>Between SCIN, NCS1 and CAPS2</h4>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["From"],"name":[1],"type":["fctr"],"align":["left"]},{"label":["To"],"name":[2],"type":["fctr"],"align":["left"]},{"label":["Support"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["Accuracy"],"name":[4],"type":["dbl"],"align":["right"]}],"data":[{"1":"NCS1","2":"CAPS2","3":"14","4":"1"},{"1":"NCS1","2":"SCIN","3":"13","4":"1"},{"1":"SCIN","2":"CAPS2","3":"14","4":"1"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p><a href="GO:0005509" class="uri">GO:0005509</a>, with the GO term “calcium ion binding” follows the definition - Interacting selectively and non-covalently with calciumions (Ca2+): <a href="http://amigo.geneontology.org/amigo/term/GO:0005509" class="uri">http://amigo.geneontology.org/amigo/term/GO:0005509</a>.</p>
+<p>From SFARI GENE database, we were able to figure out that some genes related to Ca2+-dependent activator protein (with calcium-binding activity) to be associated with autism: <a href="https://gene.sfari.org/database/human-gene/CADPS2" class="uri">https://gene.sfari.org/database/human-gene/CADPS2</a>.</p>
+<p>SCIN, NCS1, and CAPS2 are all annotated to calcium ion binding. The tables above indicate that genes related to a calcium ion binding(SCIN, NCS1 and CAPS2) could be interpreted as autism related gene.</p>
+</div>
+</div>
 </div>
 <div id="appendix" class="section level1">
 <h1>Appendix</h1>
 <pre class="r"><code>knitr::opts_chunk$set(fig.width = 7, fig.height = 3, echo = FALSE, 
                       warning = FALSE, message = FALSE) 
 
-#install.packages(&quot;devtools&quot;)
+# install.packages(&quot;devtools&quot;)
+# install_github(&quot;mategarb/R.ROSETTA&quot;)
+
 library(devtools)
-install_github(&quot;mategarb/R.ROSETTA&quot;)
 library(R.ROSETTA)
 library(plyr)
 library(knitr)
@@ -327,7 +405,8 @@ library(knitr)
 
 cat(&quot;Number of features:  &quot;, ncol(autcon)-1, &quot;\n&quot;)
 cat(&quot;Number of observations:  &quot;, nrow(autcon), &quot;\n&quot;)
-cat(&quot;Number of obs. by class:  \n&quot;)
+
+
 table(autcon$decision)
 
 # ------------------------------------------------------------------------------
@@ -349,7 +428,37 @@ rule_table_sub = rule_table[which(rule_table$PVAL &lt; 0.05), ]
 table(rule_table_sub$DECISION)
 
 
-saveLineByLine(autconDefault$main, &quot;outFile.txt&quot;)</code></pre>
+# ------------------------------------------------------------------------------
+# Task 4
+# ------------------------------------------------------------------------------
+
+saveLineByLine(autconDefault$main, &quot;outFile.txt&quot;)
+
+
+# ------------------------------------------------------------------------------
+# Task 6
+# ------------------------------------------------------------------------------
+
+table &lt;- data.frame(From = c(&quot;MAP7&quot;,&quot;MAP7&quot;,&quot;MAP7&quot;)
+                    ,To = c(&quot;SCIN&quot;,&quot;NCS1&quot;,&quot;CAPS2&quot;)
+                    ,Support = c(16,&quot;-&quot;,&quot;-&quot;)
+                    ,Accuracy =c(0.94689,&quot;-&quot;,&quot;-&quot;) )
+table
+table &lt;- data.frame(From = c(&quot;NCS1&quot;,&quot;NCS1&quot;,&quot;SCIN&quot;)
+                    ,To = c(&quot;CAPS2&quot;,&quot;SCIN&quot;,&quot;CAPS2&quot;)
+                    ,Support = c(&quot;-&quot;,&quot;-&quot;,&quot;-&quot;)
+                    ,Accuracy =c(&quot;-&quot;,&quot;-&quot;,&quot;-&quot;) )
+table
+table &lt;- data.frame(From = c(&quot;COX2&quot;,&quot;COX2&quot;,&quot;COX2&quot;)
+                    ,To = c(&quot;SCIN&quot;,&quot;NCS1&quot;,&quot;CAPS2&quot;)
+                    ,Support = c(8,20,&quot;-&quot;)
+                    ,Accuracy =c(1,1,&quot;-&quot;))
+table
+table &lt;- data.frame(From = c(&quot;NCS1&quot;,&quot;NCS1&quot;,&quot;SCIN&quot;)
+                    ,To = c(&quot;CAPS2&quot;,&quot;SCIN&quot;,&quot;CAPS2&quot;)
+                    ,Support = c(14,13,14)
+                    ,Accuracy =c(1,1,1))
+table</code></pre>
 </div>
 
 
